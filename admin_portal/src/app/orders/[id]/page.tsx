@@ -48,7 +48,7 @@ export default function OrderDetailPage() {
       </div>
       <Card><CardHeader className="flex flex-row items-center justify-between"><CardTitle>Status</CardTitle>
         <div className="flex items-center gap-2">
-          <Select value={newStatus} onValueChange={setNewStatus}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent>{statusFlow.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={newStatus} onValueChange={(v) => setNewStatus(v ?? '')}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger><SelectContent>{statusFlow.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
           <Button onClick={updateStatus} disabled={newStatus === order.status} size="sm">Update</Button>
         </div>
       </CardHeader></Card>

@@ -75,8 +75,8 @@ export default function EditProductPage() {
         <CardContent className="space-y-4">
           <div><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><Label>Subcategory</Label><Select value={subcategoryId} onValueChange={setSubcategoryId}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select></div>
-            <div><Label>Origin</Label><Select value={origin} onValueChange={(v) => setOrigin(v as 'local' | 'imported')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="local">Local</SelectItem><SelectItem value="imported">Imported</SelectItem></SelectContent></Select></div>
+            <div><Label>Subcategory</Label><Select value={subcategoryId} onValueChange={(v) => setSubcategoryId(v ?? '')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>Origin</Label><Select value={origin} onValueChange={(v) => v && setOrigin(v as 'local' | 'imported')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="local">Local</SelectItem><SelectItem value="imported">Imported</SelectItem></SelectContent></Select></div>
           </div>
           <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
           <div><Label>Image</Label><ImageUpload currentUrl={imageUrl} onUpload={setImageUrl} /></div>

@@ -29,7 +29,7 @@ export default function ProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Products</h1>
-        <Button asChild><Link href="/products/new"><Plus className="h-4 w-4 mr-2" /> Add Product</Link></Button>
+        <Link href="/products/new"><Plus className="h-4 w-4 mr-2" /> Add Product</Link>
       </div>
       <div className="mb-4 relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -47,7 +47,7 @@ export default function ProductsPage() {
               <TableCell><Badge variant={product.origin === 'local' ? 'default' : 'secondary'}>{product.origin}</Badge></TableCell>
               <TableCell>{product.variants?.length ?? 0}</TableCell>
               <TableCell><Badge variant={product.is_active ? 'default' : 'destructive'}>{product.is_active ? 'Active' : 'Inactive'}</Badge></TableCell>
-              <TableCell><Button variant="ghost" size="icon" asChild><Link href={`/products/${product.id}`}><Pencil className="h-4 w-4" /></Link></Button></TableCell>
+              <TableCell><Link href={`/products/${product.id}`}><Pencil className="h-4 w-4" /></Link></TableCell>
             </TableRow>
           ))}
         </TableBody>

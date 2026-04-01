@@ -6,7 +6,7 @@ import { Category, Subcategory } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
@@ -74,18 +74,7 @@ export default function CategoriesPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Categories</h1>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => { setEditingCategory(null); setCategoryName('') }}><Plus className="h-4 w-4 mr-2" /> Add Category</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{editingCategory ? 'Edit' : 'New'} Category</DialogTitle></DialogHeader>
-            <div className="space-y-4">
-              <div><Label>Name</Label><Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} /></div>
-              <Button onClick={saveCategory} className="w-full">Save</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => { setEditingCategory(null); setCategoryName(''); setDialogOpen(true) }}><Plus className="h-4 w-4 mr-2" /> Add Category</Button>
       </div>
       <div className="space-y-6">
         {categories.map((cat) => (
@@ -114,6 +103,15 @@ export default function CategoriesPage() {
           </Card>
         ))}
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{editingCategory ? 'Edit' : 'New'} Category</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div><Label>Name</Label><Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} /></div>
+            <Button onClick={saveCategory} className="w-full">Save</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog open={subDialogOpen} onOpenChange={setSubDialogOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle>{editingSub ? 'Edit' : 'New'} Subcategory</DialogTitle></DialogHeader>

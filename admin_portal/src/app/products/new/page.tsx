@@ -40,10 +40,10 @@ export default function NewProductPage() {
       <Card><CardContent className="pt-6 space-y-4">
         <div><Label>Product Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div><Label>Subcategory</Label>
-          <Select value={subcategoryId} onValueChange={setSubcategoryId}><SelectTrigger><SelectValue placeholder="Select subcategory" /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
+          <Select value={subcategoryId} onValueChange={(v) => setSubcategoryId(v ?? '')}><SelectTrigger><SelectValue placeholder="Select subcategory" /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
         </div>
         <div><Label>Origin</Label>
-          <Select value={origin} onValueChange={(v) => setOrigin(v as 'local' | 'imported')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="local">Local</SelectItem><SelectItem value="imported">Imported</SelectItem></SelectContent></Select>
+          <Select value={origin} onValueChange={(v) => v && setOrigin(v as 'local' | 'imported')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="local">Local</SelectItem><SelectItem value="imported">Imported</SelectItem></SelectContent></Select>
         </div>
         <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
         <div><Label>Image</Label><ImageUpload currentUrl={imageUrl} onUpload={setImageUrl} /></div>

@@ -33,7 +33,7 @@ export default function DiscountsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Discounts</h1>
-        <Button asChild><Link href="/discounts/new"><Plus className="h-4 w-4 mr-2" /> New Discount</Link></Button>
+        <Link href="/discounts/new"><Plus className="h-4 w-4 mr-2" /> New Discount</Link>
       </div>
       <Table>
         <TableHeader><TableRow><TableHead>Product</TableHead><TableHead>Variant</TableHead><TableHead>Type</TableHead><TableHead>Value</TableHead><TableHead>Valid Until</TableHead><TableHead>Status</TableHead><TableHead></TableHead></TableRow></TableHeader>

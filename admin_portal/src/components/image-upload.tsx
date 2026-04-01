@@ -26,12 +26,10 @@ export function ImageUpload({ currentUrl, onUpload }: ImageUploadProps) {
   return (
     <div className="space-y-2">
       {currentUrl && <img src={currentUrl} alt="Product" className="w-32 h-32 object-contain rounded border" />}
-      <Button variant="outline" size="sm" disabled={uploading} asChild>
-        <label className="cursor-pointer">
-          <Upload className="h-4 w-4 mr-2" />{uploading ? 'Uploading...' : 'Upload Image'}
-          <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
-        </label>
-      </Button>
+      <label className="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm hover:bg-muted">
+        <Upload className="h-4 w-4" />{uploading ? 'Uploading...' : 'Upload Image'}
+        <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
+      </label>
     </div>
   )
 }

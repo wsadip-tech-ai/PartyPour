@@ -29,7 +29,7 @@ export default function OrdersPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Orders</h1>
-        <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent>
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? 'all')}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent>
           <SelectItem value="all">All Statuses</SelectItem><SelectItem value="pending">Pending</SelectItem><SelectItem value="confirmed">Confirmed</SelectItem>
           <SelectItem value="dispatched">Dispatched</SelectItem><SelectItem value="delivered">Delivered</SelectItem><SelectItem value="cancelled">Cancelled</SelectItem>
         </SelectContent></Select>

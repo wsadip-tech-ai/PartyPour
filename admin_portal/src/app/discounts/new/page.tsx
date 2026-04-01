@@ -33,10 +33,10 @@ export default function NewDiscountPage() {
       <h1 className="text-3xl font-bold mb-8">New Discount</h1>
       <Card><CardContent className="pt-6 space-y-4">
         <div><Label>Product Variant (leave empty for event-wide)</Label>
-          <Select value={variantId} onValueChange={setVariantId}><SelectTrigger><SelectValue placeholder="Select variant (optional)" /></SelectTrigger><SelectContent>{variants.map((v: any) => <SelectItem key={v.id} value={v.id}>{v.products.name} — {v.size}</SelectItem>)}</SelectContent></Select>
+          <Select value={variantId} onValueChange={(v) => setVariantId(v ?? '')}><SelectTrigger><SelectValue placeholder="Select variant (optional)" /></SelectTrigger><SelectContent>{variants.map((v: any) => <SelectItem key={v.id} value={v.id}>{v.products.name} — {v.size}</SelectItem>)}</SelectContent></Select>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div><Label>Type</Label><Select value={type} onValueChange={(v) => setType(v as 'percentage' | 'flat')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="percentage">Percentage (%)</SelectItem><SelectItem value="flat">Flat (NPR)</SelectItem></SelectContent></Select></div>
+          <div><Label>Type</Label><Select value={type} onValueChange={(v) => v && setType(v as 'percentage' | 'flat')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="percentage">Percentage (%)</SelectItem><SelectItem value="flat">Flat (NPR)</SelectItem></SelectContent></Select></div>
           <div><Label>Value</Label><Input type="number" value={value} onChange={(e) => setValue(e.target.value)} /></div>
         </div>
         <div className="grid grid-cols-2 gap-4">
