@@ -1,7 +1,7 @@
-# Beverage Service App — Design Spec
+# RaksiChaiyo — Design Spec
 
 **Date:** 2026-04-01
-**Project:** PilaoPani (working title)
+**Project:** RaksiChaiyo
 **Author:** Sadip / Claude
 
 ---
