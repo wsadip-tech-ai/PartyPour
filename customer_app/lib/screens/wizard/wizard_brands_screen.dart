@@ -129,8 +129,7 @@ class _BrandSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsAsync = ref.watch(productsProvider((subcategoryId: '', origin: originFilter)));
-    // We need to fetch by slug, not subcategoryId. Use catalog service directly.
+    // Products are fetched by slug in _BrandList below
     // For now, we'll use a dedicated provider.
 
     return Column(

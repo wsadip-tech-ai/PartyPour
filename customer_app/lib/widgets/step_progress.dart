@@ -19,7 +19,6 @@ class StepProgress extends StatelessWidget {
             children: List.generate(totalSteps, (index) {
               final step = index + 1;
               final isActive = step <= currentStep;
-              final isCurrent = step == currentStep;
               return Expanded(
                 child: Row(
                   children: [

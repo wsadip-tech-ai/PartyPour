@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
-import '../../models/estimation_rule.dart';
 import '../../widgets/step_progress.dart';
 import '../../widgets/type_selector_card.dart';
 
