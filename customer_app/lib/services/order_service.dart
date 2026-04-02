@@ -43,7 +43,9 @@ class OrderService {
     }).toList();
 
     await _client.from('order_items').insert(items);
-    return Order.fromJson({...orderData, 'order_items': items});
+
+    // Re-fetch the complete order with server-generated IDs
+    return getOrder(orderId);
   }
 
   Future<List<Order>> getOrderHistory() async {
