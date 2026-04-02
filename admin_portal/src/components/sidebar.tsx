@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, FolderTree, Package, Percent, ShoppingCart, Wrench, LogOut } from 'lucide-react'
+import { LayoutDashboard, FolderTree, Package, Percent, ShoppingCart, Wrench, Calculator, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/discounts', label: 'Discounts', icon: Percent },
   { href: '/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/equipment', label: 'Equipment', icon: Wrench },
+  { href: '/estimation-rules', label: 'Estimation Rules', icon: Calculator },
 ]
 
 export function Sidebar() {
