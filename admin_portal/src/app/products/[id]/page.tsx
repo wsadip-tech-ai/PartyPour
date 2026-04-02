@@ -36,14 +36,17 @@ export default function EditProductPage() {
   const [vMrp, setVMrp] = useState('')
 
   const fetchProduct = async () => {
-    const { data } = await supabase.from('products').select('*, variants(*)').eq('id', id).single()
+    const { data, error } = await supabase.from('products').select('*, variants(*)').eq('id', id).single()
+    if (error) { console.error('fetchProduct error:', error); toast.error('Failed to load product: ' + error.message); return }
     if (data) { setProduct(data); setName(data.name); setSubcategoryId(data.subcategory_id); setOrigin(data.origin); setDescription(data.description ?? ''); setImageUrl(data.image_url); setIsActive(data.is_active) }
   }
 
   useEffect(() => {
-    // Load subcategories first, then the product so the subcategory Select
-    // already has its options populated when subcategoryId is set.
     const init = async () => {
+      // Check auth first
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { console.error('Not authenticated'); toast.error('Please log in first'); return }
+
       const { data: subs } = await supabase.from('subcategories').select('*').order('name')
       setSubcategories(subs ?? [])
       await fetchProduct()
@@ -74,7 +77,7 @@ export default function EditProductPage() {
     toast.success('Variant deleted'); fetchProduct()
   }
 
-  if (!product) return <p>Loading...</p>
+  if (!product) return <div className="flex items-center justify-center h-64"><p className="text-muted-foreground">Loading product...</p></div>
 
   return (
     <div className="max-w-4xl space-y-8">
@@ -84,7 +87,9 @@ export default function EditProductPage() {
         <CardContent className="space-y-4">
           <div><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><Label>Subcategory</Label><Select value={subcategoryId} onValueChange={(v) => setSubcategoryId(v ?? '')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>Subcategory</Label>{subcategories.length > 0 && subcategoryId ? (
+              <Select value={subcategoryId} onValueChange={(v) => setSubcategoryId(v ?? '')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{subcategories.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
+            ) : <p className="text-sm text-muted-foreground">Loading...</p>}</div>
             <div><Label>Origin</Label><Select value={origin} onValueChange={(v) => v && setOrigin(v as 'local' | 'imported')}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="local">Local</SelectItem><SelectItem value="imported">Imported</SelectItem></SelectContent></Select></div>
           </div>
           <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
