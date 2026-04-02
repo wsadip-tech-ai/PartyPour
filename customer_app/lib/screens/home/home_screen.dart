@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../widgets/cart_badge.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -102,18 +103,30 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.receipt_long), label: 'Orders'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        onDestinationSelected: (index) {
-          switch (index) {
-            case 0: context.go('/home');
-            case 1: context.go('/orders');
-            case 2: context.go('/profile');
-          }
+      bottomNavigationBar: Consumer(
+        builder: (context, ref, _) {
+          final unreadCount = ref.watch(unreadCountProvider);
+          return NavigationBar(
+            destinations: [
+              const NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+              NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: unreadCount > 0,
+                  label: Text('$unreadCount'),
+                  child: const Icon(Icons.receipt_long),
+                ),
+                label: 'Orders',
+              ),
+              const NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+            ],
+            onDestinationSelected: (index) {
+              switch (index) {
+                case 0: context.go('/home');
+                case 1: context.go('/orders');
+                case 2: context.go('/profile');
+              }
+            },
+          );
         },
       ),
     );

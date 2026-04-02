@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/order_provider.dart';
+import '../../providers/notification_provider.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
@@ -34,7 +35,24 @@ class OrderHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(orderHistoryProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Orders')),
+      appBar: AppBar(
+        title: const Text('My Orders'),
+        actions: [
+          Consumer(
+            builder: (context, ref, _) {
+              final unreadCount = ref.watch(unreadCountProvider);
+              return IconButton(
+                onPressed: () => context.push('/notifications'),
+                icon: Badge(
+                  isLabelVisible: unreadCount > 0,
+                  label: Text('$unreadCount'),
+                  child: const Icon(Icons.notifications_outlined),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: ordersAsync.when(
         data: (orders) => orders.isEmpty
             ? const Center(child: Text('No orders yet'))

@@ -18,6 +18,7 @@ import '../screens/wizard/wizard_quantities_screen.dart';
 import '../screens/wizard/wizard_brands_screen.dart';
 import '../screens/wizard/wizard_review_screen.dart';
 import '../screens/calculator/price_calculator_screen.dart';
+import '../screens/notifications/notifications_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -41,6 +42,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/orders', builder: (_, __) => const OrderHistoryScreen()),
       GoRoute(path: '/order/:orderId', builder: (_, state) => OrderDetailScreen(orderId: state.pathParameters['orderId']!)),
       GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
+      GoRoute(path: '/notifications', builder: (_, __) => const NotificationsScreen()),
     ],
   );
 });
