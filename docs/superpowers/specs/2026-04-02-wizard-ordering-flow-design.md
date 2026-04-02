@@ -283,9 +283,40 @@ Persisted locally during the wizard session so the user can go back/forward with
 - **Price formatting** — always "NPR X,XXX" with comma separators
 - **Empty states** — friendly messages when no brands available for a category
 
-## 8. Out of Scope
+## 8. New Subcategories & Products
+
+### Brandy (new subcategory under Hard Drinks)
+
+| Brand | Origin | Sizes |
+|-------|--------|-------|
+| Sandesh Jumla Apple Brandy | Local | 750ml |
+| E&J VSOP | Imported | 1L |
+| Bardinet Napoleon VSOP | Imported | 700ml, 1L |
+| St. Remy Authentic VSOP | Imported | 1L |
+| Martell VS | Imported | 1L |
+
+### Shots/Specials (new subcategory under Hard Drinks)
+
+| Brand | Origin | Sizes |
+|-------|--------|-------|
+| Jagermeister | Imported | 750ml |
+| Tequila Jose Cuervo Gold | Imported | 750ml |
+| Aila (Newari Rice Spirit) | Local | 750ml |
+
+### Cocktail Mixers (new subcategory under Mixers & Add-ons)
+
+| Brand | Origin | Sizes |
+|-------|--------|-------|
+| Cranberry Juice (mixer) | Imported | 1L |
+| Orange Juice (mixer) | Imported | 1L |
+| Grenadine Syrup | Imported | 750ml |
+| Triple Sec | Imported | 750ml |
+| Simple Syrup | Local | 500ml |
+
+**Note:** Cocktails as a type in the wizard represent pre-mixed/ready-to-serve cocktail packages or raw ingredient bundles. The estimation engine accounts for cocktail servings mapped to the cocktail mixers subcategory.
+
+## 9. Out of Scope
 
 - Saving wizard progress to server (local state only, lost if app is killed)
 - Multiple orders in progress simultaneously
-- Brandy and Cocktails subcategories in DB (estimation rules exist but no products yet — will show "Coming Soon")
 - Payment integration
