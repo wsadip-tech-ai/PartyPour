@@ -1,0 +1,86 @@
+============================================
+ RaksiChaiyo - How to Run (Quick Reference)
+============================================
+
+PREREQUISITE: Flutter SDK at C:\flutter\bin
+              Node.js installed
+              Android Studio with emulator or physical device
+
+============================================
+1. CUSTOMER APP (Flutter - Android)
+============================================
+
+Option A: From Android Studio (Recommended)
+  1. Open Android Studio
+  2. File > Open > C:\Users\wsadi\Documents\MyProjects\root_RaksiChaiyo\customer_app
+  3. Wait for Gradle sync to complete
+  4. Select your device from the toolbar dropdown:
+     - Physical phone (connect via USB, enable USB Debugging)
+     - OR Emulator (launch from Device Manager first)
+     NOTE: Do NOT select "Chrome (web)" - select the Android device
+  5. Click the green Run button
+
+Option B: From Terminal
+  cd C:\Users\wsadi\Documents\MyProjects\root_RaksiChaiyo\customer_app
+  set PATH=C:\flutter\bin;%PATH%
+  flutter run
+
+Option C: Chrome (for quick testing without emulator)
+  cd C:\Users\wsadi\Documents\MyProjects\root_RaksiChaiyo\customer_app
+  set PATH=C:\flutter\bin;%PATH%
+  flutter run -d chrome
+
+============================================
+2. ADMIN PORTAL (Next.js - Web)
+============================================
+
+  cd C:\Users\wsadi\Documents\MyProjects\root_RaksiChaiyo\admin_portal
+  npm run dev
+
+  Opens at: http://localhost:3000
+
+  Admin Login:
+    Email:    admin@raksichaiyo.com
+    Password: Admin@123456
+
+============================================
+3. SUPABASE (Database)
+============================================
+
+  Project URL: https://wckuawushetknwpyswqm.supabase.co
+  Dashboard:   https://supabase.com/dashboard/project/wckuawushetknwpyswqm
+
+  To push new migrations:
+    cd C:\Users\wsadi\Documents\MyProjects\root_RaksiChaiyo
+    supabase db push
+
+============================================
+4. EMULATOR INTERNET FIX (if needed)
+============================================
+
+  If the Android emulator has no internet:
+  1. Android Studio > Tools > Device Manager
+  2. Click pencil icon on your emulator
+  3. Show Advanced Settings > Boot Option > Cold Boot
+  4. Finish > Stop emulator > Cold Boot Now
+
+  OR connect a physical phone via USB instead.
+
+============================================
+5. PROJECT STRUCTURE
+============================================
+
+  root_RaksiChaiyo/
+  ├── customer_app/     Flutter customer app (Android + iOS)
+  ├── admin_portal/     Next.js admin web portal
+  ├── supabase/         Database migrations
+  └── docs/             Specs and plans
+
+============================================
+6. TEST ACCOUNTS
+============================================
+
+  Customer: Sign up with any email/password in the app
+  Admin:    admin@raksichaiyo.com / Admin@123456
+
+============================================
