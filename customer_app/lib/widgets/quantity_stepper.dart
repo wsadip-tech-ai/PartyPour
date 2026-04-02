@@ -1,6 +1,7 @@
 // lib/widgets/quantity_stepper.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class QuantityStepper extends StatelessWidget {
   final int value;
@@ -17,6 +18,48 @@ class QuantityStepper extends StatelessWidget {
     required this.onChanged,
     this.large = false,
   });
+
+  void _showEditDialog(BuildContext context) {
+    final controller = TextEditingController(text: '$value');
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Enter quantity'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: '$min – $max',
+          ),
+          onSubmitted: (text) {
+            final parsed = int.tryParse(text);
+            if (parsed != null) {
+              onChanged(parsed.clamp(min, max));
+            }
+            Navigator.of(ctx).pop();
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final parsed = int.tryParse(controller.text);
+              if (parsed != null) {
+                onChanged(parsed.clamp(min, max));
+              }
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +79,18 @@ class QuantityStepper extends StatelessWidget {
             foregroundColor: theme.colorScheme.primary,
           ),
         ),
-        SizedBox(
-          width: large ? 64 : 48,
-          child: Text(
-            '$value',
-            textAlign: TextAlign.center,
-            style: textStyle,
+        GestureDetector(
+          onTap: () => _showEditDialog(context),
+          child: SizedBox(
+            width: large ? 64 : 48,
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              style: textStyle?.copyWith(
+                decoration: TextDecoration.underline,
+                decorationStyle: TextDecorationStyle.dotted,
+              ),
+            ),
           ),
         ),
         IconButton(

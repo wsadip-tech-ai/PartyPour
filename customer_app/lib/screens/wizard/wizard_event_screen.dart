@@ -82,7 +82,7 @@ class WizardEventScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Children', style: theme.textTheme.titleMedium),
-                                  Text('Under 18 (optional)', style: theme.textTheme.bodySmall),
+                                  Text('Included in total guests (optional)', style: theme.textTheme.bodySmall),
                                 ],
                               ),
                             ),

@@ -15,16 +15,6 @@ class WizardTypesScreen extends ConsumerStatefulWidget {
 }
 
 class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
-  bool _initialized = false;
-
-  static const _defaultsByEventType = {
-    'wedding': ['whiskey', 'beer-bottle-can', 'wine', 'carbonated', 'water', 'ice-garnish'],
-    'birthday': ['beer-bottle-can', 'carbonated', 'juice', 'water', 'ice-garnish'],
-    'corporate': ['whiskey', 'beer-bottle-can', 'wine', 'carbonated', 'water'],
-    'house_party': ['whiskey', 'vodka', 'beer-bottle-can', 'carbonated', 'water', 'ice-garnish'],
-    'anniversary': ['whiskey', 'wine', 'beer-bottle-can', 'carbonated', 'water', 'ice-garnish'],
-  };
-
   static const _iconMap = {
     'local_bar': Icons.local_bar,
     'wine_bar': Icons.wine_bar,
@@ -57,15 +47,6 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
             Expanded(
               child: rulesAsync.when(
                 data: (rules) {
-                  // Pre-select defaults on first load
-                  if (!_initialized && wizard.selectedTypeSlugs.isEmpty) {
-                    _initialized = true;
-                    final defaults = _defaultsByEventType[wizard.eventType] ?? [];
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref.read(wizardProvider.notifier).setSelectedTypes(defaults);
-                    });
-                  }
-
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
