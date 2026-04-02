@@ -21,6 +21,32 @@ class WizardBrandsScreen extends ConsumerStatefulWidget {
 class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
   final Map<String, String?> _originFilters = {};
 
+  /// Cache futures keyed by slug so each slug is only fetched once,
+  /// even when the widget rebuilds.
+  final Map<String, Future<List<Product>>> _productCache = {};
+
+  Future<List<Product>> _getProducts(String slug) {
+    return _productCache.putIfAbsent(slug, () => _fetchProductsBySlug(slug));
+  }
+
+  Future<List<Product>> _fetchProductsBySlug(String slug) async {
+    final supabase = Supabase.instance.client;
+    final subData = await supabase
+        .from('subcategories')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+    if (subData == null) return [];
+    final subcategoryId = subData['id'] as String;
+    final data = await supabase
+        .from('products')
+        .select('*, variants(*)')
+        .eq('subcategory_id', subcategoryId)
+        .eq('is_active', true)
+        .order('name');
+    return data.map((json) => Product.fromJson(json)).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final wizard = ref.watch(wizardProvider);
@@ -35,14 +61,16 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text('Choose your brands',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                  style: theme.textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: rulesAsync.when(
                 data: (rules) {
                   final selectedRules = rules
-                      .where((r) => wizard.selectedTypeSlugs.contains(r.subcategorySlug))
+                      .where((r) =>
+                          wizard.selectedTypeSlugs.contains(r.subcategorySlug))
                       .toList();
 
                   return ListView.builder(
@@ -59,15 +87,37 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                         label: rule.label,
                         bottlesNeeded: qty,
                         originFilter: originFilter,
-                        onOriginChanged: (v) => setState(() => _originFilters[slug] = v),
+                        onOriginChanged: (v) =>
+                            setState(() => _originFilters[slug] = v),
                         wizard: wizard,
-                        ref: ref,
+                        productsFuture: _getProducts(slug),
                         theme: theme,
+                        onBrandSelect: (product, variant) {
+                          final notifier = ref.read(wizardProvider.notifier);
+                          final currentSelections =
+                              wizard.brandSelections[slug] ?? [];
+                          final existing = currentSelections
+                              .where((s) => s.product.id == product.id)
+                              .firstOrNull;
+                          if (existing != null) {
+                            final idx = currentSelections.indexOf(existing);
+                            notifier.removeBrandSelection(slug, idx);
+                          }
+                          notifier.addBrandSelection(
+                            slug,
+                            BrandSelection(
+                              product: product,
+                              variant: variant,
+                              quantity: qty,
+                            ),
+                          );
+                        },
                       );
                     },
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
                 error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
@@ -75,16 +125,24 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.05))],
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: 8, color: Colors.black.withOpacity(0.05))
+                ],
               ),
               child: Row(
                 children: [
-                  Expanded(child: OutlinedButton(onPressed: () => context.pop(), child: const Text('Back'))),
+                  Expanded(
+                      child: OutlinedButton(
+                          onPressed: () => context.pop(),
+                          child: const Text('Back'))),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
                     child: FilledButton(
-                      onPressed: _allCategoriesHaveBrands(wizard) ? () => context.push('/wizard/review') : null,
+                      onPressed: _allCategoriesHaveBrands(wizard)
+                          ? () => context.push('/wizard/review')
+                          : null,
                       child: const Text('Next — Review Order'),
                     ),
                   ),
@@ -106,6 +164,10 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// _BrandSection — plain StatelessWidget, no ref field
+// ---------------------------------------------------------------------------
+
 class _BrandSection extends StatelessWidget {
   final String slug;
   final String label;
@@ -113,8 +175,9 @@ class _BrandSection extends StatelessWidget {
   final String? originFilter;
   final ValueChanged<String?> onOriginChanged;
   final WizardState wizard;
-  final WidgetRef ref;
+  final Future<List<Product>> productsFuture;
   final ThemeData theme;
+  final void Function(Product product, dynamic variant) onBrandSelect;
 
   const _BrandSection({
     required this.slug,
@@ -123,24 +186,26 @@ class _BrandSection extends StatelessWidget {
     required this.originFilter,
     required this.onOriginChanged,
     required this.wizard,
-    required this.ref,
+    required this.productsFuture,
     required this.theme,
+    required this.onBrandSelect,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Products are fetched by slug in _BrandList below
-    // For now, we'll use a dedicated provider.
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
         Row(
           children: [
-            Text(label, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(label,
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
             const Spacer(),
-            Text('$bottlesNeeded bottles', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary)),
+            Text('$bottlesNeeded bottles',
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: theme.colorScheme.primary)),
           ],
         ),
         const SizedBox(height: 8),
@@ -151,7 +216,8 @@ class _BrandSection extends StatelessWidget {
           originFilter: originFilter,
           bottlesNeeded: bottlesNeeded,
           wizard: wizard,
-          ref: ref,
+          productsFuture: productsFuture,
+          onBrandSelect: onBrandSelect,
         ),
         const Divider(height: 32),
       ],
@@ -159,31 +225,36 @@ class _BrandSection extends StatelessWidget {
   }
 }
 
-class _BrandList extends ConsumerWidget {
+// ---------------------------------------------------------------------------
+// _BrandList — plain StatelessWidget receiving the cached future
+// ---------------------------------------------------------------------------
+
+class _BrandList extends StatelessWidget {
   final String slug;
   final String? originFilter;
   final int bottlesNeeded;
   final WizardState wizard;
-  final WidgetRef ref;
+  final Future<List<Product>> productsFuture;
+  final void Function(Product product, dynamic variant) onBrandSelect;
 
   const _BrandList({
     required this.slug,
     required this.originFilter,
     required this.bottlesNeeded,
     required this.wizard,
-    required this.ref,
+    required this.productsFuture,
+    required this.onBrandSelect,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Fetch products by subcategory slug using a dedicated search
-    final catalogService = ref.watch(catalogServiceProvider);
-
-    return FutureBuilder(
-      future: _fetchProductsBySlug(catalogService),
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Product>>(
+      future: productsFuture, // stable reference — no re-fetch on rebuild
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()));
+          return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator()));
         }
         final products = snapshot.data ?? [];
         final filtered = originFilter != null
@@ -193,7 +264,9 @@ class _BrandList extends ConsumerWidget {
         if (filtered.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(16),
-            child: Text('No brands available yet', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            child: Text('No brands available yet',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
           );
         }
 
@@ -201,41 +274,21 @@ class _BrandList extends ConsumerWidget {
 
         return Column(
           children: filtered.map((product) {
-            final selectedBrand = currentSelections.where((s) => s.product.id == product.id).firstOrNull;
+            final selectedBrand = currentSelections
+                .where((s) => s.product.id == product.id)
+                .firstOrNull;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: BrandPickerCard(
                 product: product,
                 isSelected: selectedBrand != null,
                 selectedVariant: selectedBrand?.variant,
-                onSelect: (variant) {
-                  final notifier = ref.read(wizardProvider.notifier);
-                  if (selectedBrand != null) {
-                    // Remove existing and re-add with new variant
-                    final idx = currentSelections.indexOf(selectedBrand);
-                    notifier.removeBrandSelection(slug, idx);
-                  }
-                  notifier.addBrandSelection(slug, BrandSelection(
-                    product: product,
-                    variant: variant,
-                    quantity: bottlesNeeded,
-                  ));
-                },
+                onSelect: (variant) => onBrandSelect(product, variant),
               ),
             );
           }).toList(),
         );
       },
     );
-  }
-
-  Future<List<Product>> _fetchProductsBySlug(dynamic catalogService) async {
-    // Fetch subcategory by slug, then products
-    final supabase = Supabase.instance.client;
-    final subData = await supabase.from('subcategories').select('id').eq('slug', slug).maybeSingle();
-    if (subData == null) return [];
-    final subcategoryId = subData['id'] as String;
-    final data = await supabase.from('products').select('*, variants(*)').eq('subcategory_id', subcategoryId).eq('is_active', true).order('name');
-    return data.map((json) => Product.fromJson(json)).toList();
   }
 }

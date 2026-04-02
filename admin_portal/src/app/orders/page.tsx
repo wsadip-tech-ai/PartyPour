@@ -40,7 +40,7 @@ export default function OrdersPage() {
           {orders.map((order) => (
             <TableRow key={order.id}>
               <TableCell><Link href={`/orders/${order.id}`} className="text-primary hover:underline">#{order.id.substring(0, 8)}</Link></TableCell>
-              <TableCell>{(order as any).profiles?.full_name ?? 'Unknown'}</TableCell>
+              <TableCell>{order.profiles?.full_name ?? order.profiles?.email ?? 'Unknown'}</TableCell>
               <TableCell>{order.event_type ?? '-'}</TableCell>
               <TableCell>NPR {order.final_amount.toLocaleString()}</TableCell>
               <TableCell><Badge variant={statusColors[order.status] ?? 'default'}>{order.status}</Badge></TableCell>

@@ -40,7 +40,16 @@ export default function EditProductPage() {
     if (data) { setProduct(data); setName(data.name); setSubcategoryId(data.subcategory_id); setOrigin(data.origin); setDescription(data.description ?? ''); setImageUrl(data.image_url); setIsActive(data.is_active) }
   }
 
-  useEffect(() => { fetchProduct(); supabase.from('subcategories').select('*').order('name').then(({ data }) => setSubcategories(data ?? [])) }, [])
+  useEffect(() => {
+    // Load subcategories first, then the product so the subcategory Select
+    // already has its options populated when subcategoryId is set.
+    const init = async () => {
+      const { data: subs } = await supabase.from('subcategories').select('*').order('name')
+      setSubcategories(subs ?? [])
+      await fetchProduct()
+    }
+    init()
+  }, [])
 
   const saveProduct = async () => {
     await supabase.from('products').update({ name, subcategory_id: subcategoryId, origin, description: description || null, image_url: imageUrl, is_active: isActive }).eq('id', id)
