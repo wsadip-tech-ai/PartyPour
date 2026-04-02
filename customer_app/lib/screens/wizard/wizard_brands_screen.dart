@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/wizard_provider.dart';
-import '../../providers/catalog_provider.dart';
 import '../../models/product.dart';
 import '../../widgets/step_progress.dart';
 import '../../widgets/origin_filter.dart';
