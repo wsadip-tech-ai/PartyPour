@@ -1,10 +1,17 @@
-// lib/screens/calculator/price_calculator_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
-import '../../widgets/quantity_stepper.dart';
+
+const _gold = Color(0xFFCA8A04);
+const _goldLight = Color(0xFFEAB308);
+const _darkBg = Color(0xFF1C1917);
+const _surfaceDark = Color(0xFF292524);
+const _textLight = Color(0xFFFAFAF9);
+const _muted = Color(0xFF78716C);
+const _mutedLight = Color(0xFFA8A29E);
+const _border = Color(0xFF44403C);
+const _green = Color(0xFF4ade80);
 
 class PriceCalculatorScreen extends ConsumerWidget {
   const PriceCalculatorScreen({super.key});
@@ -12,126 +19,284 @@ class PriceCalculatorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wizard = ref.watch(wizardProvider);
-    final theme = Theme.of(context);
+
+    // Calculate totals and savings
+    int totalBottles = 0;
+    int totalCategories = 0;
+    double caseSavings = 0;
+    for (final entry in wizard.brandSelections.entries) {
+      final selections = entry.value;
+      if (selections.isNotEmpty) {
+        totalCategories++;
+        for (final s in selections) {
+          totalBottles += s.quantity;
+          if (s.unitType == 'case' && s.variant.casePrice != null && s.variant.caseSize != null) {
+            final bottleEquivPrice = s.variant.unitPrice * s.variant.caseSize!;
+            final caseSaving = (bottleEquivPrice - s.variant.casePrice!) * s.quantity;
+            caseSavings += caseSaving;
+          }
+        }
+      }
+    }
 
     return Scaffold(
+      backgroundColor: _darkBg,
       appBar: AppBar(
-        title: const Text('Price Calculator'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
+        backgroundColor: _darkBg,
+        leading: GestureDetector(
+          onTap: () => context.pop(),
+          child: Center(
+            child: Container(
+              width: 32, height: 32,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: _border)),
+              child: const Icon(Icons.close, size: 16, color: _mutedLight),
+            ),
+          ),
         ),
+        title: const Text('Price Calculator', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: _textLight)),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
+      body: Column(
         children: [
-          Text('Adjust quantities and see price changes in real-time.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          const SizedBox(height: 16),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Live indicator
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [_gold.withValues(alpha: 0.06), _gold.withValues(alpha: 0.02)]),
+                      border: Border.all(color: _gold.withValues(alpha: 0.12)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(width: 6, height: 6, decoration: const BoxDecoration(color: _green, shape: BoxShape.circle)),
+                        const SizedBox(width: 8),
+                        const Text('Prices update as you change quantities', style: TextStyle(fontSize: 11, color: _mutedLight)),
+                      ],
+                    ),
+                  ),
 
-          ...wizard.brandSelections.entries.map((entry) {
-            final slug = entry.key;
-            final selections = entry.value;
-            if (selections.isEmpty) return const SizedBox.shrink();
+                  // Item rows grouped by category
+                  ...wizard.brandSelections.entries.map((entry) {
+                    final slug = entry.key;
+                    final selections = entry.value;
+                    if (selections.isEmpty) return const SizedBox.shrink();
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(slug.replaceAll('-', ' ').toUpperCase(),
-                    style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                ...selections.asMap().entries.map((selEntry) {
-                  final idx = selEntry.key;
-                  final sel = selEntry.value;
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(sel.product.name, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-                                    Text(sel.variant.size, style: theme.textTheme.bodySmall),
-                                  ],
-                                ),
-                              ),
-                              // Unit/Case toggle
-                              if (sel.variant.caseSize != null && sel.variant.casePrice != null)
-                                SegmentedButton<String>(
-                                  segments: [
-                                    const ButtonSegment(value: 'unit', label: Text('Bottle')),
-                                    ButtonSegment(value: 'case', label: Text('Case(${sel.variant.caseSize})')),
-                                  ],
-                                  selected: {sel.unitType},
-                                  onSelectionChanged: (s) {
-                                    sel.unitType = s.first;
-                                    ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity);
-                                  },
-                                  style: ButtonStyle(
-                                    visualDensity: VisualDensity.compact,
-                                    textStyle: WidgetStatePropertyAll(theme.textTheme.labelSmall),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Category label
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 6),
+                          child: Text(slug.replaceAll('-', ' ').toUpperCase(),
+                            style: const TextStyle(fontSize: 11, color: _gold, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
+                        ),
+
+                        // Compact rows
+                        ...selections.asMap().entries.map((selEntry) {
+                          final idx = selEntry.key;
+                          final sel = selEntry.value;
+                          final initial = sel.product.name.isNotEmpty ? sel.product.name[0].toUpperCase() : '?';
+                          final colors = _getColors(sel.product.name);
+                          final hasCase = sel.variant.caseSize != null && sel.variant.casePrice != null;
+
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: idx.isEven ? Colors.transparent : Colors.white.withValues(alpha: 0.01),
+                            ),
+                            child: Row(
+                              children: [
+                                // Brand thumbnail
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    width: 34, height: 34,
+                                    decoration: BoxDecoration(gradient: LinearGradient(colors: colors)),
+                                    child: Center(child: Text(initial, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white))),
                                   ),
                                 ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Text('NPR ${sel.unitPrice.toStringAsFixed(0)} each',
-                                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                              const Spacer(),
-                              QuantityStepper(
-                                value: sel.quantity,
-                                min: 1,
-                                onChanged: (v) => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, v),
-                              ),
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 90,
-                                child: Text(
-                                  'NPR ${sel.totalPrice.toStringAsFixed(0)}',
-                                  textAlign: TextAlign.right,
-                                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                const SizedBox(width: 10),
+                                // Name + size
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(sel.product.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: _textLight), overflow: TextOverflow.ellipsis, maxLines: 1),
+                                      Text(sel.variant.size, style: const TextStyle(fontSize: 10, color: _muted)),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                                // Btl / Case toggle
+                                if (hasCase)
+                                  Container(
+                                    decoration: BoxDecoration(color: _surfaceDark, borderRadius: BorderRadius.circular(6)),
+                                    padding: const EdgeInsets.all(2),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: ['unit', 'case'].map((type) {
+                                        final isActive = sel.unitType == type;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            sel.unitType = type;
+                                            ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: isActive ? _gold : Colors.transparent,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              type == 'unit' ? 'Btl' : 'Case',
+                                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: isActive ? _darkBg : _muted),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                if (!hasCase) const SizedBox(width: 50),
+                                const SizedBox(width: 8),
+                                // Qty stepper
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: sel.quantity > 1 ? () => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity - 1) : null,
+                                      child: Container(
+                                        width: 22, height: 22,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
+                                        child: Icon(Icons.remove, size: 10, color: sel.quantity > 1 ? _gold : _muted.withValues(alpha: 0.3)),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 26,
+                                      child: Text('${sel.quantity}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textLight)),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity + 1),
+                                      child: Container(
+                                        width: 22, height: 22,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
+                                        child: const Icon(Icons.add, size: 10, color: _gold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 6),
+                                // Price
+                                SizedBox(
+                                  width: 58,
+                                  child: Text(
+                                    _formatPrice(sel.totalPrice),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _gold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        // Divider
+                        Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), color: _border),
+                      ],
+                    );
+                  }),
+
+                  // Summary section
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: _surfaceDark,
+                      border: Border.all(color: _border),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        _SummaryRow(label: 'Bottles', value: '$totalBottles'),
+                        const SizedBox(height: 4),
+                        _SummaryRow(label: 'Categories', value: '$totalCategories types'),
+                        if (caseSavings > 0) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Savings (case)', style: TextStyle(fontSize: 12, color: _mutedLight)),
+                              Text('- NPR ${caseSavings.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _green)),
                             ],
                           ),
                         ],
-                      ),
+                        Container(height: 1, color: _border, margin: const EdgeInsets.symmetric(vertical: 8)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _textLight)),
+                            Text('NPR ${wizard.grandTotal.toStringAsFixed(0)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _gold)),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                }),
-                const SizedBox(height: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Sticky total bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(color: _darkBg, border: Border(top: BorderSide(color: _border.withValues(alpha: 0.5)))),
+            child: Row(
+              children: [
+                const Text('Total', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight)),
+                const Spacer(),
+                Text('NPR ${wizard.grandTotal.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _gold)),
               ],
-            );
-          }),
+            ),
+          ),
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.08))],
-        ),
-        child: Row(
-          children: [
-            Text('Total', style: theme.textTheme.titleMedium),
-            const Spacer(),
-            Text(
-              'NPR ${wizard.grandTotal.toStringAsFixed(0)}',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
-            ),
-          ],
-        ),
-      ),
+    );
+  }
+
+  String _formatPrice(double price) {
+    if (price >= 100000) return '${(price / 1000).toStringAsFixed(0)}K';
+    return price.toStringAsFixed(0);
+  }
+
+  List<Color> _getColors(String name) {
+    final hash = name.hashCode.abs() % 6;
+    return [
+      [_gold, _goldLight],
+      [const Color(0xFF44403C), _surfaceDark],
+      [const Color(0xFF1565C0), const Color(0xFF64B5F6)],
+      [const Color(0xFF2E7D32), const Color(0xFF81C784)],
+      [const Color(0xFFC62828), const Color(0xFFEF9A9A)],
+      [const Color(0xFF6A1B9A), const Color(0xFFCE93D8)],
+    ][hash];
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+  const _SummaryRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12, color: _mutedLight)),
+        Text(value, style: const TextStyle(fontSize: 12, color: _mutedLight)),
+      ],
     );
   }
 }
