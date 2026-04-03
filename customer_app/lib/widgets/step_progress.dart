@@ -27,7 +27,7 @@ class StepProgress extends StatelessWidget {
                         height: 4,
                         decoration: BoxDecoration(
                           color: isActive
-                              ? theme.colorScheme.primary
+                              ? const Color(0xFFCA8A04)
                               : theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(2),
                         ),

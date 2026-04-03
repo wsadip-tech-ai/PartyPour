@@ -33,7 +33,7 @@ class WizardReviewScreen extends ConsumerWidget {
                 children: [
                   // Event summary card
                   Card(
-                    color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                    color: const Color(0xFFCA8A04).withValues(alpha: 0.08),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -71,7 +71,7 @@ class WizardReviewScreen extends ConsumerWidget {
                           children: [
                             Text(slug.replaceAll('-', ' ').toUpperCase(),
                                 style: theme.textTheme.labelLarge?.copyWith(
-                                    color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                                    color: const Color(0xFFCA8A04), fontWeight: FontWeight.bold)),
                             const Spacer(),
                             Text('NPR ${categoryTotal.toStringAsFixed(0)}',
                                 style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
@@ -127,20 +127,21 @@ class WizardReviewScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.08))],
+                color: const Color(0xFF1C1917),
+                boxShadow: [BoxShadow(blurRadius: 12, color: Colors.black.withValues(alpha: 0.2))],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
-                      Text('Grand Total', style: theme.textTheme.titleMedium),
+                      Text('Grand Total',
+                          style: theme.textTheme.titleMedium?.copyWith(color: const Color(0xFFFAFAF9))),
                       const Spacer(),
                       Text(
                         'NPR ${wizard.grandTotal.toStringAsFixed(0)}',
                         style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                            fontWeight: FontWeight.bold, color: const Color(0xFFCA8A04)),
                       ),
                     ],
                   ),
@@ -150,6 +151,10 @@ class WizardReviewScreen extends ConsumerWidget {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => context.pop(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFCA8A04),
+                            side: const BorderSide(color: Color(0xFFCA8A04)),
+                          ),
                           child: const Text('Back'),
                         ),
                       ),
@@ -157,6 +162,10 @@ class WizardReviewScreen extends ConsumerWidget {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => context.push('/calculator'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFCA8A04),
+                            side: const BorderSide(color: Color(0xFFCA8A04)),
+                          ),
                           child: const Text('Price Calculator'),
                         ),
                       ),

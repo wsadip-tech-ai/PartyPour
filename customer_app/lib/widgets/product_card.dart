@@ -59,10 +59,13 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
+                      // Origin badge: green pill for Local, gold pill for Imported
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: isLocal ? const Color(0xFFE8F5E9) : const Color(0xFFE3F2FD),
+                          color: isLocal
+                              ? const Color(0xFF4ade80).withValues(alpha: 0.18)
+                              : const Color(0xFFEAB308).withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -70,16 +73,19 @@ class ProductCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
-                            color: isLocal ? const Color(0xFF2E7D32) : const Color(0xFF1565C0),
+                            color: isLocal
+                                ? const Color(0xFF16a34a)
+                                : const Color(0xFFCA8A04),
                           ),
                         ),
                       ),
                       const Spacer(),
+                      // Price in gold
                       Text(
                         'NPR ${product.lowestPrice.toStringAsFixed(0)}',
                         style: theme.textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                          color: const Color(0xFFCA8A04),
                         ),
                       ),
                     ],

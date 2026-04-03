@@ -123,18 +123,23 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
+                color: const Color(0xFF1C1917),
                 boxShadow: [
-                  BoxShadow(
-                      blurRadius: 8, color: Colors.black.withOpacity(0.05))
+                  BoxShadow(blurRadius: 12, color: Colors.black.withValues(alpha: 0.2))
                 ],
               ),
               child: Row(
                 children: [
                   Expanded(
-                      child: OutlinedButton(
-                          onPressed: () => context.pop(),
-                          child: const Text('Back'))),
+                    child: OutlinedButton(
+                      onPressed: () => context.pop(),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFCA8A04),
+                        side: const BorderSide(color: Color(0xFFCA8A04)),
+                      ),
+                      child: const Text('Back'),
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,

@@ -144,8 +144,8 @@ class WizardEventScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.05))],
+                color: const Color(0xFF1C1917),
+                boxShadow: [BoxShadow(blurRadius: 12, color: Colors.black.withValues(alpha: 0.2))],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -160,6 +160,7 @@ class WizardEventScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => context.push('/category/a1000000-0000-0000-0000-000000000001'),
+                    style: TextButton.styleFrom(foregroundColor: const Color(0xFFA8A29E)),
                     child: const Text('Browse Catalog Instead'),
                   ),
                 ],

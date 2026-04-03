@@ -18,7 +18,15 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RaksiChaiyo'),
+        title: const Text(
+          'RaksiChaiyo',
+          style: TextStyle(
+            color: Color(0xFFCA8A04),
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            letterSpacing: 0.5,
+          ),
+        ),
         actions: const [CartBadge()],
       ),
       body: Padding(
@@ -27,54 +35,92 @@ class HomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Plan your event\nbeverages',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0C0A09),
+                  height: 1.15,
+                )),
             const SizedBox(height: 8),
             Text('We help you estimate and order the right amount.',
-                style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                style: theme.textTheme.bodyLarge?.copyWith(color: const Color(0xFFA8A29E))),
             const SizedBox(height: 32),
 
-            // Start order CTA
-            Card(
-              clipBehavior: Clip.antiAlias,
-              color: theme.colorScheme.primaryContainer,
-              child: InkWell(
-                onTap: () {
-                  ref.read(wizardProvider.notifier).reset();
-                  context.push('/wizard/event');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Row(
-                    children: [
-                      Icon(Icons.celebration, size: 48, color: theme.colorScheme.primary),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Start Your Order', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text('Tell us about your event and we\'ll handle the rest',
-                                style: theme.textTheme.bodyMedium),
-                          ],
+            // Start order CTA — dark card with gold accent
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF292524),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF1C1917).withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    ref.read(wizardProvider.notifier).reset();
+                    context.push('/wizard/event');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.celebration, size: 48, color: Color(0xFFCA8A04)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Start Your Order',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFFFAFAF9),
+                                  )),
+                              const SizedBox(height: 4),
+                              Text('Tell us about your event and we\'ll handle the rest',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: const Color(0xFFA8A29E),
+                                  )),
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(Icons.arrow_forward, color: theme.colorScheme.primary),
-                    ],
+                        const Icon(Icons.arrow_forward, color: Color(0xFFCA8A04)),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Resume wizard if in progress
+            // Resume wizard if in progress — gold left border accent
             if (hasWizardInProgress)
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: const Border(
+                    left: BorderSide(color: Color(0xFFCA8A04), width: 4),
+                    top: BorderSide(color: Color(0xFFE7E5E4)),
+                    right: BorderSide(color: Color(0xFFE7E5E4)),
+                    bottom: BorderSide(color: Color(0xFFE7E5E4)),
+                  ),
+                ),
                 child: ListTile(
-                  leading: Icon(Icons.replay, color: theme.colorScheme.primary),
-                  title: const Text('Resume your order'),
-                  subtitle: Text('${wizard.selectedTypeSlugs.length} types selected • ${wizard.totalPax} guests'),
-                  trailing: const Icon(Icons.chevron_right),
+                  leading: const Icon(Icons.replay, color: Color(0xFFCA8A04)),
+                  title: const Text('Resume your order',
+                      style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0C0A09))),
+                  subtitle: Text(
+                    '${wizard.selectedTypeSlugs.length} types selected • ${wizard.totalPax} guests',
+                    style: const TextStyle(color: Color(0xFFA8A29E)),
+                  ),
+                  trailing: const Icon(Icons.chevron_right, color: Color(0xFFCA8A04)),
                   onTap: () => context.push('/wizard/types'),
                 ),
               ),
