@@ -19,7 +19,7 @@ class AuthService {
   Future<void> signOut() => _client.auth.signOut();
 
   Future<bool> signInWithGoogle() async {
-    return await _client.auth.signInWithOAuth(
+    return await Supabase.instance.client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: 'com.raksichaiyo.customerapp://login-callback',
     );
