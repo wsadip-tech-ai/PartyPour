@@ -18,6 +18,21 @@ class AuthService {
 
   Future<void> signOut() => _client.auth.signOut();
 
+  Future<bool> signInWithGoogle() async {
+    return await _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: 'com.raksichaiyo.customerapp://login-callback',
+    );
+  }
+
+  Future<void> sendPhoneOtp(String phone) async {
+    await _client.auth.signInWithOtp(phone: phone);
+  }
+
+  Future<AuthResponse> verifyPhoneOtp(String phone, String token) async {
+    return await _client.auth.verifyOTP(phone: phone, token: token, type: OtpType.sms);
+  }
+
   Future<Profile?> getProfile() async {
     final userId = currentUser?.id;
     if (userId == null) return null;
