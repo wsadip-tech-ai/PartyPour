@@ -1,0 +1,243 @@
+============================================
+ RaksiChaiyo — Known Issues & Fixes Log
+============================================
+ Last updated: 2026-04-03
+
+============================================
+1. SUPABASE SIGN-UP RETURNS 500
+============================================
+
+  Error: "Database error saving new user" (500)
+
+  Cause: The handle_new_user() trigger function couldn't find the
+  profiles table because it lacked SET search_path = public.
+
+  Fix: Migration 007 — rewrote handle_new_user() with:
+    - SET search_path = public
+    - EXCEPTION handler (logs error but doesn't block signup)
+    - ON CONFLICT (id) DO NOTHING for idempotency
+
+============================================
+2. SUPABASE EMAIL CONFIRMATION BLOCKING SIGNUP
+============================================
+
+  Error: Sign-up succeeds but user can't log in (no email service)
+
+  Cause: Supabase requires email confirmation by default.
+
+  Fix: Supabase Dashboard > Authentication > Providers > Email >
+  Turn OFF "Confirm email"
+
+============================================
+3. ANDROID NDK BROKEN (source.properties missing)
+============================================
+
+  Error: "NDK at ... did not have a source.properties file"
+
+  Cause: NDK 26.3.11579264 was corrupted/incomplete installation.
+
+  Fix: Delete the broken NDK folder and let Gradle download fresh:
+    - Delete: C:\Users\wsadi\AppData\Local\Android\sdk\ndk\26.3.11579264
+    - Rebuild: flutter build apk --debug (Gradle downloads correct NDK)
+
+============================================
+4. ANDROID EMULATOR NO INTERNET
+============================================
+
+  Error: "Failed host lookup" / DNS resolution fails / 100% packet loss
+
+  Cause: Windows Hyper-V (WHPX) networking issue with Android emulator.
+
+  Fix options:
+    a) Use Chrome: flutter run -d chrome
+    b) Use physical phone via USB
+    c) Android Studio > Device Manager > Edit emulator >
+       Show Advanced Settings > Boot Option > Cold Boot
+    d) Launch with DNS: emulator -avd NAME -dns-server 8.8.8.8,8.8.4.4
+
+============================================
+5. FLUTTER WINDOWS DESKTOP BUILD FAILS
+============================================
+
+  Error: "Unable to find suitable Visual Studio toolchain"
+
+  Cause: Visual Studio Build Tools missing C++ desktop workload.
+
+  Fix: Install "Desktop development with C++" workload:
+    - Open Visual Studio Installer
+    - Modify Build Tools 2022
+    - Check: MSVC build tools, C++ CMake tools, Windows 10 SDK
+
+  Workaround: Use Chrome or Android instead of Windows desktop.
+
+============================================
+6. DEVELOPER MODE REQUIRED FOR FLUTTER
+============================================
+
+  Error: "Building with plugins requires symlink support"
+
+  Cause: Flutter plugins need symlinks, which require Developer Mode.
+
+  Fix: Settings > Developer Settings > Developer Mode > ON
+  Or run: start ms-settings:developers
+
+============================================
+7. NEXT.JS ADMIN PORTAL — PRODUCT EDIT 500 ERROR
+============================================
+
+  Error: "Jest worker encountered 2 child process exceptions"
+  or 500 on product edit page
+
+  Cause: Multiple issues:
+    a) Turbopack cache corruption
+    b) Supabase browser client not persisting auth session
+    c) Select component rendering before subcategories loaded
+
+  Fix:
+    a) Delete .next folder and restart: rm -rf .next && npm run dev
+    b) Made Supabase client a singleton (client.ts)
+    c) Sequential loading: subcategories load before product data
+    d) Conditional Select rendering: only shows when data is ready
+
+============================================
+8. CHECKOUT — "type 'Null' is not a subtype of type 'String'"
+============================================
+
+  Error: TypeError on checkout when placing order
+
+  Cause: order_service.dart constructed Order.fromJson() using raw
+  insert maps that lacked server-generated IDs (id field was null).
+
+  Fix: Re-fetch the complete order after creation instead of
+  constructing from raw maps:
+    return getOrder(orderId);  // instead of Order.fromJson({...})
+
+============================================
+9. STEP 4 PAGE RELOADS ON EVERY INTERACTION
+============================================
+
+  Error: Brands screen flickers/reloads when tapping anything
+
+  Cause: FutureBuilder called _fetchProductsBySlug() inline in build(),
+  creating a new Future on every rebuild, restarting the network request.
+
+  Fix: Added _productCache map to state. Used putIfAbsent() so each
+  slug is fetched only once. Same Future instance reused on rebuilds.
+
+============================================
+10. SELECT onValueChange TYPE ERROR (Next.js 16)
+============================================
+
+  Error: "Type 'Dispatch<SetStateAction<string>>' is not assignable"
+
+  Cause: New shadcn/ui Select (base-ui) passes string|null to
+  onValueChange, not just string.
+
+  Fix: Wrap all onValueChange handlers:
+    onValueChange={(v) => setSomething(v ?? '')}
+    onValueChange={(v) => v && setOrigin(v as 'local' | 'imported')}
+
+============================================
+11. BUTTON asChild NOT SUPPORTED (Next.js 16)
+============================================
+
+  Error: "Property 'asChild' does not exist on type"
+
+  Cause: New shadcn/ui uses base-ui components which don't support
+  the asChild prop from Radix.
+
+  Fix: Replace <Button asChild><Link> with plain <Link> elements,
+  or use onClick handlers instead of wrapping.
+
+============================================
+12. RELEASE APK — "requested path is invalid" / NO INTERNET
+============================================
+
+  Error: AuthRetryableFetchException / SocketException /
+  "requested path is invalid" on real Android device
+
+  Cause: AndroidManifest.xml was missing INTERNET permission.
+  Debug builds auto-include it, but release builds require explicit
+  declaration.
+
+  Fix: Added to android/app/src/main/AndroidManifest.xml:
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+============================================
+13. ADMIN MIGRATION NO-OP ON FRESH DATABASE
+============================================
+
+  Error: Migration 009 (UPDATE profiles SET role='admin') does nothing
+  on a fresh database because the user doesn't exist yet.
+
+  Cause: Profiles are created by the handle_new_user trigger only after
+  signup via Supabase Auth. Migration runs before any user exists.
+
+  Fix:
+    - Migration 011: Added promote_to_admin() reusable function
+    - Migration 012: Added promote_to_admin_by_id(UUID) for immutable
+      targeting, guards for exactly 1 match, raises on 0 or duplicates
+    - HOW_TO_RUN.txt Section 7: documented the manual setup steps
+
+============================================
+14. ADMIN EMAIL-BASED PROMOTION SECURITY RISK
+============================================
+
+  Error: Codex adversarial review HIGH — email is mutable, could grant
+  admin to wrong account if email is reused.
+
+  Cause: promote_to_admin('email') targets a mutable field.
+
+  Fix: Migration 012 — added promote_to_admin_by_id(UUID) that targets
+  immutable user ID. Email version now guards for exactly 1 match and
+  raises ADMIN_BOOTSTRAP_FAILED exception on 0 or duplicate matches.
+  Both functions REVOKE ALL FROM PUBLIC.
+
+============================================
+15. HOME SCREEN NAVIGATION ERRORS
+============================================
+
+  Error: Clicking "Browse by Type" chips or "Popular Picks" cards
+  threw errors. "Wedding Season Special" did nothing.
+
+  Cause:
+    a) Type chips navigated to category page with hardcoded ID but
+       needed subcategory ID for product list
+    b) Popular picks cards linked to category page (wrong)
+    c) Promo card had no onTap handler
+
+  Fix:
+    a) Type chips now fetch subcategory ID by slug from Supabase,
+       then navigate to /products/:subcategoryId
+    b) Popular picks now navigate to /wizard/event
+    c) Promo card now resets wizard, sets eventType='wedding',
+       opens /wizard/event
+
+============================================
+16. CATEGORY SCREEN CRASH (Browse Catalog)
+============================================
+
+  Error: Crash when clicking "Browse Catalog Instead" from Step 1
+
+  Cause: _SubcategoryCard widget referenced subcategory.description
+  and subcategory.productCount which don't exist on the Subcategory
+  model (only has id, categoryId, name, slug, sortOrder, imageUrl).
+
+  Fix: Removed references to non-existent properties. Simplified
+  the card to show name + icon + chevron only.
+
+============================================
+ ENVIRONMENT NOTES
+============================================
+
+  - Flutter 3.29.3 (channel stable)
+  - Dart 3.7.2
+  - Android SDK 36.1.0
+  - Next.js 16.2.2 (Turbopack)
+  - Supabase CLI 2.78.1
+  - Node.js 24.14.0
+  - Windows 11 Home 10.0.26200
+  - Codex CLI 0.118.0
+
+============================================
