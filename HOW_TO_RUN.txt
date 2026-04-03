@@ -84,3 +84,28 @@ Option C: Chrome (for quick testing without emulator)
   Admin:    admin@raksichaiyo.com / Admin@123456
 
 ============================================
+7. ADMIN SETUP (Fresh Environment)
+============================================
+
+  On a fresh database, the admin user must be created manually:
+
+  Step 1: Create the user via Supabase Auth
+    - Go to Supabase Dashboard > Authentication > Users > Add User
+    - Email: admin@raksichaiyo.com, Password: Admin@123456
+    - OR use the signup API:
+      curl -X POST "https://YOUR_PROJECT.supabase.co/auth/v1/signup" \
+        -H "apikey: YOUR_ANON_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"email":"admin@raksichaiyo.com","password":"Admin@123456","data":{"full_name":"Admin"}}'
+
+  Step 2: Promote to admin
+    - Go to Supabase Dashboard > Table Editor > profiles
+    - Find the admin user, change 'role' from 'customer' to 'admin'
+    - OR use the promote_to_admin function:
+      SELECT promote_to_admin('admin@raksichaiyo.com');
+
+  Note: Migration 009 only promotes existing profiles. If the user
+  hasn't signed up yet, the migration is a no-op. Always create
+  the auth user FIRST, then promote.
+
+============================================
