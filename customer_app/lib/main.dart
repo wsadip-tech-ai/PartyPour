@@ -6,7 +6,11 @@ import 'config/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
+  try {
+    await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
+  } catch (_) {
+    // Supabase init may fail without internet — app will retry on login
+  }
   runApp(const ProviderScope(child: RaksiChaiyoApp()));
 }
 
