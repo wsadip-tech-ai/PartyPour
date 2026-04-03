@@ -16,7 +16,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   String? _originFilter;
 
   static const _bgColor = Color(0xFF1C1917);
-  static const _surfaceColor = Color(0xFF292524);
   static const _goldColor = Color(0xFFCA8A04);
   static const _goldLightColor = Color(0xFFEAB308);
   static const _borderColor = Color(0xFF44403C);
