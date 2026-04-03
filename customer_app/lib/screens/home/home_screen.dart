@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/wizard_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/catalog_provider.dart';
@@ -87,18 +88,24 @@ class HomeScreen extends ConsumerWidget {
               ),
 
             // === BROWSE BY TYPE ===
-            _SectionHeader(title: 'Browse by Type', actionLabel: 'See all', onAction: () => context.push('/category/a1000000-0000-0000-0000-000000000001')),
+            _SectionHeader(title: 'Browse by Type', actionLabel: 'See all', onAction: () => context.push('/category/a1000000-0000-0000-0000-000000000001')),  // Hard Drinks category
             const SizedBox(height: 8),
             _TypeChips(ref: ref),
 
             // === POPULAR PICKS ===
-            _SectionHeader(title: 'Popular Picks', actionLabel: 'View all', onAction: () => context.push('/category/a1000000-0000-0000-0000-000000000001')),
+            _SectionHeader(title: 'Popular Picks', actionLabel: 'View all', onAction: () => context.push('/wizard/event')),
             const SizedBox(height: 8),
             _PopularProducts(ref: ref),
 
             // === PROMO CARD ===
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: GestureDetector(
+              onTap: () {
+                ref.read(wizardProvider.notifier).reset();
+                ref.read(wizardProvider.notifier).setEventType('wedding');
+                context.push('/wizard/event');
+              },
               child: Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -127,6 +134,7 @@ class HomeScreen extends ConsumerWidget {
                     const Icon(Icons.chevron_right, color: _gold, size: 20),
                   ],
                 ),
+              ),
               ),
             ),
             const SizedBox(height: 16),
@@ -281,14 +289,14 @@ class _TypeChips extends StatelessWidget {
   const _TypeChips({required this.ref});
 
   static const _types = [
-    ('Whiskey', Icons.local_bar),
-    ('Beer', Icons.sports_bar),
-    ('Vodka', Icons.local_bar),
-    ('Wine', Icons.wine_bar),
-    ('Rum', Icons.local_bar),
-    ('Gin', Icons.local_bar),
-    ('Brandy', Icons.wine_bar),
-    ('Shots', Icons.local_fire_department),
+    ('Whiskey', Icons.local_bar, 'whiskey'),
+    ('Beer', Icons.sports_bar, 'beer-bottle-can'),
+    ('Vodka', Icons.local_bar, 'vodka'),
+    ('Wine', Icons.wine_bar, 'wine'),
+    ('Rum', Icons.local_bar, 'rum'),
+    ('Gin', Icons.local_bar, 'gin'),
+    ('Brandy', Icons.wine_bar, 'brandy'),
+    ('Shots', Icons.local_fire_department, 'shots-specials'),
   ];
 
   @override
@@ -301,10 +309,16 @@ class _TypeChips extends StatelessWidget {
         itemCount: _types.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
-          final (label, icon) = _types[i];
+          final (label, icon, slug) = _types[i];
           final isFirst = i == 0;
           return GestureDetector(
-            onTap: () => context.push('/category/a1000000-0000-0000-0000-000000000001'),
+            onTap: () async {
+              final supabase = Supabase.instance.client;
+              final data = await supabase.from('subcategories').select('id').eq('slug', slug).maybeSingle();
+              if (data != null && context.mounted) {
+                context.push('/products/${data['id']}');
+              }
+            },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
@@ -364,7 +378,7 @@ class _PopularProducts extends StatelessWidget {
         final item = items[i];
         final isImported = item.origin == 'Imported';
         return GestureDetector(
-          onTap: () => context.push('/category/a1000000-0000-0000-0000-000000000001'),
+          onTap: () => context.push('/wizard/event'),
           child: Container(
             width: 150,
             padding: const EdgeInsets.all(12),
