@@ -92,8 +92,8 @@ class _SubcategoryCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          splashColor: const Color(0xFFCA8A04).withOpacity(0.08),
-          highlightColor: const Color(0xFFCA8A04).withOpacity(0.04),
+          splashColor: const Color(0xFFCA8A04).withValues(alpha: 0.08),
+          highlightColor: const Color(0xFFCA8A04).withValues(alpha: 0.04),
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xFF292524),
@@ -103,86 +103,23 @@ class _SubcategoryCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             child: Row(
               children: [
-                // Gold icon circle
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 36, height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFCA8A04).withOpacity(0.08),
+                    color: const Color(0xFFCA8A04).withValues(alpha: 0.08),
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFCA8A04).withOpacity(0.25),
-                      width: 1,
-                    ),
+                    border: Border.all(color: const Color(0xFFCA8A04).withValues(alpha: 0.25)),
                   ),
-                  child: const Icon(
-                    Icons.local_bar_outlined,
-                    color: Color(0xFFCA8A04),
-                    size: 18,
-                  ),
+                  child: const Icon(Icons.local_bar_outlined, color: Color(0xFFCA8A04), size: 18),
                 ),
                 const SizedBox(width: 14),
-
-                // Name + description
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        subcategory.name,
-                        style: const TextStyle(
-                          color: Color(0xFFFAFAF9),
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (subcategory.description != null &&
-                          (subcategory.description as String).isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          subcategory.description,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Color(0xFF78716C),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ],
+                  child: Text(
+                    subcategory.name,
+                    style: const TextStyle(color: Color(0xFFFAFAF9), fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
-                const SizedBox(width: 10),
-
-                // Gold count badge (if productCount available)
-                if (subcategory.productCount != null)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCA8A04).withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: const Color(0xFFCA8A04).withOpacity(0.30),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${subcategory.productCount}',
-                      style: const TextStyle(
-                        color: Color(0xFFEAB308),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-
-                const SizedBox(width: 6),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Color(0xFF78716C),
-                  size: 20,
-                ),
+                const Icon(Icons.chevron_right_rounded, color: Color(0xFF78716C), size: 20),
               ],
             ),
           ),

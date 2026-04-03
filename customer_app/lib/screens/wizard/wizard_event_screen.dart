@@ -34,6 +34,17 @@ class WizardEventScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // Back to home
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () => context.go('/home'),
+                  icon: const Icon(Icons.arrow_back, color: _muted, size: 22),
+                ),
+              ),
+            ),
             const StepProgress(currentStep: 1),
             Expanded(
               child: SingleChildScrollView(
@@ -269,8 +280,11 @@ class WizardEventScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () => context.push('/category/a1000000-0000-0000-0000-000000000001'),
-                    child: const Text('Browse Catalog Instead', style: TextStyle(color: _muted, fontSize: 12)),
+                    onTap: () {
+                      // Navigate to Hard Drinks category list
+                      context.push('/category/a1000000-0000-0000-0000-000000000001');
+                    },
+                    child: const Text('Browse Catalog Instead', style: TextStyle(color: _gold, fontSize: 12, decoration: TextDecoration.underline, decorationColor: _gold)),
                   ),
                 ],
               ),
