@@ -57,12 +57,13 @@ class HomeScreen extends ConsumerWidget {
                 context.push('/wizard/event');
               },
               onCalculator: () => context.push('/calculator'),
+              onBrowseCatalog: () => context.push('/category/a1000000-0000-0000-0000-000000000001'),
             ),
 
             // === RESUME CARD ===
             if (hasWizardInProgress)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: _surfaceDark,
@@ -168,90 +169,172 @@ class HomeScreen extends ConsumerWidget {
 }
 
 // === HERO SECTION ===
-class _HeroSection extends StatelessWidget {
+class _HeroSection extends StatefulWidget {
   final VoidCallback onStartOrder;
   final VoidCallback onCalculator;
+  final VoidCallback onBrowseCatalog;
 
-  const _HeroSection({required this.onStartOrder, required this.onCalculator});
+  const _HeroSection({required this.onStartOrder, required this.onCalculator, required this.onBrowseCatalog});
+
+  @override
+  State<_HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderStateMixin {
+  late AnimationController _glowController;
+  late Animation<double> _glowAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+    _glowAnim = Tween<double>(begin: 0.25, end: 0.55).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(22, 8, 22, 24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [_surfaceDark, _darkBg],
-        ),
-      ),
-      child: Stack(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      color: _darkBg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gold radial glow
-          Positioned(top: -40, right: -40, child: Container(
-            width: 160, height: 160,
-            decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [_gold.withValues(alpha: 0.1), Colors.transparent])),
-          )),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Tagline badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _gold.withValues(alpha: 0.1),
-                  border: Border.all(color: _gold.withValues(alpha: 0.2)),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text('PREMIUM EVENT BEVERAGES', style: TextStyle(color: _gold, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
-                ]),
-              ),
-              const SizedBox(height: 16),
-              // Headline
-              RichText(text: const TextSpan(
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: _textLight, height: 1.2, fontFamily: 'Inter'),
-                children: [
-                  TextSpan(text: 'Curate your\n'),
-                  TextSpan(text: 'perfect ', style: TextStyle(fontStyle: FontStyle.italic, color: _gold)),
-                  TextSpan(text: 'event bar'),
-                ],
-              )),
-              const SizedBox(height: 8),
-              const Text('62+ brands, delivered to your celebration', style: TextStyle(color: _muted, fontSize: 13)),
-              const SizedBox(height: 20),
-              // Action buttons
-              Row(children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: onStartOrder,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [_gold, _goldLight]),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [BoxShadow(color: _gold.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 4))],
-                      ),
-                      child: const Center(child: Text('Start Your Order', style: TextStyle(color: _darkBg, fontWeight: FontWeight.w700, fontSize: 14, letterSpacing: 0.3))),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: onCalculator,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: _surfaceDark,
-                      border: Border.all(color: _border),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Text('Calculator', style: TextStyle(color: _textLight, fontWeight: FontWeight.w600, fontSize: 14)),
-                  ),
-                ),
-              ]),
-            ],
+          // --- Greeting line (replaces the old multi-line headline) ---
+          const Text(
+            'What are we celebrating?',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _mutedLight, letterSpacing: 0.1),
           ),
+          const SizedBox(height: 12),
+
+          // --- Dominant hero card ---
+          AnimatedBuilder(
+            animation: _glowAnim,
+            builder: (context, child) {
+              return GestureDetector(
+                onTap: widget.onStartOrder,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFB45309), _gold, _goldLight],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _gold.withValues(alpha: _glowAnim.value),
+                        blurRadius: 28,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Icon + text block
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.celebration, size: 48, color: _darkBg),
+                            const SizedBox(width: 16),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Start Your Order',
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _darkBg, letterSpacing: 0.2),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Tell us about your event and we\'ll handle the rest',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF44403C), height: 1.35),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Arrow
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _darkBg.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.arrow_forward_rounded, color: _darkBg, size: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // --- Secondary actions row ---
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: widget.onCalculator,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  decoration: BoxDecoration(
+                    color: _surfaceDark,
+                    border: Border.all(color: _border),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calculate_outlined, color: _mutedLight, size: 16),
+                      SizedBox(width: 6),
+                      Text('Calculator', style: TextStyle(color: _mutedLight, fontWeight: FontWeight.w600, fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: widget.onBrowseCatalog,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  decoration: BoxDecoration(
+                    color: _surfaceDark,
+                    border: Border.all(color: _border),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.menu_book_outlined, color: _mutedLight, size: 16),
+                      SizedBox(width: 6),
+                      Text('Browse Catalog', style: TextStyle(color: _mutedLight, fontWeight: FontWeight.w600, fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]),
         ],
       ),
     );
