@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
@@ -169,21 +170,24 @@ class PriceCalculatorScreen extends ConsumerWidget {
                                     GestureDetector(
                                       onTap: sel.quantity > 1 ? () => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity - 1) : null,
                                       child: Container(
-                                        width: 22, height: 22,
-                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
-                                        child: Icon(Icons.remove, size: 10, color: sel.quantity > 1 ? _gold : _muted.withValues(alpha: 0.3)),
+                                        width: 36, height: 36,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _border)),
+                                        child: Icon(Icons.remove, size: 16, color: sel.quantity > 1 ? _gold : _muted.withValues(alpha: 0.3)),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 26,
-                                      child: Text('${sel.quantity}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textLight)),
+                                    GestureDetector(
+                                      onTap: () => _showEditDialog(context, sel.product.name, sel.quantity, (v) => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, v)),
+                                      child: SizedBox(
+                                        width: 30,
+                                        child: Text('${sel.quantity}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textLight)),
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, sel.quantity + 1),
                                       child: Container(
-                                        width: 22, height: 22,
-                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
-                                        child: const Icon(Icons.add, size: 10, color: _gold),
+                                        width: 36, height: 36,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _border)),
+                                        child: const Icon(Icons.add, size: 16, color: _gold),
                                       ),
                                     ),
                                   ],
@@ -260,6 +264,46 @@ class PriceCalculatorScreen extends ConsumerWidget {
                 Text('NPR ${wizard.grandTotal.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _gold)),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String label, int current, ValueChanged<int> onChanged) {
+    final controller = TextEditingController(text: '$current');
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: _surfaceDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(label, style: const TextStyle(color: _textLight, fontSize: 16, fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          style: const TextStyle(color: _gold, fontSize: 28, fontWeight: FontWeight.w800),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            filled: true, fillColor: _darkBg,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _border)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _gold, width: 2)),
+          ),
+          onSubmitted: (val) {
+            onChanged((int.tryParse(val) ?? current).clamp(1, 9999));
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _muted))),
+          TextButton(
+            onPressed: () {
+              onChanged((int.tryParse(controller.text) ?? current).clamp(1, 9999));
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: _gold, fontWeight: FontWeight.w700)),
           ),
         ],
       ),

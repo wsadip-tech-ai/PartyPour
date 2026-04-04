@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/catalog_provider.dart';
 import '../../providers/cart_provider.dart';
@@ -371,14 +372,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           ? () => setState(() => _quantity--)
                           : null,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Text(
-                        '$_quantity',
-                        style: const TextStyle(
-                          color: _textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                    GestureDetector(
+                      onTap: () => _showEditDialog(context),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Text(
+                          '$_quantity',
+                          style: const TextStyle(
+                            color: _textPrimary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -509,6 +513,46 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
+  void _showEditDialog(BuildContext context) {
+    final controller = TextEditingController(text: '$_quantity');
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: _surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Quantity', style: TextStyle(color: _textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          style: const TextStyle(color: _goldColor, fontSize: 28, fontWeight: FontWeight.w800),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            filled: true, fillColor: _bgColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _goldColor, width: 2)),
+          ),
+          onSubmitted: (val) {
+            setState(() => _quantity = (int.tryParse(val) ?? _quantity).clamp(1, 9999));
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _textDim))),
+          TextButton(
+            onPressed: () {
+              setState(() => _quantity = (int.tryParse(controller.text) ?? _quantity).clamp(1, 9999));
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: _goldColor, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _divider() => Container(height: 1, color: _borderColor);
 }
 
@@ -583,8 +627,8 @@ class _QtyButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 34,
-        height: 34,
+        width: 36,
+        height: 36,
         decoration: BoxDecoration(
           color: enabled
               ? const Color(0xFFCA8A04).withOpacity(0.12)

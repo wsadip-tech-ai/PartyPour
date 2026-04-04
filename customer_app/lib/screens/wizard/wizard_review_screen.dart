@@ -378,9 +378,9 @@ class _MiniQtyStepper extends StatelessWidget {
         GestureDetector(
           onTap: value > 1 ? () => onChanged(value - 1) : null,
           child: Container(
-            width: 24, height: 24,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
-            child: Icon(Icons.remove, size: 12, color: value > 1 ? _gold : _muted.withValues(alpha: 0.3)),
+            width: 36, height: 36,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _border)),
+            child: Icon(Icons.remove, size: 16, color: value > 1 ? _gold : _muted.withValues(alpha: 0.3)),
           ),
         ),
         GestureDetector(
@@ -393,9 +393,9 @@ class _MiniQtyStepper extends StatelessWidget {
         GestureDetector(
           onTap: () => onChanged(value + 1),
           child: Container(
-            width: 24, height: 24,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: _border)),
-            child: const Icon(Icons.add, size: 12, color: _gold),
+            width: 36, height: 36,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _border)),
+            child: const Icon(Icons.add, size: 16, color: _gold),
           ),
         ),
       ],
