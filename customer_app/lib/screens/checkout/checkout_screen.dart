@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
+import '../../providers/wizard_provider.dart';
 
 const _gold = Color(0xFFCA8A04);
 const _goldLight = Color(0xFFEAB308);
@@ -14,6 +15,15 @@ const _mutedLight = Color(0xFFA8A29E);
 const _border = Color(0xFF44403C);
 const _green = Color(0xFF4ade80);
 
+const _eventIcons = {
+  'wedding': Icons.favorite,
+  'birthday': Icons.cake,
+  'corporate': Icons.business,
+  'house_party': Icons.home,
+  'anniversary': Icons.celebration,
+  'other': Icons.event,
+};
+
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
   @override
@@ -24,19 +34,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
   final _instructionsController = TextEditingController();
-  String _eventType = 'wedding';
-  DateTime? _eventDate;
-  int _guestCount = 100;
   bool _loading = false;
-
-  static const _eventTypes = [
-    ('wedding', 'Wedding', Icons.favorite),
-    ('birthday', 'Birthday', Icons.cake),
-    ('corporate', 'Corporate', Icons.business),
-    ('house_party', 'Party', Icons.home),
-    ('anniversary', 'Anniversary', Icons.celebration),
-    ('other', 'Other', Icons.event),
-  ];
+  DateTime? _eventDate;
+  bool _datePickerUsed = false;
 
   @override
   void dispose() {
@@ -54,12 +54,28 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ));
       return;
     }
+
+    final wizard = ref.read(wizardProvider);
+    final date = _eventDate ?? wizard.eventDate;
+
+    if (date == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: _surfaceDark,
+        content: const Text('Please select an event date', style: TextStyle(color: Color(0xFFEF4444))),
+      ));
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       final cartItems = ref.read(cartProvider);
       await ref.read(orderServiceProvider).createOrder(
-        cartItems: cartItems, eventType: _eventType, eventDate: _eventDate, guestCount: _guestCount,
-        deliveryAddress: _addressController.text.trim(), contactPhone: _phoneController.text.trim(),
+        cartItems: cartItems,
+        eventType: wizard.eventType,
+        eventDate: date,
+        guestCount: wizard.totalPax,
+        deliveryAddress: _addressController.text.trim(),
+        contactPhone: _phoneController.text.trim(),
         specialInstructions: _instructionsController.text.trim().isEmpty ? null : _instructionsController.text.trim(),
       );
       ref.read(cartProvider.notifier).clear();
@@ -71,13 +87,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           builder: (_) => AlertDialog(
             backgroundColor: _surfaceDark,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Row(
-              children: [
-                Icon(Icons.check_circle, color: _green, size: 28),
-                SizedBox(width: 10),
-                Text('Order Placed!', style: TextStyle(color: _textLight, fontSize: 18, fontWeight: FontWeight.w700)),
-              ],
-            ),
+            title: const Row(children: [
+              Icon(Icons.check_circle, color: _green, size: 28),
+              SizedBox(width: 10),
+              Text('Order Placed!', style: TextStyle(color: _textLight, fontSize: 18, fontWeight: FontWeight.w700)),
+            ]),
             content: const Text('Your order has been submitted. We will confirm it shortly via call.', style: TextStyle(color: _mutedLight, fontSize: 14)),
             actions: [
               TextButton(
@@ -102,6 +116,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final total = ref.watch(cartTotalProvider);
     final count = ref.watch(cartCountProvider);
+    final wizard = ref.watch(wizardProvider);
+    final effectiveDate = _datePickerUsed ? _eventDate : wizard.eventDate;
+    final eventIcon = _eventIcons[wizard.eventType] ?? Icons.event;
+
+    // Calculate total bottles
+    int totalBottles = 0;
+    for (final item in ref.watch(cartProvider)) {
+      totalBottles += item.quantity;
+    }
 
     return Scaffold(
       backgroundColor: _darkBg,
@@ -116,7 +139,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Total banner
+                  // === ORDER TOTAL BANNER ===
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                     padding: const EdgeInsets.all(16),
@@ -130,104 +153,93 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         const Text('ORDER TOTAL', style: TextStyle(fontSize: 11, color: _mutedLight, letterSpacing: 0.06)),
                         const SizedBox(height: 4),
                         Text('NPR ${total.toStringAsFixed(0)}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: _gold)),
-                        Text('$count items', style: const TextStyle(fontSize: 11, color: _muted)),
+                        Text('$count items • $totalBottles bottles', style: const TextStyle(fontSize: 11, color: _muted)),
                       ],
                     ),
                   ),
 
-                  // Event Details card
+                  // === EVENT SUMMARY (display-only, from wizard) ===
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(color: _surfaceDark, border: Border.all(color: _border), borderRadius: BorderRadius.circular(14)),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Header
                         const Row(children: [
                           Icon(Icons.celebration, size: 16, color: _gold),
                           SizedBox(width: 8),
-                          Text('Event Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textLight)),
+                          Text('Event Summary', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textLight)),
                         ]),
-                        const SizedBox(height: 12),
-                        // Event type chips
-                        Wrap(
-                          spacing: 6, runSpacing: 6,
-                          children: _eventTypes.map((e) {
-                            final isActive = _eventType == e.$1;
-                            return GestureDetector(
-                              onTap: () => setState(() => _eventType = e.$1),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: isActive ? _gold.withValues(alpha: 0.1) : Colors.transparent,
-                                  border: Border.all(color: isActive ? _gold : _border, width: 1.5),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                  Icon(e.$3, size: 14, color: isActive ? _gold : _muted),
-                                  const SizedBox(width: 6),
-                                  Text(e.$2, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: isActive ? _gold : _mutedLight)),
-                                ]),
-                              ),
-                            );
-                          }).toList(),
+                        const SizedBox(height: 14),
+                        // Info strips
+                        Row(
+                          children: [
+                            // Event type
+                            Expanded(child: _InfoChip(
+                              icon: eventIcon,
+                              label: 'Event',
+                              value: wizard.eventType.replaceAll('_', ' '),
+                            )),
+                            const SizedBox(width: 8),
+                            // Guest count
+                            Expanded(child: _InfoChip(
+                              icon: Icons.groups,
+                              label: 'Guests',
+                              value: '${wizard.totalPax}',
+                            )),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        // Date picker
+                        const SizedBox(height: 8),
+                        // Date (tappable to change if needed)
                         GestureDetector(
                           onTap: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now().add(const Duration(days: 7)),
+                              initialDate: effectiveDate ?? DateTime.now().add(const Duration(days: 7)),
                               firstDate: DateTime.now(),
                               lastDate: DateTime.now().add(const Duration(days: 365)),
-                              builder: (context, child) => Theme(data: Theme.of(context).copyWith(colorScheme: const ColorScheme.dark(primary: _gold, surface: _surfaceDark, onSurface: _textLight)), child: child!),
+                              builder: (context, child) => Theme(
+                                data: Theme.of(context).copyWith(colorScheme: const ColorScheme.dark(primary: _gold, surface: _surfaceDark, onSurface: _textLight)),
+                                child: child!,
+                              ),
                             );
-                            if (date != null) setState(() => _eventDate = date);
+                            if (date != null) setState(() { _eventDate = date; _datePickerUsed = true; });
                           },
                           child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: _darkBg, border: Border.all(color: _border), borderRadius: BorderRadius.circular(10)),
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: _darkBg,
+                              border: Border.all(color: effectiveDate == null ? _gold.withValues(alpha: 0.5) : _border),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Row(children: [
-                              const Icon(Icons.calendar_today, size: 16, color: _gold),
+                              Icon(Icons.calendar_today, size: 16, color: effectiveDate == null ? _gold : _mutedLight),
                               const SizedBox(width: 10),
                               Text(
-                                _eventDate == null ? 'Select Event Date' : '${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
-                                style: TextStyle(fontSize: 14, color: _eventDate == null ? _muted : _textLight),
+                                effectiveDate == null
+                                    ? 'Tap to select event date'
+                                    : '${effectiveDate.day}/${effectiveDate.month}/${effectiveDate.year}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: effectiveDate == null ? _gold : _textLight,
+                                  fontWeight: effectiveDate == null ? FontWeight.w600 : FontWeight.w400,
+                                ),
                               ),
                               const Spacer(),
-                              const Icon(Icons.chevron_right, size: 16, color: _muted),
+                              if (effectiveDate != null)
+                                const Text('Change', style: TextStyle(fontSize: 11, color: _gold, fontWeight: FontWeight.w500)),
+                              if (effectiveDate == null)
+                                const Icon(Icons.error_outline, size: 16, color: _gold),
                             ]),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        // Guest count
-                        Row(
-                          children: [
-                            const Text('Guests', style: TextStyle(fontSize: 13, color: _mutedLight)),
-                            const Spacer(),
-                            Text('$_guestCount', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _gold)),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        SliderTheme(
-                          data: SliderThemeData(
-                            activeTrackColor: _gold,
-                            inactiveTrackColor: _border,
-                            thumbColor: _gold,
-                            overlayColor: _gold.withValues(alpha: 0.1),
-                            trackHeight: 4,
-                          ),
-                          child: Slider(
-                            value: _guestCount.toDouble(), min: 20, max: 1000, divisions: 98,
-                            onChanged: (v) => setState(() => _guestCount = v.round()),
                           ),
                         ),
                       ],
                     ),
                   ),
 
-                  // Delivery Details card
+                  // === DELIVERY DETAILS ===
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                     padding: const EdgeInsets.all(16),
@@ -250,7 +262,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     ),
                   ),
 
-                  // Secure note
+                  // === SECURE NOTE ===
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                     child: Row(children: [
@@ -264,7 +276,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ),
           ),
 
-          // Bottom bar
+          // === BOTTOM BAR ===
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(color: _darkBg, border: Border(top: BorderSide(color: _border.withValues(alpha: 0.5)))),
@@ -293,6 +305,39 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 }
 
+// === Display-only info chip ===
+class _InfoChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  const _InfoChip({required this.icon, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(color: _darkBg, border: Border.all(color: _border), borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: _gold),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: const TextStyle(fontSize: 10, color: _muted, letterSpacing: 0.04)),
+                const SizedBox(height: 2),
+                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// === Dark input field ===
 class _DarkInput extends StatelessWidget {
   final TextEditingController controller;
   final String label;
