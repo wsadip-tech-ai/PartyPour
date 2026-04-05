@@ -205,19 +205,11 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       color: _darkBg,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- Greeting line (replaces the old multi-line headline) ---
-          const Text(
-            'What are we celebrating?',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _mutedLight, letterSpacing: 0.1),
-          ),
-          const SizedBox(height: 12),
-
-          // --- Dominant hero card ---
+          // --- Big Hero Card with Circle CTA ---
           AnimatedBuilder(
             animation: _glowAnim,
             builder: (context, child) {
@@ -225,61 +217,82 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                 onTap: widget.onStartOrder,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFB45309), _gold, _goldLight],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
+                    color: _surfaceDark,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: _gold.withValues(alpha: 0.1)),
                     boxShadow: [
                       BoxShadow(
-                        color: _gold.withValues(alpha: _glowAnim.value),
-                        blurRadius: 28,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 6),
+                        color: _gold.withValues(alpha: _glowAnim.value * 0.3),
+                        blurRadius: 40,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      // Icon + text block
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.celebration, size: 48, color: _darkBg),
-                            const SizedBox(width: 16),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Start Your Order',
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _darkBg, letterSpacing: 0.2),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Tell us about your event and we\'ll handle the rest',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF44403C), height: 1.35),
-                                  ),
-                                ],
-                              ),
+                      // Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: _gold.withValues(alpha: 0.08),
+                          border: Border.all(color: _gold.withValues(alpha: 0.15)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Text("NEPAL'S BEVERAGE CONCIERGE", style: TextStyle(fontSize: 9, color: _gold, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
+                      ),
+                      const SizedBox(height: 16),
+                      // Headline
+                      const Text('Plan your event\nbeverages in', textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _textLight, height: 1.2)),
+                      const Text('2 minutes', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _gold, fontStyle: FontStyle.italic)),
+                      const SizedBox(height: 8),
+                      const Text('Tell us your guest count and we\'ll recommend\nexactly what you need.', textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, color: _muted, height: 1.5)),
+                      const SizedBox(height: 20),
+                      // Circle CTA
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFB45309), _gold, _goldLight],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _gold.withValues(alpha: _glowAnim.value),
+                              blurRadius: 32,
+                              spreadRadius: 2,
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Arrow
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: _darkBg.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.celebration, size: 32, color: _darkBg),
+                            SizedBox(height: 4),
+                            Text('Start Order', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _darkBg, letterSpacing: 0.3)),
+                          ],
                         ),
-                        child: const Icon(Icons.arrow_forward_rounded, color: _darkBg, size: 20),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text('Tap to begin', style: TextStyle(fontSize: 10, color: _muted)),
+                      const SizedBox(height: 14),
+                      // Stats strip
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _StatChip(value: '62+', label: 'brands'),
+                          Container(width: 1, height: 20, color: _border, margin: const EdgeInsets.symmetric(horizontal: 16)),
+                          _StatChip(value: '5', label: 'step wizard'),
+                          Container(width: 1, height: 20, color: _border, margin: const EdgeInsets.symmetric(horizontal: 16)),
+                          _StatChip(value: '24hr', label: 'delivery'),
+                        ],
                       ),
                     ],
                   ),
@@ -418,6 +431,24 @@ class _TypeChips extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+// === STAT CHIP ===
+class _StatChip extends StatelessWidget {
+  final String value;
+  final String label;
+  const _StatChip({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: _gold)),
+        const SizedBox(height: 2),
+        Text(label, style: const TextStyle(fontSize: 10, color: _muted)),
+      ],
     );
   }
 }
