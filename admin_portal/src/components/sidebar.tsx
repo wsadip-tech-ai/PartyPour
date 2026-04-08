@@ -27,7 +27,7 @@ export function Sidebar() {
     router.push('/login')
   }
 
-  if (pathname === '/login') return null
+  if (pathname === '/login' || pathname.endsWith('/dispatch-slip')) return null
 
   return (
     <aside className="w-64 border-r bg-card h-screen flex flex-col">
