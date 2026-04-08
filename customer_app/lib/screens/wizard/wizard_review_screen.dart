@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/step_progress.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -30,6 +31,7 @@ class _WizardReviewScreenState extends ConsumerState<WizardReviewScreen> {
   @override
   void initState() {
     super.initState();
+    ref.read(analyticsProvider).trackWizardStepEntered(5, 'review');
     // Restore saved delivery details if user comes back
     final wizard = ref.read(wizardProvider);
     _addressController.text = wizard.deliveryAddress;
@@ -69,6 +71,7 @@ class _WizardReviewScreenState extends ConsumerState<WizardReviewScreen> {
     notifier.setContactPhone(_phoneController.text.trim());
     notifier.setSpecialInstructions(_instructionsController.text.trim());
 
+    ref.read(analyticsProvider).trackWizardStepCompleted(5, 'review');
     context.push('/wizard/confirm');
   }
 

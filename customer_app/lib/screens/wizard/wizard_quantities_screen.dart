@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/step_progress.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -53,6 +54,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
                   if (!_calculated) {
                     _calculated = true;
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      ref.read(analyticsProvider).trackWizardStepEntered(3, 'quantities');
                       final quantities = await ref.read(estimationServiceProvider).estimateQuantities(
                         totalPax: wizard.totalPax,
                         children: wizard.childrenCount,
@@ -247,7 +249,10 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
                   Expanded(
                     flex: 2,
                     child: GestureDetector(
-                      onTap: () => context.push('/wizard/brands'),
+                      onTap: () {
+                        ref.read(analyticsProvider).trackWizardStepCompleted(3, 'quantities');
+                        context.push('/wizard/brands');
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(

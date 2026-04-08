@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/step_progress.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -18,6 +19,7 @@ class WizardEventScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(analyticsProvider).trackWizardStepEntered(1, 'event');
     final wizard = ref.watch(wizardProvider);
 
     final eventTypes = [
@@ -403,7 +405,10 @@ class WizardEventScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(14),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(14),
-                          onTap: () => context.push('/wizard/types'),
+                          onTap: () {
+                            ref.read(analyticsProvider).trackWizardStepCompleted(1, 'event');
+                            context.push('/wizard/types');
+                          },
                           child: const Center(child: Text('Next — Select Beverages', style: TextStyle(color: _darkBg, fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3))),
                         ),
                       ),

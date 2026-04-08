@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
 
@@ -79,6 +80,8 @@ class _WizardConfirmScreenState extends ConsumerState<WizardConfirmScreen> {
         specialInstructions: wizard.specialInstructions.isEmpty ? null : wizard.specialInstructions,
       );
 
+      ref.read(analyticsProvider).trackWizardStepCompleted(6, 'confirm');
+      ref.read(analyticsProvider).trackOrderPlaced(order.id, wizard.grandTotal, wizard.allSelections.length);
       ref.read(cartProvider.notifier).clear();
       ref.read(wizardProvider.notifier).reset();
       ref.invalidate(orderHistoryProvider);
@@ -100,6 +103,7 @@ class _WizardConfirmScreenState extends ConsumerState<WizardConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.read(analyticsProvider).trackWizardStepEntered(6, 'confirm');
     final wizard = ref.watch(wizardProvider);
 
     int totalUnits = 0;

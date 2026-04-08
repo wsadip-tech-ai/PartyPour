@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/step_progress.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -37,6 +38,7 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.read(analyticsProvider).trackWizardStepEntered(2, 'types');
     final wizard = ref.watch(wizardProvider);
     final rulesAsync = ref.watch(estimationRulesProvider);
     final selectedCount = wizard.selectedTypeSlugs.length;
@@ -161,7 +163,10 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
                   Expanded(
                     flex: 2,
                     child: GestureDetector(
-                      onTap: selectedCount > 0 ? () => context.push('/wizard/quantities') : null,
+                      onTap: selectedCount > 0 ? () {
+                        ref.read(analyticsProvider).trackWizardStepCompleted(2, 'types');
+                        context.push('/wizard/quantities');
+                      } : null,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(

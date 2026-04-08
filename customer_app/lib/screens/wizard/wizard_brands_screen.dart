@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/wizard_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/product.dart';
 import '../../widgets/step_progress.dart';
 
@@ -53,6 +54,7 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.read(analyticsProvider).trackWizardStepEntered(4, 'brands');
     final wizard = ref.watch(wizardProvider);
     final rulesAsync = ref.watch(estimationRulesProvider);
     final allHaveBrands = _allCategoriesHaveBrands(wizard);
@@ -215,7 +217,10 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                   Expanded(
                     flex: 2,
                     child: GestureDetector(
-                      onTap: allHaveBrands ? () => context.push('/wizard/review') : null,
+                      onTap: allHaveBrands ? () {
+                        ref.read(analyticsProvider).trackWizardStepCompleted(4, 'brands');
+                        context.push('/wizard/review');
+                      } : null,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
