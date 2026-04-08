@@ -36,3 +36,15 @@ export interface OrderItem {
   unit_type: 'unit' | 'case'; unit_price: number; total_price: number
   variants?: Variant & { products?: Product }
 }
+
+export interface CustomerWithStats {
+  id: string
+  full_name: string | null
+  email: string | null
+  phone: string | null
+  role: string
+  created_at: string
+  order_count: number
+  total_spent: number
+  last_order_date: string | null
+}
