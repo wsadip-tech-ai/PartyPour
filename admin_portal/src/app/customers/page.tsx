@@ -40,6 +40,19 @@ export default function CustomersPage() {
       orderMap.set(o.user_id, existing)
     }
 
+    const { data: wizardEvents } = await supabase
+      .from('analytics_events')
+      .select('user_id, properties')
+      .eq('event_name', 'wizard_step_entered')
+      .order('created_at', { ascending: false })
+
+    const wizardMap = new Map<string, number>()
+    for (const e of wizardEvents ?? []) {
+      if (!wizardMap.has((e as any).user_id)) {
+        wizardMap.set((e as any).user_id, (e.properties as any)?.step ?? 0)
+      }
+    }
+
     const result: CustomerWithStats[] = profiles.map((p: any) => {
       const stats = orderMap.get(p.id) ?? { count: 0, total: 0 }
       return {
@@ -47,6 +60,7 @@ export default function CustomersPage() {
         order_count: stats.count,
         total_spent: stats.total,
         last_order_date: null,
+        last_wizard_step: wizardMap.get(p.id) ?? null,
       }
     })
 
@@ -101,6 +115,7 @@ export default function CustomersPage() {
           <TableRow>
             <TableHead>Customer</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-center">Last Step</TableHead>
             <TableHead className="text-center">Orders</TableHead>
             <TableHead className="text-right">Total Spent</TableHead>
             <TableHead>Joined</TableHead>
@@ -123,9 +138,14 @@ export default function CustomersPage() {
               <TableCell>
                 {c.order_count > 0 ? (
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Converted</Badge>
+                ) : (c as any).last_wizard_step ? (
+                  <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Step {(c as any).last_wizard_step}</Badge>
                 ) : (
                   <Badge variant="outline" className="text-muted-foreground">Not Converted</Badge>
                 )}
+              </TableCell>
+              <TableCell className="text-center text-sm">
+                {(c as any).last_wizard_step ? `Step ${(c as any).last_wizard_step}` : '—'}
               </TableCell>
               <TableCell className="text-center font-medium">{c.order_count}</TableCell>
               <TableCell className="text-right">{c.total_spent > 0 ? `NPR ${c.total_spent.toLocaleString()}` : '—'}</TableCell>
@@ -134,7 +154,7 @@ export default function CustomersPage() {
           ))}
           {filtered.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground py-8">No customers found</TableCell>
+              <TableCell colSpan={6} className="text-center text-muted-foreground py-8">No customers found</TableCell>
             </TableRow>
           )}
         </TableBody>
