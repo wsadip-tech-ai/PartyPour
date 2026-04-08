@@ -25,6 +25,7 @@ class EstimationService {
   Future<Map<String, int>> estimateQuantities({
     required int totalPax,
     required int children,
+    required int ladies,
     required String eventType,
     required List<String> selectedSlugs,
   }) async {
@@ -32,11 +33,17 @@ class EstimationService {
     final result = <String, int>{};
     for (final rule in rules) {
       if (selectedSlugs.contains(rule.subcategorySlug)) {
-        result[rule.subcategorySlug] = rule.estimateBottles(
+        int estimated = rule.estimateBottles(
           totalPax: totalPax,
           children: children,
           eventType: eventType,
         );
+        // Ladies boost: increase wine estimate by 30% of ladies ratio
+        if (rule.subcategorySlug == 'wine' && ladies > 0) {
+          final ladiesRatio = ladies / (totalPax - children).clamp(1, 9999);
+          estimated = (estimated * (1 + ladiesRatio * 0.3)).ceil();
+        }
+        result[rule.subcategorySlug] = estimated;
       }
     }
     return result;

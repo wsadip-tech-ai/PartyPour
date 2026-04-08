@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 import 'config/router.dart';
 
+/// Pre-loaded SharedPreferences instance, available synchronously after main()
+late final SharedPreferences prefs;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
   try {
     await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
   } catch (_) {
     // Supabase init may fail without internet — app will retry on login
   }
-  runApp(const ProviderScope(child: RaksiChaiyoApp()));
+  runApp(const ProviderScope(child: PartyPourApp()));
 }
 
-class RaksiChaiyoApp extends ConsumerWidget {
-  const RaksiChaiyoApp({super.key});
+class PartyPourApp extends ConsumerWidget {
+  const PartyPourApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
-      title: 'RaksiChaiyo',
+      title: 'PartyPour',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

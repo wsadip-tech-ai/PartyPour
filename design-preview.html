@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Design Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+
+  /* Page header */
+  .page-header{text-align:center;padding:60px 20px 40px}
+  .page-header h1{font-family:'Playfair Display',serif;font-size:2.8rem;background:linear-gradient(135deg,#CA8A04,#EAB308,#CA8A04);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.02em}
+  .page-header p{color:#888;font-size:1.05rem;margin-top:12px;letter-spacing:0.02em}
+
+  /* Grid of 3 phones */
+  .options-grid{display:flex;justify-content:center;gap:48px;padding:0 20px 80px;flex-wrap:wrap}
+
+  /* Option wrapper */
+  .option{display:flex;flex-direction:column;align-items:center;gap:24px}
+  .option-label{text-align:center}
+  .option-label h2{font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;margin-bottom:6px}
+  .option-label span{font-size:0.85rem;color:#777;letter-spacing:0.04em;text-transform:uppercase}
+
+  /* Phone frame */
+  .phone{width:375px;height:780px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08);transition:transform 0.4s cubic-bezier(.22,1,.36,1),box-shadow 0.4s ease}
+  .phone:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 35px 100px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.12)}
+
+  /* Phone notch */
+  .phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:inherit;border-radius:0 0 20px 20px;z-index:100}
+
+  /* Scrollable screen content */
+  .screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none}
+  .screen::-webkit-scrollbar{display:none}
+
+  /* ============================================ */
+  /* OPTION A — Premium Gold                      */
+  /* ============================================ */
+  .phone-a{background:#1C1917}
+  .phone-a::before{background:#1C1917}
+
+  .screen-a .hero{padding:54px 24px 28px;background:linear-gradient(180deg,#1C1917 0%,#292524 100%)}
+  .screen-a .hero .brand{font-family:'Playfair Display',serif;font-size:1.5rem;color:#CA8A04;letter-spacing:0.04em}
+  .screen-a .hero h2{font-family:'Playfair Display',serif;font-size:1.9rem;color:#FAFAF9;margin-top:20px;line-height:1.2}
+  .screen-a .hero h2 em{font-style:italic;color:#CA8A04}
+  .screen-a .hero p{color:#a8a29e;font-family:'Inter',sans-serif;font-size:0.88rem;margin-top:10px;line-height:1.6}
+
+  .screen-a .cta-btn{display:block;margin:20px 24px;padding:16px;text-align:center;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-family:'Inter',sans-serif;font-weight:700;font-size:0.95rem;border-radius:14px;letter-spacing:0.03em;text-transform:uppercase;box-shadow:0 4px 24px rgba(202,138,4,0.35)}
+
+  .screen-a .section-title{padding:8px 24px 12px;font-family:'Inter',sans-serif;font-size:0.75rem;color:#a8a29e;text-transform:uppercase;letter-spacing:0.12em}
+
+  .screen-a .products{padding:0 24px 24px;display:flex;gap:12px}
+  .screen-a .card{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(202,138,4,0.15);border-radius:16px;padding:14px;backdrop-filter:blur(10px);position:relative;overflow:hidden}
+  .screen-a .card::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(202,138,4,0.06),transparent 60%);pointer-events:none}
+  .screen-a .card .img-placeholder{width:100%;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-family:'Playfair Display',serif;font-weight:700;color:#CA8A04;margin-bottom:12px}
+  .screen-a .card .img-placeholder.c1{background:linear-gradient(135deg,#292524,#44403C)}
+  .screen-a .card .img-placeholder.c2{background:linear-gradient(135deg,#44403C,#57534e)}
+  .screen-a .card .name{font-family:'Playfair Display',serif;font-size:0.95rem;color:#FAFAF9;font-weight:600}
+  .screen-a .card .origin{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+  .screen-a .card .origin.local{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
+  .screen-a .card .origin.imported{background:rgba(202,138,4,0.12);color:#EAB308;border:1px solid rgba(202,138,4,0.2)}
+  .screen-a .card .price{font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:700;color:#CA8A04;margin-top:8px}
+  .screen-a .card .price span{font-size:0.7rem;color:#a8a29e;font-weight:400}
+
+  .screen-a .nav{display:flex;justify-content:space-around;padding:12px 0;background:#1C1917;border-top:1px solid rgba(255,255,255,0.06);position:sticky;bottom:0}
+  .screen-a .nav-item{text-align:center;font-size:0.65rem;color:#78716c;font-family:'Inter',sans-serif}
+  .screen-a .nav-item.active{color:#CA8A04}
+  .screen-a .nav-item .dot{width:4px;height:4px;border-radius:50%;background:#CA8A04;margin:4px auto 0}
+  .screen-a .nav-icon{font-size:1.3rem;margin-bottom:2px;display:block}
+
+  /* ============================================ */
+  /* OPTION B — Nature Warmth                     */
+  /* ============================================ */
+  .phone-b{background:#F5F0E1}
+  .phone-b::before{background:#F5F0E1}
+
+  .screen-b .hero{padding:54px 24px 24px;background:linear-gradient(180deg,#F5F0E1 0%,#EDE5D0 100%);position:relative;overflow:hidden}
+  .screen-b .hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none}
+  .screen-b .hero .brand{font-family:'DM Sans',sans-serif;font-size:1.1rem;color:#B5651D;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+  .screen-b .hero h2{font-family:'DM Sans',sans-serif;font-size:1.75rem;color:#3E2723;margin-top:16px;line-height:1.25;font-weight:700}
+  .screen-b .hero h2 em{color:#C67B5C;font-style:normal;position:relative}
+  .screen-b .hero h2 em::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:#C67B5C;opacity:0.3;border-radius:2px}
+  .screen-b .hero p{color:#6D4C41;font-family:'DM Sans',sans-serif;font-size:0.88rem;margin-top:10px;line-height:1.6}
+
+  .screen-b .cta-btn{display:block;margin:16px 24px;padding:16px;text-align:center;background:#C67B5C;color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.95rem;border-radius:16px;letter-spacing:0.02em;box-shadow:0 6px 20px rgba(198,123,92,0.3)}
+
+  .screen-b .section-title{padding:8px 24px 12px;font-family:'DM Sans',sans-serif;font-size:0.75rem;color:#8D6E63;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+
+  .screen-b .products{padding:0 24px 24px;display:flex;gap:12px}
+  .screen-b .card{flex:1;background:#FFFDF7;border:1px solid rgba(181,101,29,0.12);border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(62,39,35,0.06)}
+  .screen-b .card .img-placeholder{width:100%;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-family:'DM Sans',sans-serif;font-weight:700;margin-bottom:12px}
+  .screen-b .card .img-placeholder.c1{background:linear-gradient(135deg,#EFCBB8,#D4A574);color:#5D4037}
+  .screen-b .card .img-placeholder.c2{background:linear-gradient(135deg,#D4C4A8,#C8B896);color:#5D4037}
+  .screen-b .card .name{font-family:'DM Sans',sans-serif;font-size:0.95rem;color:#3E2723;font-weight:700}
+  .screen-b .card .origin{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+  .screen-b .card .origin.local{background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9}
+  .screen-b .card .origin.imported{background:#FFF3E0;color:#E65100;border:1px solid #FFE0B2}
+  .screen-b .card .price{font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;color:#B5651D;margin-top:8px}
+  .screen-b .card .price span{font-size:0.7rem;color:#8D6E63;font-weight:400}
+
+  .screen-b .nav{display:flex;justify-content:space-around;padding:12px 0;background:#F5F0E1;border-top:1px solid rgba(181,101,29,0.1);position:sticky;bottom:0}
+  .screen-b .nav-item{text-align:center;font-size:0.65rem;color:#A1887F;font-family:'DM Sans',sans-serif;font-weight:500}
+  .screen-b .nav-item.active{color:#C67B5C}
+  .screen-b .nav-item .dot{width:4px;height:4px;border-radius:50%;background:#C67B5C;margin:4px auto 0}
+  .screen-b .nav-icon{font-size:1.3rem;margin-bottom:2px;display:block}
+
+  /* ============================================ */
+  /* OPTION C — Deep Navy                         */
+  /* ============================================ */
+  .phone-c{background:#F8FAFC}
+  .phone-c::before{background:#1E3A8A}
+
+  .screen-c .hero{padding:54px 24px 24px;background:linear-gradient(160deg,#1E3A8A 0%,#1E40AF 60%,#2563EB 100%);position:relative;overflow:hidden}
+  .screen-c .hero::before{content:'';position:absolute;top:-30%;right:-20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(202,138,4,0.15),transparent 70%);pointer-events:none}
+  .screen-c .hero .brand{font-family:'Montserrat',sans-serif;font-size:0.85rem;color:rgba(255,255,255,0.7);font-weight:600;letter-spacing:0.14em;text-transform:uppercase}
+  .screen-c .hero h2{font-family:'Cormorant',serif;font-size:2rem;color:#fff;margin-top:16px;line-height:1.15;font-weight:600}
+  .screen-c .hero h2 em{color:#EAB308;font-style:italic}
+  .screen-c .hero p{color:rgba(255,255,255,0.7);font-family:'Montserrat',sans-serif;font-size:0.85rem;margin-top:10px;line-height:1.6}
+
+  .screen-c .cta-btn{display:block;margin:16px 24px;padding:16px;text-align:center;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1E3A8A;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.9rem;border-radius:12px;letter-spacing:0.04em;text-transform:uppercase;box-shadow:0 4px 20px rgba(202,138,4,0.25)}
+
+  .screen-c .section-title{padding:12px 24px 12px;font-family:'Montserrat',sans-serif;font-size:0.7rem;color:#64748b;text-transform:uppercase;letter-spacing:0.12em;font-weight:600;background:#F8FAFC}
+
+  .screen-c .products{padding:0 24px 24px;display:flex;gap:12px;background:#F8FAFC}
+  .screen-c .card{flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+  .screen-c .card .img-placeholder{width:100%;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-family:'Cormorant',serif;font-weight:700;margin-bottom:12px}
+  .screen-c .card .img-placeholder.c1{background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1E3A8A}
+  .screen-c .card .img-placeholder.c2{background:linear-gradient(135deg,#e0e7ff,#c7d2fe);color:#1E3A8A}
+  .screen-c .card .name{font-family:'Cormorant',serif;font-size:1rem;color:#0f172a;font-weight:700}
+  .screen-c .card .origin{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:6px;font-size:0.65rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-family:'Montserrat',sans-serif}
+  .screen-c .card .origin.local{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+  .screen-c .card .origin.imported{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+  .screen-c .card .price{font-family:'Montserrat',sans-serif;font-size:0.95rem;font-weight:700;color:#1E3A8A;margin-top:8px}
+  .screen-c .card .price span{font-size:0.7rem;color:#94a3b8;font-weight:400}
+
+  .screen-c .nav{display:flex;justify-content:space-around;padding:12px 0;background:#fff;border-top:1px solid #e2e8f0;position:sticky;bottom:0}
+  .screen-c .nav-item{text-align:center;font-size:0.65rem;color:#94a3b8;font-family:'Montserrat',sans-serif;font-weight:500}
+  .screen-c .nav-item.active{color:#1E3A8A}
+  .screen-c .nav-item .dot{width:4px;height:4px;border-radius:50%;background:#CA8A04;margin:4px auto 0}
+  .screen-c .nav-icon{font-size:1.3rem;margin-bottom:2px;display:block}
+
+  /* Quick browse strip */
+  .browse-strip{display:flex;gap:10px;padding:16px 24px;overflow-x:auto;scrollbar-width:none}
+  .browse-strip::-webkit-scrollbar{display:none}
+  .browse-chip{white-space:nowrap;padding:8px 16px;border-radius:24px;font-size:0.78rem;font-weight:500;flex-shrink:0}
+
+  .screen-a .browse-strip{background:#1C1917}
+  .screen-a .browse-chip{background:rgba(255,255,255,0.05);color:#d6d3d1;border:1px solid rgba(255,255,255,0.08)}
+  .screen-a .browse-chip.active{background:rgba(202,138,4,0.15);color:#EAB308;border-color:rgba(202,138,4,0.3)}
+
+  .screen-b .browse-strip{background:#F5F0E1}
+  .screen-b .browse-chip{background:#fff;color:#6D4C41;border:1px solid rgba(181,101,29,0.15);font-family:'DM Sans',sans-serif}
+  .screen-b .browse-chip.active{background:#C67B5C;color:#fff;border-color:#C67B5C}
+
+  .screen-c .browse-strip{background:#F8FAFC}
+  .screen-c .browse-chip{background:#fff;color:#64748b;border:1px solid #e2e8f0;font-family:'Montserrat',sans-serif}
+  .screen-c .browse-chip.active{background:#1E3A8A;color:#fff;border-color:#1E3A8A}
+
+  /* Responsive */
+  @media(max-width:1280px){.options-grid{gap:24px}.phone{width:340px;height:710px;border-radius:38px}}
+  @media(max-width:1060px){.options-grid{flex-direction:column;align-items:center}}
+
+  /* Subtle entrance animation */
+  .option{opacity:0;animation:fadeUp 0.8s ease forwards}
+  .option:nth-child(1){animation-delay:0.1s}
+  .option:nth-child(2){animation-delay:0.3s}
+  .option:nth-child(3){animation-delay:0.5s}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Vote badge */
+  .vote{margin-top:4px;display:inline-block;padding:10px 28px;border-radius:12px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;letter-spacing:0.02em}
+  .vote-a{background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917}
+  .vote-a:hover{box-shadow:0 4px 20px rgba(202,138,4,0.4);transform:translateY(-2px)}
+  .vote-b{background:#C67B5C;color:#fff}
+  .vote-b:hover{box-shadow:0 4px 20px rgba(198,123,92,0.4);transform:translateY(-2px)}
+  .vote-c{background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff}
+  .vote-c:hover{box-shadow:0 4px 20px rgba(30,58,138,0.4);transform:translateY(-2px)}
+
+  /* Recommend badge */
+  .recommend{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>RaksiChaiyo</h1>
+  <p>Choose your design direction</p>
+</div>
+
+<div class="options-grid">
+
+  <!-- ========== OPTION A: Premium Gold ========== -->
+  <div class="option">
+    <div class="option-label">
+      <h2>Option A</h2>
+      <span>Premium Gold</span>
+    </div>
+    <div class="phone phone-a" style="position:relative">
+      <div class="recommend">Recommended</div>
+      <div class="screen screen-a">
+        <div class="hero">
+          <div class="brand">RaksiChaiyo</div>
+          <h2>Curate your <em>perfect</em> event bar</h2>
+          <p>Premium beverages delivered to your celebration. From local craft to imported luxury.</p>
+        </div>
+        <a class="cta-btn">Start Your Order</a>
+        <div class="browse-strip">
+          <div class="browse-chip active">Whiskey</div>
+          <div class="browse-chip">Vodka</div>
+          <div class="browse-chip">Beer</div>
+          <div class="browse-chip">Wine</div>
+          <div class="browse-chip">Rum</div>
+        </div>
+        <div class="section-title">Featured Brands</div>
+        <div class="products">
+          <div class="card">
+            <div class="img-placeholder c1">JW</div>
+            <div class="name">Johnnie Walker</div>
+            <div class="origin imported">Imported</div>
+            <div class="price">NPR 3,200 <span>/bottle</span></div>
+          </div>
+          <div class="card">
+            <div class="img-placeholder c2">OD</div>
+            <div class="name">Old Durbar</div>
+            <div class="origin local">Local</div>
+            <div class="price">NPR 700 <span>/bottle</span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="nav-item active"><span class="nav-icon">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="nav-icon">&#9776;</span>Orders</div>
+          <div class="nav-item"><span class="nav-icon">&#9679;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+    <div class="vote vote-a">Choose Premium Gold</div>
+  </div>
+
+  <!-- ========== OPTION B: Nature Warmth ========== -->
+  <div class="option">
+    <div class="option-label">
+      <h2>Option B</h2>
+      <span>Nature Warmth</span>
+    </div>
+    <div class="phone phone-b">
+      <div class="screen screen-b">
+        <div class="hero">
+          <div class="brand">RaksiChaiyo</div>
+          <h2>Beverages for your <em>celebration</em></h2>
+          <p>Handpicked spirits and drinks for every event. Local craft meets global flavors.</p>
+        </div>
+        <a class="cta-btn">Plan My Event</a>
+        <div class="browse-strip">
+          <div class="browse-chip active">Whiskey</div>
+          <div class="browse-chip">Vodka</div>
+          <div class="browse-chip">Beer</div>
+          <div class="browse-chip">Wine</div>
+          <div class="browse-chip">Rum</div>
+        </div>
+        <div class="section-title">Popular Picks</div>
+        <div class="products">
+          <div class="card">
+            <div class="img-placeholder c1">JW</div>
+            <div class="name">Johnnie Walker</div>
+            <div class="origin imported">Imported</div>
+            <div class="price">NPR 3,200 <span>/bottle</span></div>
+          </div>
+          <div class="card">
+            <div class="img-placeholder c2">OD</div>
+            <div class="name">Old Durbar</div>
+            <div class="origin local">Local</div>
+            <div class="price">NPR 700 <span>/bottle</span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="nav-item active"><span class="nav-icon">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="nav-icon">&#9776;</span>Orders</div>
+          <div class="nav-item"><span class="nav-icon">&#9679;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+    <div class="vote vote-b">Choose Nature Warmth</div>
+  </div>
+
+  <!-- ========== OPTION C: Deep Navy ========== -->
+  <div class="option">
+    <div class="option-label">
+      <h2>Option C</h2>
+      <span>Deep Navy</span>
+    </div>
+    <div class="phone phone-c">
+      <div class="screen screen-c">
+        <div class="hero">
+          <div class="brand">RaksiChaiyo</div>
+          <h2>Elevate your <em>event</em> experience</h2>
+          <p>Curated beverage service for weddings, parties, and corporate events across Nepal.</p>
+        </div>
+        <a class="cta-btn">Get Started</a>
+        <div class="browse-strip">
+          <div class="browse-chip active">Whiskey</div>
+          <div class="browse-chip">Vodka</div>
+          <div class="browse-chip">Beer</div>
+          <div class="browse-chip">Wine</div>
+          <div class="browse-chip">Rum</div>
+        </div>
+        <div class="section-title">Top Selections</div>
+        <div class="products">
+          <div class="card">
+            <div class="img-placeholder c1">JW</div>
+            <div class="name">Johnnie Walker</div>
+            <div class="origin imported">Imported</div>
+            <div class="price">NPR 3,200 <span>/bottle</span></div>
+          </div>
+          <div class="card">
+            <div class="img-placeholder c2">OD</div>
+            <div class="name">Old Durbar</div>
+            <div class="origin local">Local</div>
+            <div class="price">NPR 700 <span>/bottle</span></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="nav-item active"><span class="nav-icon">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="nav-icon">&#9776;</span>Orders</div>
+          <div class="nav-item"><span class="nav-icon">&#9679;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+    <div class="vote vote-c">Choose Deep Navy</div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Step 5: Final Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.progress{padding:48px 20px 0;display:flex;gap:4px}
+.seg{flex:1;height:3px;border-radius:2px;background:#44403C}
+.seg.done{background:#CA8A04}
+.step-lbl{padding:8px 20px 0;font-size:11px;color:#78716C;letter-spacing:0.06em}
+
+/* Shared */
+.hdr{padding:16px 20px 0}
+.hdr h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.hdr h1 em{color:#CA8A04;font-style:italic}
+.hdr .sub{font-size:13px;color:#78716C;margin-top:4px}
+
+/* === VERSION A: Receipt Style === */
+.va .event-banner{margin:14px 20px;padding:12px 16px;background:rgba(202,138,4,0.06);border:1px solid rgba(202,138,4,0.12);border-radius:12px;display:flex;align-items:center;gap:10px}
+.va .event-banner .eb-icon{font-size:18px}
+.va .event-banner .eb-text{font-size:12px;color:#A8A29E}
+.va .event-banner .eb-text strong{color:#CA8A04}
+
+.va .cat-label{padding:14px 20px 6px;font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+
+.va .line-item{padding:10px 20px;display:flex;align-items:center;gap:12px}
+.va .line-item .li-img{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.va .line-item .li-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.va .line-item .li-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.va .line-item .li-info{flex:1}
+.va .line-item .li-info .li-name{font-size:13px;font-weight:600;color:#FAFAF9}
+.va .line-item .li-info .li-detail{font-size:11px;color:#78716C}
+.va .line-item .li-qty{display:flex;align-items:center;gap:6px}
+.va .line-item .li-qty .qb{width:24px;height:24px;border-radius:6px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:12px;color:#CA8A04}
+.va .line-item .li-qty .qv{font-size:16px;font-weight:700;color:#FAFAF9;min-width:24px;text-align:center}
+.va .line-item .li-price{min-width:70px;text-align:right;font-size:13px;font-weight:700;color:#CA8A04}
+
+.va .cat-subtotal{padding:4px 20px 12px;text-align:right;font-size:12px;color:#78716C}
+.va .cat-subtotal strong{color:#A8A29E}
+
+.va .divider{height:1px;background:#44403C;margin:0 20px}
+
+.va .total-section{margin:16px 20px;padding:16px;background:#292524;border:1px solid #44403C;border-radius:14px}
+.va .total-section .ts-row{display:flex;justify-content:space-between;font-size:13px;color:#A8A29E;margin-bottom:6px}
+.va .total-section .ts-grand{display:flex;justify-content:space-between;font-size:20px;font-weight:800;color:#CA8A04;padding-top:8px;border-top:1px solid #44403C;margin-top:4px}
+
+.va .actions{padding:0 20px 16px;display:flex;gap:8px}
+.va .calc-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #44403C;background:transparent;text-align:center;font-size:12px;font-weight:500;color:#A8A29E}
+
+/* Bottom */
+.bot{position:sticky;bottom:0;padding:14px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.bot .total-row .tl{font-size:14px;color:#FAFAF9}
+.bot .total-row .tv{font-size:22px;font-weight:800;color:#CA8A04}
+.bot .row{display:flex;gap:10px}
+.bot .back{flex:1;padding:14px;border-radius:14px;border:1.5px solid #CA8A04;background:transparent;color:#CA8A04;font-size:14px;font-weight:600;text-align:center}
+.bot .next{flex:2;padding:14px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:14px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+
+/* === VERSION B: Card Summary === */
+.vb .event-card{margin:14px 20px;padding:14px;background:rgba(202,138,4,0.04);border:1px solid rgba(202,138,4,0.12);border-radius:14px;display:flex;align-items:center;gap:12px}
+.vb .event-card .ec-icon{width:36px;height:36px;border-radius:10px;background:rgba(202,138,4,0.1);display:flex;align-items:center;justify-content:center;font-size:16px}
+.vb .event-card .ec-info{font-size:13px;color:#A8A29E}
+.vb .event-card .ec-info strong{color:#CA8A04}
+
+.vb .cat-section{margin:8px 20px;background:#292524;border:1px solid #44403C;border-radius:16px;padding:16px;margin-bottom:12px}
+.vb .cat-section .cs-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #44403C}
+.vb .cat-section .cs-head .cs-icon{font-size:16px}
+.vb .cat-section .cs-head h3{font-size:13px;font-weight:700;color:#FAFAF9;flex:1}
+.vb .cat-section .cs-head .cs-total{font-size:13px;font-weight:700;color:#CA8A04}
+
+.vb .cat-section .cs-item{display:flex;align-items:center;gap:10px;padding:8px 0}
+.vb .cat-section .cs-item .csi-img{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}
+.vb .cat-section .cs-item .csi-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.vb .cat-section .cs-item .csi-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.vb .cat-section .cs-item .csi-info{flex:1}
+.vb .cat-section .cs-item .csi-info .csi-name{font-size:13px;font-weight:500;color:#FAFAF9}
+.vb .cat-section .cs-item .csi-info .csi-size{font-size:10px;color:#78716C}
+.vb .cat-section .cs-item .csi-qty{display:flex;align-items:center;gap:4px}
+.vb .cat-section .cs-item .csi-qty .qb{width:22px;height:22px;border-radius:6px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:10px;color:#CA8A04}
+.vb .cat-section .cs-item .csi-qty .qv{font-size:15px;font-weight:700;color:#FAFAF9;min-width:22px;text-align:center}
+.vb .cat-section .cs-item .csi-price{font-size:13px;font-weight:700;color:#CA8A04;min-width:65px;text-align:right}
+
+.vb .grand-total{margin:4px 20px 8px;padding:18px;background:linear-gradient(135deg,rgba(202,138,4,0.08),rgba(202,138,4,0.02));border:1.5px solid rgba(202,138,4,0.2);border-radius:16px}
+.vb .grand-total .gt-label{font-size:12px;color:#A8A29E;text-transform:uppercase;letter-spacing:0.08em}
+.vb .grand-total .gt-amount{font-size:28px;font-weight:800;color:#CA8A04;margin-top:4px}
+.vb .grand-total .gt-items{font-size:11px;color:#78716C;margin-top:2px}
+
+.vb .action-row{display:flex;gap:8px;padding:4px 20px 16px}
+.vb .action-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #44403C;background:transparent;text-align:center;font-size:12px;color:#A8A29E;display:flex;align-items:center;justify-content:center;gap:6px}
+.vb .action-btn .ab-icon{font-size:14px;color:#CA8A04}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Step 5: Final Review</h1>
+  <p>Order summary before placing the order</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Receipt Style -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Receipt / Invoice</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div></div>
+        <div class="step-lbl">Step 5 of 5</div>
+        <div class="hdr"><h1>Review your <em>order</em></h1><div class="sub">Double-check everything before placing</div></div>
+
+        <div class="event-banner"><span class="eb-icon">&#127881;</span><span class="eb-text"><strong>200</strong> guests &bull; Wedding &bull; Nov 4, 2026</span></div>
+
+        <div class="cat-label">Whiskey</div>
+        <div class="line-item"><div class="li-img g1">JW</div><div class="li-info"><div class="li-name">Johnnie Walker Red</div><div class="li-detail">750ml &bull; NPR 3,200/bottle</div></div><div class="li-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div><div class="li-price">NPR 80,000</div></div>
+        <div class="cat-subtotal">Subtotal: <strong>NPR 80,000</strong></div>
+
+        <div class="divider"></div>
+
+        <div class="cat-label">Beer</div>
+        <div class="line-item"><div class="li-img g2">TB</div><div class="li-info"><div class="li-name">Tuborg</div><div class="li-detail">650ml &bull; NPR 380/bottle</div></div><div class="li-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="li-price">NPR 76,000</div></div>
+        <div class="line-item"><div class="li-img g2">GK</div><div class="li-info"><div class="li-name">Gorkha</div><div class="li-detail">650ml &bull; NPR 400/bottle</div></div><div class="li-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="li-price">NPR 80,000</div></div>
+        <div class="cat-subtotal">Subtotal: <strong>NPR 156,000</strong></div>
+
+        <div class="divider"></div>
+
+        <div class="cat-label">Cold Drinks</div>
+        <div class="line-item"><div class="li-img g2">CC</div><div class="li-info"><div class="li-name">Coca-Cola</div><div class="li-detail">2.25L &bull; NPR 180/bottle</div></div><div class="li-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div><div class="li-price">NPR 9,000</div></div>
+        <div class="cat-subtotal">Subtotal: <strong>NPR 9,000</strong></div>
+
+        <div class="total-section">
+          <div class="ts-row"><span>Items</span><span>475 bottles</span></div>
+          <div class="ts-row"><span>Categories</span><span>3 types</span></div>
+          <div class="ts-grand"><span>Grand Total</span><span>NPR 245,000</span></div>
+        </div>
+
+        <div class="actions"><div class="calc-btn">&#128200; Price Calculator</div><div class="calc-btn">&#128172; Chat Support</div></div>
+
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Place Order</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Card Summary -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Grouped Cards + Grand Total</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div></div>
+        <div class="step-lbl">Step 5 of 5</div>
+        <div class="hdr"><h1>Review your <em>order</em></h1><div class="sub">Adjust quantities or place your order</div></div>
+
+        <div class="event-card"><div class="ec-icon">&#127881;</div><div class="ec-info"><strong>200</strong> guests &bull; Wedding &bull; Nov 4, 2026</div></div>
+
+        <!-- Whiskey card -->
+        <div class="cat-section">
+          <div class="cs-head"><span class="cs-icon">&#127867;</span><h3>Whiskey</h3><span class="cs-total">NPR 80,000</span></div>
+          <div class="cs-item"><div class="csi-img g1">JW</div><div class="csi-info"><div class="csi-name">Johnnie Walker Red</div><div class="csi-size">750ml &bull; NPR 3,200 each</div></div><div class="csi-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div><div class="csi-price">NPR 80,000</div></div>
+        </div>
+
+        <!-- Beer card -->
+        <div class="cat-section">
+          <div class="cs-head"><span class="cs-icon">&#127866;</span><h3>Beer</h3><span class="cs-total">NPR 156,000</span></div>
+          <div class="cs-item"><div class="csi-img g2">TB</div><div class="csi-info"><div class="csi-name">Tuborg</div><div class="csi-size">650ml &bull; NPR 380 each</div></div><div class="csi-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="csi-price">NPR 76,000</div></div>
+          <div style="height:1px;background:#44403C;margin:4px 0"></div>
+          <div class="cs-item"><div class="csi-img g2">GK</div><div class="csi-info"><div class="csi-name">Gorkha</div><div class="csi-size">650ml &bull; NPR 400 each</div></div><div class="csi-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="csi-price">NPR 80,000</div></div>
+        </div>
+
+        <!-- Cold drinks card -->
+        <div class="cat-section">
+          <div class="cs-head"><span class="cs-icon">&#129380;</span><h3>Cold Drinks</h3><span class="cs-total">NPR 9,000</span></div>
+          <div class="cs-item"><div class="csi-img g2">CC</div><div class="csi-info"><div class="csi-name">Coca-Cola</div><div class="csi-size">2.25L &bull; NPR 180 each</div></div><div class="csi-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div><div class="csi-price">NPR 9,000</div></div>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="grand-total">
+          <div class="gt-label">Grand Total</div>
+          <div class="gt-amount">NPR 245,000</div>
+          <div class="gt-items">475 bottles across 3 categories</div>
+        </div>
+
+        <div class="action-row">
+          <div class="action-btn"><span class="ab-icon">&#128200;</span> Price Calculator</div>
+          <div class="action-btn"><span class="ab-icon">&#128172;</span> Chat Support</div>
+        </div>
+
+        <div class="bot">
+          <div class="row"><div class="back">Back</div><div class="next">Place Order</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

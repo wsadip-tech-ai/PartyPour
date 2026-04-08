@@ -24,7 +24,7 @@ export default function NewProductPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => { supabase.from('subcategories').select('*').order('name').then(({ data }) => setSubcategories(data ?? [])) }, [])
+  useEffect(() => { supabase.from('subcategories').select('*').order('name').then(({ data }: { data: any }) => setSubcategories(data ?? [])) }, [])
 
   const handleSave = async () => {
     setSaving(true)

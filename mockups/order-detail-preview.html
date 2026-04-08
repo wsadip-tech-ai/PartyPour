@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Order Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.appbar{padding:48px 20px 14px;display:flex;align-items:center;background:#1C1917}
+.appbar .back-btn{width:32px;height:32px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;color:#A8A29E;font-size:14px;margin-right:12px}
+.appbar h2{font-size:17px;font-weight:700;color:#FAFAF9}
+
+/* Status banner shared */
+.status-banner{margin:8px 20px;padding:14px 16px;border-radius:12px;display:flex;align-items:center;gap:10px}
+.status-banner .sb-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.status-banner .sb-info h3{font-size:14px;font-weight:700}
+.status-banner .sb-info p{font-size:11px;margin-top:1px}
+.status-banner.pending{background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2)}
+.status-banner.pending .sb-icon{background:rgba(251,146,60,0.15);color:#FB923C}
+.status-banner.pending .sb-info h3{color:#FB923C}
+.status-banner.pending .sb-info p{color:#A8A29E}
+.status-banner.confirmed{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2)}
+.status-banner.confirmed .sb-icon{background:rgba(74,222,128,0.15);color:#4ade80}
+.status-banner.confirmed .sb-info h3{color:#4ade80}
+.status-banner.confirmed .sb-info p{color:#A8A29E}
+
+/* === VERSION A: Info Cards + Items Table === */
+.va .timeline{display:flex;padding:14px 20px;gap:4px}
+.va .timeline .tl-seg{flex:1;height:4px;border-radius:2px}
+.va .timeline .tl-seg.done{background:#4ade80}
+.va .timeline .tl-seg.current{background:#FB923C}
+.va .timeline .tl-seg.future{background:#44403C}
+.va .timeline-labels{display:flex;padding:0 20px 12px;gap:4px}
+.va .timeline-labels span{flex:1;font-size:9px;text-align:center;color:#78716C}
+.va .timeline-labels span.active{color:#FB923C;font-weight:600}
+.va .timeline-labels span.done-lbl{color:#4ade80}
+
+.va .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 20px;margin-bottom:12px}
+.va .info-card{background:#292524;border:1px solid #44403C;border-radius:12px;padding:12px}
+.va .info-card .ic-label{font-size:10px;color:#78716C;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.va .info-card .ic-value{font-size:14px;font-weight:600;color:#FAFAF9;margin-top:4px}
+.va .info-card .ic-value.gold{color:#CA8A04}
+
+.va .section-label{padding:12px 20px 6px;font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+
+.va .item-row{display:flex;align-items:center;padding:8px 20px;gap:10px}
+.va .item-row .ir-img{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+.va .item-row .ir-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.va .item-row .ir-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.va .item-row .ir-info{flex:1}
+.va .item-row .ir-info .ir-name{font-size:13px;font-weight:500;color:#FAFAF9}
+.va .item-row .ir-info .ir-detail{font-size:10px;color:#78716C}
+.va .item-row .ir-qty{font-size:13px;color:#A8A29E;min-width:24px;text-align:center}
+.va .item-row .ir-price{font-size:13px;font-weight:700;color:#CA8A04;min-width:60px;text-align:right}
+
+.va .total-box{margin:12px 20px;padding:14px;background:#292524;border:1px solid #44403C;border-radius:12px}
+.va .total-box .tb-row{display:flex;justify-content:space-between;font-size:12px;color:#A8A29E;margin-bottom:4px}
+.va .total-box .tb-row.grand{font-size:16px;font-weight:800;border-top:1px solid #44403C;padding-top:8px;margin-top:4px}
+.va .total-box .tb-row.grand span:first-child{color:#FAFAF9}
+.va .total-box .tb-row.grand span:last-child{color:#CA8A04}
+
+/* === VERSION B: Full Dark with Visual Timeline === */
+.vb .visual-timeline{padding:16px 20px;display:flex;align-items:flex-start;gap:0}
+.vb .vt-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.vb .vt-step .vt-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:2;position:relative}
+.vb .vt-step .vt-dot.done{background:#4ade80;color:#1C1917}
+.vb .vt-step .vt-dot.current{background:#FB923C;color:#1C1917;box-shadow:0 0 12px rgba(251,146,60,0.4)}
+.vb .vt-step .vt-dot.future{background:#292524;border:1.5px solid #44403C;color:#78716C}
+.vb .vt-step .vt-label{font-size:9px;color:#78716C;margin-top:6px;text-align:center}
+.vb .vt-step .vt-label.active{color:#FB923C;font-weight:600}
+.vb .vt-step .vt-label.done-lbl{color:#4ade80}
+.vb .vt-step::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:2px;background:#44403C;z-index:1}
+.vb .vt-step.done-line::after{background:#4ade80}
+.vb .vt-step:last-child::after{display:none}
+
+.vb .detail-card{margin:8px 20px;background:#292524;border:1px solid #44403C;border-radius:14px;padding:16px}
+.vb .detail-card .dc-title{font-size:12px;font-weight:700;color:#FAFAF9;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.vb .detail-card .dc-title .dc-icon{font-size:14px;color:#CA8A04}
+.vb .detail-card .dc-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
+.vb .detail-card .dc-row .dc-label{color:#78716C}
+.vb .detail-card .dc-row .dc-value{color:#FAFAF9;font-weight:500}
+
+.vb .items-section{margin:8px 20px}
+.vb .items-label{font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:8px}
+.vb .item-card{background:#292524;border:1px solid #44403C;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.vb .item-card .ic-img{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}
+.vb .item-card .ic-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.vb .item-card .ic-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.vb .item-card .ic-info{flex:1}
+.vb .item-card .ic-info .ic-name{font-size:13px;font-weight:600;color:#FAFAF9}
+.vb .item-card .ic-info .ic-detail{font-size:10px;color:#78716C}
+.vb .item-card .ic-qty{font-size:13px;color:#A8A29E}
+.vb .item-card .ic-price{font-size:13px;font-weight:700;color:#CA8A04;min-width:55px;text-align:right}
+
+.vb .grand-card{margin:8px 20px 16px;padding:16px;background:linear-gradient(135deg,rgba(202,138,4,0.06),rgba(202,138,4,0.02));border:1.5px solid rgba(202,138,4,0.2);border-radius:14px}
+.vb .grand-card .gc-row{display:flex;justify-content:space-between;font-size:12px;color:#A8A29E;margin-bottom:4px}
+.vb .grand-card .gc-total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;border-top:1px solid rgba(202,138,4,0.15);padding-top:10px;margin-top:6px}
+.vb .grand-card .gc-total span:first-child{color:#FAFAF9}
+.vb .grand-card .gc-total span:last-child{color:#CA8A04}
+
+.vb .action-row{display:flex;gap:8px;padding:0 20px 16px}
+.vb .action-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #44403C;text-align:center;font-size:12px;color:#A8A29E;display:flex;align-items:center;justify-content:center;gap:6px}
+.vb .action-btn .ab-ic{font-size:14px;color:#CA8A04}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Order Detail</h1>
+  <p>Full order view with status tracking</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Grid Info + Table -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Info Grid + Compact Table</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Order #a3d8f1e2</h2></div>
+
+        <div class="status-banner pending">
+          <div class="sb-icon">&#9679;</div>
+          <div class="sb-info"><h3>Awaiting Confirmation</h3><p>Your order is being reviewed</p></div>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-seg current"></div>
+          <div class="tl-seg future"></div>
+          <div class="tl-seg future"></div>
+          <div class="tl-seg future"></div>
+        </div>
+        <div class="timeline-labels">
+          <span class="active">Placed</span>
+          <span>Confirmed</span>
+          <span>On the Way</span>
+          <span>Delivered</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-label">Event</div><div class="ic-value">Wedding</div></div>
+          <div class="info-card"><div class="ic-label">Date</div><div class="ic-value">Nov 4, 2026</div></div>
+          <div class="info-card"><div class="ic-label">Guests</div><div class="ic-value">200</div></div>
+          <div class="info-card"><div class="ic-label">Delivery</div><div class="ic-value">Kathmandu</div></div>
+        </div>
+
+        <div class="section-label">Items</div>
+        <div class="item-row"><div class="ir-img g1">JW</div><div class="ir-info"><div class="ir-name">Johnnie Walker Red</div><div class="ir-detail">750ml</div></div><div class="ir-qty">x25</div><div class="ir-price">80,000</div></div>
+        <div class="item-row"><div class="ir-img g2">TB</div><div class="ir-info"><div class="ir-name">Tuborg</div><div class="ir-detail">650ml</div></div><div class="ir-qty">x200</div><div class="ir-price">76,000</div></div>
+        <div class="item-row"><div class="ir-img g2">GK</div><div class="ir-info"><div class="ir-name">Gorkha</div><div class="ir-detail">650ml</div></div><div class="ir-qty">x200</div><div class="ir-price">80,000</div></div>
+        <div class="item-row"><div class="ir-img g2">CC</div><div class="ir-info"><div class="ir-name">Coca-Cola</div><div class="ir-detail">2.25L</div></div><div class="ir-qty">x50</div><div class="ir-price">9,000</div></div>
+
+        <div class="total-box">
+          <div class="tb-row"><span>Subtotal</span><span>NPR 245,000</span></div>
+          <div class="tb-row"><span>Discount</span><span>NPR 0</span></div>
+          <div class="tb-row grand"><span>Total</span><span>NPR 245,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Visual Timeline + Detail Cards -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Visual Timeline + Cards</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Order #a3d8f1e2</h2></div>
+
+        <div class="status-banner confirmed">
+          <div class="sb-icon">&#10003;</div>
+          <div class="sb-info"><h3>Order Confirmed</h3><p>We're preparing your beverages</p></div>
+        </div>
+
+        <!-- Visual timeline with dots -->
+        <div class="visual-timeline">
+          <div class="vt-step done-line"><div class="vt-dot done">&#10003;</div><div class="vt-label done-lbl">Placed</div></div>
+          <div class="vt-step"><div class="vt-dot current">&#10003;</div><div class="vt-label active">Confirmed</div></div>
+          <div class="vt-step"><div class="vt-dot future">3</div><div class="vt-label">On the Way</div></div>
+          <div class="vt-step"><div class="vt-dot future">4</div><div class="vt-label">Delivered</div></div>
+        </div>
+
+        <!-- Event details card -->
+        <div class="detail-card">
+          <div class="dc-title"><span class="dc-icon">&#127881;</span> Event Details</div>
+          <div class="dc-row"><span class="dc-label">Type</span><span class="dc-value">Wedding</span></div>
+          <div class="dc-row"><span class="dc-label">Date</span><span class="dc-value">Nov 4, 2026</span></div>
+          <div class="dc-row"><span class="dc-label">Guests</span><span class="dc-value">200</span></div>
+          <div class="dc-row"><span class="dc-label">Delivery</span><span class="dc-value">Kathmandu, Nepal</span></div>
+          <div class="dc-row"><span class="dc-label">Phone</span><span class="dc-value">+977 9841234567</span></div>
+        </div>
+
+        <!-- Items -->
+        <div class="items-section">
+          <div class="items-label">Items Ordered</div>
+          <div class="item-card"><div class="ic-img g1">JW</div><div class="ic-info"><div class="ic-name">Johnnie Walker Red</div><div class="ic-detail">750ml &bull; x25</div></div><div class="ic-price">80,000</div></div>
+          <div class="item-card"><div class="ic-img g2">TB</div><div class="ic-info"><div class="ic-name">Tuborg</div><div class="ic-detail">650ml &bull; x200</div></div><div class="ic-price">76,000</div></div>
+          <div class="item-card"><div class="ic-img g2">GK</div><div class="ic-info"><div class="ic-name">Gorkha</div><div class="ic-detail">650ml &bull; x200</div></div><div class="ic-price">80,000</div></div>
+          <div class="item-card"><div class="ic-img g2">CC</div><div class="ic-info"><div class="ic-name">Coca-Cola</div><div class="ic-detail">2.25L &bull; x50</div></div><div class="ic-price">9,000</div></div>
+        </div>
+
+        <!-- Grand total -->
+        <div class="grand-card">
+          <div class="gc-row"><span>Subtotal</span><span>NPR 245,000</span></div>
+          <div class="gc-row"><span>Discount</span><span>NPR 0</span></div>
+          <div class="gc-row"><span>Delivery</span><span style="color:#4ade80">FREE</span></div>
+          <div class="gc-total"><span>Grand Total</span><span>NPR 245,000</span></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-row">
+          <div class="action-btn"><span class="ab-ic">&#128172;</span> Chat Support</div>
+          <div class="action-btn"><span class="ab-ic">&#128222;</span> Call Us</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

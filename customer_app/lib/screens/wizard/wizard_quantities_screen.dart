@@ -56,6 +56,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
                       final quantities = await ref.read(estimationServiceProvider).estimateQuantities(
                         totalPax: wizard.totalPax,
                         children: wizard.childrenCount,
+                        ladies: wizard.ladiesCount,
                         eventType: wizard.eventType,
                         selectedSlugs: wizard.selectedTypeSlugs,
                       );
@@ -122,6 +123,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
                               final qty = wizard.estimatedQuantities[slug] ?? 0;
                               final servings = (qty * rule.servingsPerBottle).round();
                               final icon = _iconMap[rule.iconName] ?? Icons.local_drink;
+                              final unit = rule.unit;
 
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 12),
@@ -175,7 +177,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
                                             children: [
                                               Text('$qty', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: _gold, height: 1)),
                                               const SizedBox(height: 2),
-                                              const Text('bottles', style: TextStyle(fontSize: 10, color: _muted)),
+                                              Text(unit, style: const TextStyle(fontSize: 10, color: _muted)),
                                             ],
                                           ),
                                         ),

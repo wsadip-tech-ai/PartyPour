@@ -14,6 +14,63 @@ class ProductListScreen extends ConsumerStatefulWidget {
 
 class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   String? _originFilter;
+  String _searchQuery = '';
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _showRequestBrandDialog(BuildContext context) {
+    final brandController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF292524),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Request a Brand', style: TextStyle(color: Color(0xFFFAFAF9), fontSize: 16, fontWeight: FontWeight.w600)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Can't find what you're looking for? Let us know and we'll try to add it.", style: TextStyle(color: Color(0xFF78716C), fontSize: 13)),
+            const SizedBox(height: 14),
+            TextField(
+              controller: brandController,
+              autofocus: true,
+              style: const TextStyle(color: Color(0xFFFAFAF9), fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Brand name',
+                hintStyle: const TextStyle(color: Color(0xFF78716C)),
+                filled: true,
+                fillColor: const Color(0xFF1C1917),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF44403C))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF44403C))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCA8A04), width: 2)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: Color(0xFF78716C)))),
+          TextButton(
+            onPressed: () {
+              final name = brandController.text.trim();
+              Navigator.pop(context);
+              if (name.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: const Color(0xFF292524),
+                  content: Text('Request for "$name" submitted!', style: const TextStyle(color: Color(0xFF4ade80))),
+                ));
+              }
+            },
+            child: const Text('Submit', style: TextStyle(color: Color(0xFFCA8A04), fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
 
   static const _bgColor = Color(0xFF1C1917);
   static const _goldColor = Color(0xFFCA8A04);
@@ -47,10 +104,20 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
     return Scaffold(
       backgroundColor: _bgColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showRequestBrandDialog(context),
+        backgroundColor: _goldColor,
+        icon: const Icon(Icons.add_circle_outline, color: Color(0xFF1C1917)),
+        label: const Text("Can't find a brand?", style: TextStyle(color: Color(0xFF1C1917), fontWeight: FontWeight.w700, fontSize: 12)),
+      ),
       appBar: AppBar(
         backgroundColor: _bgColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: _textPrimary),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/home'),
+        ),
         title: const Text(
           'Products',
           style: TextStyle(
@@ -68,9 +135,38 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       ),
       body: Column(
         children: [
+          // Search field
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: TextField(
+              controller: _searchController,
+              style: const TextStyle(color: Color(0xFFFAFAF9), fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Search brands...',
+                hintStyle: const TextStyle(color: Color(0xFF78716C), fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF78716C), size: 20),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Color(0xFF78716C), size: 18),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: const Color(0xFF292524),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF44403C))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF44403C))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCA8A04), width: 2)),
+              ),
+              onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
+            ),
+          ),
           // Origin filter pills
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -82,7 +178,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   ),
                   const SizedBox(width: 8),
                   _FilterPill(
-                    label: 'Local',
+                    label: 'Domestic',
                     isActive: _originFilter == 'local',
                     onTap: () => setState(() => _originFilter = 'local'),
                     activeColor: _localGreen,
@@ -102,7 +198,15 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           // Product grid
           Expanded(
             child: productsAsync.when(
-              data: (products) => products.isEmpty
+              data: (allProducts) {
+                final products = _searchQuery.isEmpty
+                    ? allProducts
+                    : () {
+                        final starts = allProducts.where((p) => p.name.toLowerCase().startsWith(_searchQuery)).toList();
+                        final contains = allProducts.where((p) => !p.name.toLowerCase().startsWith(_searchQuery) && p.name.toLowerCase().contains(_searchQuery)).toList();
+                        return [...starts, ...contains];
+                      }();
+                return products.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -136,7 +240,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                           onTap: () => context.push('/product/${product.id}'),
                         );
                       },
-                    ),
+                    );
+              },
               loading: () => const Center(
                 child: CircularProgressIndicator(
                   color: _goldColor,
@@ -216,7 +321,7 @@ class _ProductGridCard extends StatelessWidget {
     final isLocal = product.origin == 'local';
     final originColor =
         isLocal ? const Color(0xFF4ade80) : const Color(0xFFEAB308);
-    final originLabel = isLocal ? 'Local' : 'Imported';
+    final originLabel = isLocal ? 'Domestic' : 'Imported';
 
     // Safely get base price
     String priceLabel = '';

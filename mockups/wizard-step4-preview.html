@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Step 4: Choose Brands</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.progress{padding:48px 20px 0;display:flex;gap:4px}
+.seg{flex:1;height:3px;border-radius:2px;background:#44403C}
+.seg.done{background:#CA8A04}
+.step-lbl{padding:8px 20px 0;font-size:11px;color:#78716C;letter-spacing:0.06em}
+.bot{position:sticky;bottom:0;padding:14px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot .row{display:flex;gap:10px}
+.bot .back{flex:1;padding:14px;border-radius:14px;border:1.5px solid #CA8A04;background:transparent;color:#CA8A04;font-size:14px;font-weight:600;text-align:center}
+.bot .next{flex:2;padding:14px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:14px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+
+/* Shared header */
+.hdr{padding:16px 20px 0}
+.hdr h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.hdr h1 em{color:#CA8A04;font-style:italic}
+.hdr .sub{font-size:13px;color:#78716C;margin-top:4px}
+
+/* Category section header */
+.cat-head{padding:16px 20px 8px;display:flex;align-items:center;gap:10px}
+.cat-head .cat-icon{width:32px;height:32px;border-radius:8px;background:rgba(202,138,4,0.1);display:flex;align-items:center;justify-content:center;font-size:16px}
+.cat-head .cat-info h3{font-size:14px;font-weight:700;color:#FAFAF9}
+.cat-head .cat-info span{font-size:11px;color:#CA8A04;font-weight:600}
+
+/* Origin filter */
+.origin-row{display:flex;gap:6px;padding:0 20px;margin-bottom:10px}
+.origin-btn{padding:7px 14px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid #44403C;color:#A8A29E;background:transparent;cursor:pointer}
+.origin-btn.active{background:rgba(202,138,4,0.1);border-color:#CA8A04;color:#CA8A04}
+
+/* Divider */
+.section-div{height:1px;background:#44403C;margin:16px 20px}
+
+/* === VERSION A: Horizontal Scroll Cards === */
+.va .brand-scroll{display:flex;gap:10px;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.va .brand-scroll::-webkit-scrollbar{display:none}
+.va .brand-card{min-width:160px;background:#292524;border:1.5px solid #44403C;border-radius:16px;padding:14px;flex-shrink:0;cursor:pointer;transition:all 0.2s;position:relative}
+.va .brand-card.selected{border-color:#CA8A04;background:rgba(202,138,4,0.05)}
+.va .brand-card .bc-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#CA8A04;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1C1917;opacity:0}
+.va .brand-card.selected .bc-check{opacity:1}
+.va .brand-card .bc-img{width:100%;height:80px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
+.va .brand-card .bc-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.va .brand-card .bc-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.va .brand-card .bc-img.g3{background:linear-gradient(135deg,#1565C0,#64B5F6)}
+.va .brand-card .bc-name{font-size:13px;font-weight:600;color:#FAFAF9}
+.va .brand-card .bc-origin{display:inline-block;margin-top:4px;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.va .brand-card .bc-origin.local{background:rgba(74,222,128,0.12);color:#4ade80}
+.va .brand-card .bc-origin.imported{background:rgba(234,179,8,0.12);color:#EAB308}
+.va .brand-card .bc-sizes{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.va .brand-card .bc-size{padding:3px 8px;border-radius:8px;font-size:10px;border:1px solid #44403C;color:#A8A29E}
+.va .brand-card .bc-size.active{border-color:#CA8A04;color:#CA8A04;background:rgba(202,138,4,0.08)}
+.va .brand-card .bc-price{font-size:13px;font-weight:700;color:#CA8A04;margin-top:8px}
+
+/* === VERSION B: Vertical List Cards with Image === */
+.vb .brand-list{padding:0 20px}
+.vb .brand-item{background:#292524;border:1.5px solid #44403C;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:14px;cursor:pointer;transition:all 0.2s;position:relative}
+.vb .brand-item.selected{border-color:#CA8A04;background:rgba(202,138,4,0.04)}
+.vb .brand-item .bi-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#CA8A04;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1C1917;opacity:0}
+.vb .brand-item.selected .bi-check{opacity:1}
+.vb .brand-item .bi-img{width:60px;height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
+.vb .brand-item .bi-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.vb .brand-item .bi-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.vb .brand-item .bi-img.g3{background:linear-gradient(135deg,#1565C0,#64B5F6)}
+.vb .brand-item .bi-info{flex:1}
+.vb .brand-item .bi-info .bi-row{display:flex;align-items:center;gap:8px}
+.vb .brand-item .bi-info .bi-name{font-size:14px;font-weight:600;color:#FAFAF9}
+.vb .brand-item .bi-info .bi-origin{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600}
+.vb .brand-item .bi-info .bi-origin.local{background:rgba(74,222,128,0.12);color:#4ade80}
+.vb .brand-item .bi-info .bi-origin.imported{background:rgba(234,179,8,0.12);color:#EAB308}
+.vb .brand-item .bi-info .bi-sizes{display:flex;gap:4px;margin-top:6px}
+.vb .brand-item .bi-info .bi-size{padding:4px 10px;border-radius:8px;font-size:10px;border:1px solid #44403C;color:#A8A29E}
+.vb .brand-item .bi-info .bi-size.active{border-color:#CA8A04;color:#CA8A04;background:rgba(202,138,4,0.08)}
+.vb .brand-item .bi-info .bi-price{font-size:13px;font-weight:700;color:#CA8A04;margin-top:6px}
+.vb .brand-item .bi-info .bi-case{font-size:10px;color:#78716C;margin-top:1px}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Step 4: Choose Brands</h1>
+  <p>Brand selection layout for each beverage type</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Horizontal Scroll -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Horizontal Scroll</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 4 of 5</div>
+        <div class="hdr"><h1>Choose your <em>brands</em></h1><div class="sub">Pick at least one brand per category</div></div>
+
+        <!-- Whiskey -->
+        <div class="cat-head"><div class="cat-icon">&#127867;</div><div class="cat-info"><h3>Whiskey</h3><span>25 bottles needed</span></div></div>
+        <div class="origin-row"><div class="origin-btn active">All</div><div class="origin-btn">Local</div><div class="origin-btn">Imported</div></div>
+        <div class="brand-scroll">
+          <div class="brand-card selected"><div class="bc-check">&#10003;</div><div class="bc-img g1">JW</div><div class="bc-name">Johnnie Walker Red</div><div class="bc-origin imported">Imported</div><div class="bc-sizes"><div class="bc-size active">750ml</div><div class="bc-size">1L</div></div><div class="bc-price">NPR 3,200</div></div>
+          <div class="brand-card"><div class="bc-check">&#10003;</div><div class="bc-img g2">OD</div><div class="bc-name">Old Durbar</div><div class="bc-origin local">Local</div><div class="bc-sizes"><div class="bc-size">750ml</div><div class="bc-size">375ml</div></div><div class="bc-price">NPR 700</div></div>
+          <div class="brand-card"><div class="bc-check">&#10003;</div><div class="bc-img g3">KH</div><div class="bc-name">Khukuri</div><div class="bc-origin local">Local</div><div class="bc-sizes"><div class="bc-size">750ml</div></div><div class="bc-price">NPR 550</div></div>
+        </div>
+
+        <div class="section-div"></div>
+
+        <!-- Beer -->
+        <div class="cat-head"><div class="cat-icon">&#127866;</div><div class="cat-info"><h3>Beer</h3><span>400 bottles needed</span></div></div>
+        <div class="origin-row"><div class="origin-btn active">All</div><div class="origin-btn">Local</div><div class="origin-btn">Imported</div></div>
+        <div class="brand-scroll" style="padding-bottom:16px">
+          <div class="brand-card selected"><div class="bc-check">&#10003;</div><div class="bc-img g2">TB</div><div class="bc-name">Tuborg</div><div class="bc-origin local">Local</div><div class="bc-sizes"><div class="bc-size active">650ml</div><div class="bc-size">330ml</div></div><div class="bc-price">NPR 380</div></div>
+          <div class="brand-card"><div class="bc-check">&#10003;</div><div class="bc-img g2">GK</div><div class="bc-name">Gorkha</div><div class="bc-origin local">Local</div><div class="bc-sizes"><div class="bc-size">650ml</div><div class="bc-size">330ml</div></div><div class="bc-price">NPR 400</div></div>
+          <div class="brand-card"><div class="bc-check">&#10003;</div><div class="bc-img g3">NI</div><div class="bc-name">Nepal Ice</div><div class="bc-origin local">Local</div><div class="bc-sizes"><div class="bc-size">650ml</div></div><div class="bc-price">NPR 370</div></div>
+        </div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Next — Review</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Vertical List -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Vertical List</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 4 of 5</div>
+        <div class="hdr"><h1>Choose your <em>brands</em></h1><div class="sub">Pick at least one brand per category</div></div>
+
+        <!-- Whiskey -->
+        <div class="cat-head"><div class="cat-icon">&#127867;</div><div class="cat-info"><h3>Whiskey</h3><span>25 bottles needed</span></div></div>
+        <div class="origin-row"><div class="origin-btn active">All</div><div class="origin-btn">Local</div><div class="origin-btn">Imported</div></div>
+        <div class="brand-list">
+          <div class="brand-item selected">
+            <div class="bi-check">&#10003;</div>
+            <div class="bi-img g1">JW</div>
+            <div class="bi-info">
+              <div class="bi-row"><span class="bi-name">Johnnie Walker Red</span><span class="bi-origin imported">Imported</span></div>
+              <div class="bi-sizes"><div class="bi-size active">750ml</div><div class="bi-size">1L</div></div>
+              <div class="bi-price">NPR 3,200 <span style="color:#78716C;font-weight:400;font-size:11px">/bottle</span></div>
+              <div class="bi-case">Case of 12: NPR 36,000</div>
+            </div>
+          </div>
+          <div class="brand-item">
+            <div class="bi-check">&#10003;</div>
+            <div class="bi-img g2">OD</div>
+            <div class="bi-info">
+              <div class="bi-row"><span class="bi-name">Old Durbar</span><span class="bi-origin local">Local</span></div>
+              <div class="bi-sizes"><div class="bi-size">750ml</div><div class="bi-size">375ml</div></div>
+              <div class="bi-price">NPR 700 <span style="color:#78716C;font-weight:400;font-size:11px">/bottle</span></div>
+              <div class="bi-case">Case of 12: NPR 7,800</div>
+            </div>
+          </div>
+          <div class="brand-item">
+            <div class="bi-check">&#10003;</div>
+            <div class="bi-img g3">KH</div>
+            <div class="bi-info">
+              <div class="bi-row"><span class="bi-name">Khukuri</span><span class="bi-origin local">Local</span></div>
+              <div class="bi-sizes"><div class="bi-size">750ml</div><div class="bi-size">375ml</div></div>
+              <div class="bi-price">NPR 550 <span style="color:#78716C;font-weight:400;font-size:11px">/bottle</span></div>
+              <div class="bi-case">Case of 12: NPR 6,000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-div"></div>
+
+        <!-- Beer -->
+        <div class="cat-head"><div class="cat-icon">&#127866;</div><div class="cat-info"><h3>Beer</h3><span>400 bottles needed</span></div></div>
+        <div class="origin-row"><div class="origin-btn active">All</div><div class="origin-btn">Local</div><div class="origin-btn">Imported</div></div>
+        <div class="brand-list" style="padding-bottom:16px">
+          <div class="brand-item selected">
+            <div class="bi-check">&#10003;</div>
+            <div class="bi-img g2">TB</div>
+            <div class="bi-info">
+              <div class="bi-row"><span class="bi-name">Tuborg</span><span class="bi-origin local">Local</span></div>
+              <div class="bi-sizes"><div class="bi-size active">650ml</div><div class="bi-size">330ml</div></div>
+              <div class="bi-price">NPR 380 <span style="color:#78716C;font-weight:400;font-size:11px">/bottle</span></div>
+              <div class="bi-case">Case of 12: NPR 4,200</div>
+            </div>
+          </div>
+          <div class="brand-item">
+            <div class="bi-check">&#10003;</div>
+            <div class="bi-img g2">GK</div>
+            <div class="bi-info">
+              <div class="bi-row"><span class="bi-name">Gorkha</span><span class="bi-origin local">Local</span></div>
+              <div class="bi-sizes"><div class="bi-size">650ml</div><div class="bi-size">330ml</div></div>
+              <div class="bi-price">NPR 400 <span style="color:#78716C;font-weight:400;font-size:11px">/bottle</span></div>
+              <div class="bi-case">Case of 12: NPR 4,400</div>
+            </div>
+          </div>
+        </div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Next — Review</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

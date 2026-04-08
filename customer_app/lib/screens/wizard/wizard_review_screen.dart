@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/wizard_provider.dart';
-import '../../providers/cart_provider.dart';
 import '../../widgets/step_progress.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -14,22 +13,77 @@ const _textLight = Color(0xFFFAFAF9);
 const _muted = Color(0xFF78716C);
 const _mutedLight = Color(0xFFA8A29E);
 const _border = Color(0xFF44403C);
+const _green = Color(0xFF4ade80);
 
-class WizardReviewScreen extends ConsumerWidget {
+class WizardReviewScreen extends ConsumerStatefulWidget {
   const WizardReviewScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WizardReviewScreen> createState() => _WizardReviewScreenState();
+}
+
+class _WizardReviewScreenState extends ConsumerState<WizardReviewScreen> {
+  final _addressController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _instructionsController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Restore saved delivery details if user comes back
+    final wizard = ref.read(wizardProvider);
+    _addressController.text = wizard.deliveryAddress;
+    _phoneController.text = wizard.contactPhone;
+    _instructionsController.text = wizard.specialInstructions;
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    _phoneController.dispose();
+    _instructionsController.dispose();
+    super.dispose();
+  }
+
+  void _goToConfirm() {
+    if (_addressController.text.trim().isEmpty || _phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: _surfaceDark,
+        content: Text('Please fill in delivery address and phone', style: TextStyle(color: Color(0xFFEF4444))),
+      ));
+      return;
+    }
+
+    final wizard = ref.read(wizardProvider);
+    if (wizard.eventDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: _surfaceDark,
+        content: Text('Please select an event date in Step 1', style: TextStyle(color: Color(0xFFEF4444))),
+      ));
+      return;
+    }
+
+    // Save delivery details to wizard state
+    final notifier = ref.read(wizardProvider.notifier);
+    notifier.setDeliveryAddress(_addressController.text.trim());
+    notifier.setContactPhone(_phoneController.text.trim());
+    notifier.setSpecialInstructions(_instructionsController.text.trim());
+
+    context.push('/wizard/confirm');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final wizard = ref.watch(wizardProvider);
 
     // Calculate totals
-    int totalBottles = 0;
+    int totalUnits = 0;
     int totalCategories = 0;
     for (final selections in wizard.brandSelections.values) {
       if (selections.isNotEmpty) {
         totalCategories++;
         for (final s in selections) {
-          totalBottles += s.quantity;
+          totalUnits += s.quantity;
         }
       }
     }
@@ -58,7 +112,7 @@ class WizardReviewScreen extends ConsumerWidget {
                     ),
                     const Padding(
                       padding: EdgeInsets.fromLTRB(20, 6, 20, 0),
-                      child: Text('Double-check everything before placing', style: TextStyle(color: _muted, fontSize: 13)),
+                      child: Text('Check your selections and fill delivery details', style: TextStyle(color: _muted, fontSize: 13)),
                     ),
 
                     // Event banner
@@ -74,14 +128,16 @@ class WizardReviewScreen extends ConsumerWidget {
                         children: [
                           const Icon(Icons.celebration, size: 18, color: _gold),
                           const SizedBox(width: 10),
-                          RichText(text: TextSpan(
-                            style: const TextStyle(fontSize: 12, color: _mutedLight, fontFamily: 'Inter'),
-                            children: [
-                              TextSpan(text: '${wizard.totalPax}', style: const TextStyle(color: _gold, fontWeight: FontWeight.w700)),
-                              TextSpan(text: ' guests • ${wizard.eventType.replaceAll('_', ' ')}'),
-                              if (wizard.eventDate != null) TextSpan(text: ' • ${wizard.eventDate!.day}/${wizard.eventDate!.month}/${wizard.eventDate!.year}'),
-                            ],
-                          )),
+                          Expanded(
+                            child: RichText(text: TextSpan(
+                              style: const TextStyle(fontSize: 12, color: _mutedLight, fontFamily: 'Inter'),
+                              children: [
+                                TextSpan(text: '${wizard.totalPax}', style: const TextStyle(color: _gold, fontWeight: FontWeight.w700)),
+                                TextSpan(text: ' guests • ${wizard.eventType.replaceAll('_', ' ')}'),
+                                if (wizard.eventDate != null) TextSpan(text: ' • ${wizard.eventDate!.day}/${wizard.eventDate!.month}/${wizard.eventDate!.year}'),
+                              ],
+                            )),
+                          ),
                         ],
                       ),
                     ),
@@ -97,7 +153,6 @@ class WizardReviewScreen extends ConsumerWidget {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Category label
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
                             child: Text(
@@ -105,8 +160,6 @@ class WizardReviewScreen extends ConsumerWidget {
                               style: const TextStyle(fontSize: 11, color: _gold, fontWeight: FontWeight.w700, letterSpacing: 1.0),
                             ),
                           ),
-
-                          // Line items
                           ...selections.asMap().entries.map((selEntry) {
                             final idx = selEntry.key;
                             final sel = selEntry.value;
@@ -117,7 +170,6 @@ class WizardReviewScreen extends ConsumerWidget {
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
                               child: Row(
                                 children: [
-                                  // Brand thumbnail
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Container(
@@ -130,24 +182,21 @@ class WizardReviewScreen extends ConsumerWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  // Info
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(sel.product.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight)),
-                                        Text('${sel.variant.size} • NPR ${sel.unitPrice.toStringAsFixed(0)}/bottle',
+                                        Text('${sel.variant.size} • NPR ${sel.unitPrice.toStringAsFixed(0)}/unit',
                                           style: const TextStyle(fontSize: 11, color: _muted)),
                                       ],
                                     ),
                                   ),
-                                  // Qty stepper
                                   _MiniQtyStepper(
                                     value: sel.quantity,
                                     onChanged: (v) => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, v),
                                     onTap: () => _showEditDialog(context, sel.product.name, sel.quantity, (v) => ref.read(wizardProvider.notifier).updateBrandQuantity(slug, idx, v)),
                                   ),
-                                  // Line price
                                   SizedBox(
                                     width: 72,
                                     child: Text(
@@ -160,8 +209,6 @@ class WizardReviewScreen extends ConsumerWidget {
                               ),
                             );
                           }),
-
-                          // Category subtotal
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
                             child: Align(
@@ -170,8 +217,6 @@ class WizardReviewScreen extends ConsumerWidget {
                                 style: const TextStyle(fontSize: 12, color: _mutedLight)),
                             ),
                           ),
-
-                          // Divider
                           Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 20), color: _border),
                           const SizedBox(height: 8),
                         ],
@@ -180,7 +225,7 @@ class WizardReviewScreen extends ConsumerWidget {
 
                     // Total summary box
                     Container(
-                      margin: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                      margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: _surfaceDark,
@@ -193,7 +238,7 @@ class WizardReviewScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text('Items', style: TextStyle(fontSize: 13, color: _mutedLight)),
-                              Text('$totalBottles bottles', style: const TextStyle(fontSize: 13, color: _mutedLight)),
+                              Text('$totalUnits units', style: const TextStyle(fontSize: 13, color: _mutedLight)),
                             ],
                           ),
                           const SizedBox(height: 6),
@@ -217,49 +262,29 @@ class WizardReviewScreen extends ConsumerWidget {
                       ),
                     ),
 
-                    // Action buttons
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                      child: Row(
+                    // === DELIVERY DETAILS ===
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(color: _surfaceDark, border: Border.all(color: _border), borderRadius: BorderRadius.circular(14)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => context.push('/calculator'),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                decoration: BoxDecoration(border: Border.all(color: _border), borderRadius: BorderRadius.circular(12)),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.calculate_outlined, size: 16, color: _gold),
-                                    SizedBox(width: 6),
-                                    Text('Price Calculator', style: TextStyle(fontSize: 12, color: _mutedLight)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {}, // TODO: chat support
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                decoration: BoxDecoration(border: Border.all(color: _border), borderRadius: BorderRadius.circular(12)),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.chat_outlined, size: 16, color: _gold),
-                                    SizedBox(width: 6),
-                                    Text('Chat Support', style: TextStyle(fontSize: 12, color: _mutedLight)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          const Row(children: [
+                            Icon(Icons.local_shipping_outlined, size: 16, color: _gold),
+                            SizedBox(width: 8),
+                            Text('Delivery Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textLight)),
+                          ]),
+                          const SizedBox(height: 12),
+                          _DarkInput(controller: _addressController, label: 'Delivery Address', maxLines: 2),
+                          const SizedBox(height: 8),
+                          _DarkInput(controller: _phoneController, label: 'Contact Phone', keyboardType: TextInputType.phone),
+                          const SizedBox(height: 8),
+                          _DarkInput(controller: _instructionsController, label: 'Special instructions (optional)', maxLines: 2),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -269,47 +294,33 @@ class WizardReviewScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(color: _darkBg, boxShadow: [BoxShadow(blurRadius: 12, color: Colors.black.withValues(alpha: 0.3))]),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => context.pop(),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            decoration: BoxDecoration(border: Border.all(color: _gold, width: 1.5), borderRadius: BorderRadius.circular(14)),
-                            child: const Center(child: Text('Back', style: TextStyle(color: _gold, fontSize: 14, fontWeight: FontWeight.w600))),
-                          ),
-                        ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => context.pop(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(border: Border.all(color: _gold, width: 1.5), borderRadius: BorderRadius.circular(14)),
+                        child: const Center(child: Text('Back', style: TextStyle(color: _gold, fontSize: 14, fontWeight: FontWeight.w600))),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 2,
-                        child: GestureDetector(
-                          onTap: () {
-                            final cart = ref.read(cartProvider.notifier);
-                            cart.clear();
-                            for (final selections in wizard.brandSelections.values) {
-                              for (final sel in selections) {
-                                cart.addItem(sel.product, sel.variant, sel.unitType, quantity: sel.quantity);
-                              }
-                            }
-                            context.push('/checkout');
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [_gold, _goldLight]),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [BoxShadow(color: _gold.withValues(alpha: 0.25), blurRadius: 16, offset: const Offset(0, 4))],
-                            ),
-                            child: const Center(child: Text('Place Order', style: TextStyle(color: _darkBg, fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3))),
-                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: GestureDetector(
+                      onTap: _goToConfirm,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(colors: [_gold, _goldLight]),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [BoxShadow(color: _gold.withValues(alpha: 0.25), blurRadius: 16, offset: const Offset(0, 4))],
                         ),
+                        child: const Center(child: Text('Confirm Order', style: TextStyle(color: _darkBg, fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3))),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -399,6 +410,35 @@ class _MiniQtyStepper extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DarkInput extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final int maxLines;
+  final TextInputType? keyboardType;
+
+  const _DarkInput({required this.controller, required this.label, this.maxLines = 1, this.keyboardType});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: _textLight, fontSize: 14),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: _muted, fontSize: 13),
+        filled: true,
+        fillColor: _darkBg,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: _border)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: _border)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: _gold, width: 2)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      ),
     );
   }
 }

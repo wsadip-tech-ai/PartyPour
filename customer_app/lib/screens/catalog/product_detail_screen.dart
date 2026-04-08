@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/catalog_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../widgets/cart_badge.dart';
@@ -52,6 +53,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         backgroundColor: _bgColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: _textPrimary),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/home'),
+        ),
         iconTheme: const IconThemeData(color: _textPrimary),
         actions: const [CartBadge()],
         bottom: PreferredSize(
@@ -65,7 +70,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           final variant = _selectedVariant!;
           final hasCase =
               variant.caseSize != null && variant.casePrice != null;
-          final displayPrice = _unitType == 'case' && hasCase
+          final isCaseOnly = variant.isCaseOnly;
+          // Case-only products (beer) always use case pricing
+          if (isCaseOnly && _unitType == 'unit') {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _unitType = 'case');
+            });
+          }
+          final displayPrice = (isCaseOnly || _unitType == 'case') && hasCase
               ? variant.casePrice!
               : variant.unitPrice;
           final totalPrice = displayPrice * _quantity;
@@ -145,7 +157,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           ),
                         ),
                         child: Text(
-                          isLocal ? 'Local' : 'Imported',
+                          isLocal ? 'Domestic' : 'Imported',
                           style: TextStyle(
                             color: isLocal ? _localGreen : _goldLightColor,
                             fontSize: 12,
@@ -194,7 +206,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     return GestureDetector(
                       onTap: () => setState(() {
                         _selectedVariant = v;
-                        _unitType = 'unit';
+                        _unitType = v.isCaseOnly ? 'case' : 'unit';
                       }),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 160),
@@ -242,84 +254,121 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Unit price (gold, large)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            'NPR ${variant.unitPrice.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                              color: _goldLightColor,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            '/ bottle',
-                            style: TextStyle(
-                                color: _textDim,
-                                fontSize: 12),
-                          ),
-                        ],
-                      ),
-
-                      // MRP strikethrough
-                      if (variant.mrp != null &&
-                          variant.mrp! > variant.unitPrice) ...[
-                        const SizedBox(height: 3),
-                        Text(
-                          'MRP: NPR ${variant.mrp!.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            color: _textDim,
-                            fontSize: 12,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor: _textDim,
-                          ),
-                        ),
-                      ],
-
-                      // Case price
-                      if (hasCase) ...[
-                        const SizedBox(height: 8),
+                      // Primary price display
+                      if (isCaseOnly && hasCase) ...[
+                        // Case-only: show case price as primary
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
                           children: [
-                            const Icon(Icons.inventory_2_outlined,
-                                size: 13, color: _textDim),
-                            const SizedBox(width: 5),
                             Text(
-                              'Case of ${variant.caseSize}: NPR ${variant.casePrice!.toStringAsFixed(0)}',
+                              'NPR ${variant.casePrice!.toStringAsFixed(0)}',
                               style: const TextStyle(
-                                  color: _textMuted, fontSize: 13),
+                                color: _goldLightColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '/ case of ${variant.caseSize}',
+                              style: const TextStyle(
+                                  color: _textDim,
+                                  fontSize: 12),
                             ),
                           ],
                         ),
-                        // Savings per bottle
-                        if (variant.savingsPerUnit > 0) ...[
+                        if (variant.caseSize != null) ...[
                           const SizedBox(height: 4),
+                          Text(
+                            'NPR ${(variant.casePrice! / variant.caseSize!).toStringAsFixed(0)} per unit',
+                            style: const TextStyle(
+                              color: _textMuted,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ] else ...[
+                        // Regular products: show unit price as primary
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              'NPR ${variant.unitPrice.toStringAsFixed(0)}',
+                              style: const TextStyle(
+                                color: _goldLightColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              '/ bottle',
+                              style: TextStyle(
+                                  color: _textDim,
+                                  fontSize: 12),
+                            ),
+                          ],
+                        ),
+
+                        // MRP strikethrough
+                        if (variant.mrp != null &&
+                            variant.mrp! > variant.unitPrice) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            'MRP: NPR ${variant.mrp!.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              color: _textDim,
+                              fontSize: 12,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: _textDim,
+                            ),
+                          ),
+                        ],
+
+                        // Case price (only for non-case-only products)
+                        if (hasCase) ...[
+                          const SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.savings_outlined,
-                                  size: 13, color: _localGreen),
+                              const Icon(Icons.inventory_2_outlined,
+                                  size: 13, color: _textDim),
                               const SizedBox(width: 5),
                               Text(
-                                'Save NPR ${variant.savingsPerUnit.toStringAsFixed(0)} per bottle in a case',
+                                'Case of ${variant.caseSize}: NPR ${variant.casePrice!.toStringAsFixed(0)}',
                                 style: const TextStyle(
-                                  color: _localGreen,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                    color: _textMuted, fontSize: 13),
                               ),
                             ],
                           ),
+                          // Savings per bottle
+                          if (variant.savingsPerUnit > 0) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.savings_outlined,
+                                    size: 13, color: _localGreen),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Save NPR ${variant.savingsPerUnit.toStringAsFixed(0)} per bottle in a case',
+                                  style: const TextStyle(
+                                    color: _localGreen,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       ],
                     ],
                   ),
                 ),
 
-                // ── Buy as toggle ─────────────────────────────────────
-                if (hasCase) ...[
+                // ── Buy as toggle (hidden for case-only products like beer) ──
+                if (hasCase && !isCaseOnly) ...[
                   const SizedBox(height: 20),
                   const Text(
                     'Buy as',

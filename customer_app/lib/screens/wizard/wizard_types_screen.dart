@@ -33,7 +33,7 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
   };
 
   // Group slugs into categories for display
-  static const _alcoholSlugs = {'whiskey', 'vodka', 'gin', 'rum', 'brandy', 'beer-bottle-can', 'wine', 'shots-specials', 'energy-drinks', 'cocktail-mixers'};
+  static const _alcoholSlugs = {'whiskey', 'vodka', 'gin', 'rum', 'brandy', 'beer-bottle-can', 'wine', 'shots-specials', 'energy-drinks'};
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,15 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
             Expanded(
               child: rulesAsync.when(
                 data: (rules) {
-                  final alcoholRules = rules.where((r) => _alcoholSlugs.contains(r.subcategorySlug)).toList();
+                  // Priority order: whiskey, vodka, beer, wine first
+                  const _prioritySlugs = ['whiskey', 'vodka', 'beer-bottle-can', 'wine'];
+                  int _priority(String slug) {
+                    final idx = _prioritySlugs.indexOf(slug);
+                    return idx >= 0 ? idx : _prioritySlugs.length;
+                  }
+
+                  final alcoholRules = rules.where((r) => _alcoholSlugs.contains(r.subcategorySlug)).toList()
+                    ..sort((a, b) => _priority(a.subcategorySlug).compareTo(_priority(b.subcategorySlug)));
                   final nonAlcoholRules = rules.where((r) => !_alcoholSlugs.contains(r.subcategorySlug)).toList();
 
                   return SingleChildScrollView(

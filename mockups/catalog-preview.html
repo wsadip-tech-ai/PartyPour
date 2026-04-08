@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Catalog Screens</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:32px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.25s}
+.option:nth-child(3){animation-delay:0.4s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.1rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.75rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:340px;height:740px;border-radius:40px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:30px;background:#1C1917;border-radius:0 0 18px 18px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+@media(max-width:1100px){.grid{flex-direction:column;align-items:center}}
+
+.appbar{padding:42px 16px 12px;display:flex;align-items:center;background:#1C1917}
+.appbar .back-btn{width:28px;height:28px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;color:#A8A29E;font-size:12px;margin-right:10px}
+.appbar h2{font-size:15px;font-weight:700;color:#FAFAF9;flex:1}
+.appbar .cart{font-size:16px;color:#78716C}
+
+/* === CATEGORY LIST === */
+.cat-item{margin:4px 16px;background:#292524;border:1px solid #44403C;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.cat-item:hover{border-color:rgba(202,138,4,0.3)}
+.cat-item .ci-icon{width:36px;height:36px;border-radius:10px;background:rgba(202,138,4,0.08);display:flex;align-items:center;justify-content:center;font-size:16px;color:#CA8A04}
+.cat-item .ci-info{flex:1}
+.cat-item .ci-info h4{font-size:13px;font-weight:600;color:#FAFAF9}
+.cat-item .ci-info span{font-size:11px;color:#78716C}
+.cat-item .ci-arrow{color:#44403C;font-size:14px}
+.cat-item .ci-count{font-size:11px;color:#CA8A04;font-weight:600;background:rgba(202,138,4,0.08);padding:3px 8px;border-radius:8px}
+
+/* === PRODUCT LIST === */
+.origin-row{display:flex;gap:4px;padding:8px 16px}
+.origin-btn{padding:6px 12px;border-radius:16px;font-size:10px;font-weight:500;border:1px solid #44403C;color:#A8A29E}
+.origin-btn.active{background:rgba(202,138,4,0.1);border-color:#CA8A04;color:#CA8A04}
+
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
+.prod-card{background:#292524;border:1px solid #44403C;border-radius:14px;padding:10px;cursor:pointer}
+.prod-card:hover{border-color:rgba(202,138,4,0.3)}
+.prod-card .pc-img{width:100%;height:90px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px}
+.prod-card .pc-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.prod-card .pc-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.prod-card .pc-img.g3{background:linear-gradient(135deg,#1565C0,#64B5F6)}
+.prod-card .pc-img.g4{background:linear-gradient(135deg,#2E7D32,#81C784)}
+.prod-card .pc-name{font-size:12px;font-weight:600;color:#FAFAF9}
+.prod-card .pc-origin{display:inline-block;margin-top:3px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600}
+.prod-card .pc-origin.local{background:rgba(74,222,128,0.12);color:#4ade80}
+.prod-card .pc-origin.imported{background:rgba(234,179,8,0.12);color:#EAB308}
+.prod-card .pc-price{font-size:12px;font-weight:700;color:#CA8A04;margin-top:4px}
+
+/* === PRODUCT DETAIL === */
+.pd-hero{padding:16px;text-align:center}
+.pd-hero .pd-img{width:140px;height:140px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:800;color:#fff;margin:0 auto 14px;background:linear-gradient(135deg,#CA8A04,#EAB308);box-shadow:0 8px 32px rgba(202,138,4,0.2)}
+.pd-hero .pd-name{font-size:20px;font-weight:800;color:#FAFAF9}
+.pd-hero .pd-origin{display:inline-block;margin-top:6px;font-size:10px;padding:4px 12px;border-radius:16px;font-weight:600;background:rgba(234,179,8,0.12);color:#EAB308}
+
+.pd-section{padding:0 16px;margin-top:16px}
+.pd-section .pd-label{font-size:11px;color:#78716C;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px}
+.pd-sizes{display:flex;gap:6px}
+.pd-size{padding:8px 16px;border-radius:10px;border:1.5px solid #44403C;font-size:12px;color:#A8A29E}
+.pd-size.active{border-color:#CA8A04;color:#CA8A04;background:rgba(202,138,4,0.08)}
+
+.pd-pricing{padding:16px;margin:12px 16px 0;background:#292524;border:1px solid #44403C;border-radius:14px}
+.pd-pricing .pp-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+.pd-pricing .pp-row .pp-label{color:#78716C}
+.pd-pricing .pp-row .pp-value{color:#FAFAF9;font-weight:500}
+.pd-pricing .pp-row .pp-value.gold{color:#CA8A04;font-weight:700}
+.pd-pricing .pp-row .pp-value.strike{color:#78716C;text-decoration:line-through;font-size:12px}
+
+.pd-buy{display:flex;gap:8px;padding:16px;margin-top:12px}
+.pd-buy .unit-case{display:flex;background:#292524;border-radius:10px;padding:2px;flex-shrink:0}
+.pd-buy .uc{padding:8px 14px;border-radius:8px;font-size:11px;font-weight:500;color:#78716C}
+.pd-buy .uc.active{background:#CA8A04;color:#1C1917;font-weight:600}
+
+.pd-qty{display:flex;align-items:center;gap:6px}
+.pd-qty .qb{width:28px;height:28px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:12px;color:#CA8A04}
+.pd-qty .qv{font-size:16px;font-weight:700;color:#FAFAF9;min-width:24px;text-align:center}
+
+.pd-add-btn{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:13px;font-weight:700;text-align:center;box-shadow:0 4px 12px rgba(202,138,4,0.2)}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Catalog Screens</h1>
+  <p>Secondary browse flow — Category, Product List, Product Detail</p>
+</div>
+
+<div class="grid">
+
+  <!-- CATEGORY LIST -->
+  <div class="option">
+    <div class="label"><h2>Category List</h2><span>Subcategory selection</span></div>
+    <div class="phone">
+      <div class="screen">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Hard Drinks</h2><span class="cart">&#128722;</span></div>
+
+        <div class="cat-item"><div class="ci-icon">&#127867;</div><div class="ci-info"><h4>Whiskey</h4><span>Local & imported brands</span></div><div class="ci-count">7</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127864;</div><div class="ci-info"><h4>Vodka</h4><span>Premium selections</span></div><div class="ci-count">3</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127865;</div><div class="ci-info"><h4>Gin</h4><span>Craft & classic</span></div><div class="ci-count">2</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127870;</div><div class="ci-info"><h4>Rum</h4><span>Spiced & dark</span></div><div class="ci-count">3</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127863;</div><div class="ci-info"><h4>Brandy</h4><span>VSOP & apple</span></div><div class="ci-count">5</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127866;</div><div class="ci-info"><h4>Beer (Bottle/Can)</h4><span>Popular choices</span></div><div class="ci-count">5</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127866;</div><div class="ci-info"><h4>Beer (Draught)</h4><span>Keg options</span></div><div class="ci-count">2</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127863;</div><div class="ci-info"><h4>Wine</h4><span>Red & white</span></div><div class="ci-count">6</div><span class="ci-arrow">&#8250;</span></div>
+        <div class="cat-item"><div class="ci-icon">&#127381;</div><div class="ci-info"><h4>Shots/Specials</h4><span>Party essentials</span></div><div class="ci-count">3</div><span class="ci-arrow">&#8250;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT LIST -->
+  <div class="option">
+    <div class="label"><h2>Product List</h2><span>Grid with origin filter</span></div>
+    <div class="phone">
+      <div class="screen">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Whiskey</h2><span class="cart">&#128722;</span></div>
+
+        <div class="origin-row">
+          <div class="origin-btn active">All</div>
+          <div class="origin-btn">Local</div>
+          <div class="origin-btn">Imported</div>
+        </div>
+
+        <div class="prod-grid">
+          <div class="prod-card"><div class="pc-img g1">JW</div><div class="pc-name">Johnnie Walker Red</div><div class="pc-origin imported">Imported</div><div class="pc-price">NPR 3,200</div></div>
+          <div class="prod-card"><div class="pc-img g2">JB</div><div class="pc-name">Johnnie Walker Black</div><div class="pc-origin imported">Imported</div><div class="pc-price">NPR 5,500</div></div>
+          <div class="prod-card"><div class="pc-img g2">OD</div><div class="pc-name">Old Durbar</div><div class="pc-origin local">Local</div><div class="pc-price">NPR 700</div></div>
+          <div class="prod-card"><div class="pc-img g4">KH</div><div class="pc-name">Khukuri</div><div class="pc-origin local">Local</div><div class="pc-price">NPR 550</div></div>
+          <div class="prod-card"><div class="pc-img g2">RS</div><div class="pc-name">Ruslan</div><div class="pc-origin local">Local</div><div class="pc-price">NPR 520</div></div>
+          <div class="prod-card"><div class="pc-img g3">1P</div><div class="pc-name">100 Pipers</div><div class="pc-origin imported">Imported</div><div class="pc-price">NPR 2,800</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <div class="option">
+    <div class="label"><h2>Product Detail</h2><span>Brand + variants + add to cart</span></div>
+    <div class="phone">
+      <div class="screen">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2></h2><span class="cart">&#128722;</span></div>
+
+        <div class="pd-hero">
+          <div class="pd-img">JW</div>
+          <div class="pd-name">Johnnie Walker Red Label</div>
+          <div class="pd-origin">Imported</div>
+        </div>
+
+        <div class="pd-section">
+          <div class="pd-label">Select Size</div>
+          <div class="pd-sizes">
+            <div class="pd-size active">750ml</div>
+            <div class="pd-size">1L</div>
+          </div>
+        </div>
+
+        <div class="pd-pricing">
+          <div class="pp-row"><span class="pp-label">Unit Price</span><span class="pp-value gold">NPR 3,200</span></div>
+          <div class="pp-row"><span class="pp-label">MRP</span><span class="pp-value strike">NPR 3,400</span></div>
+          <div class="pp-row"><span class="pp-label">Case (12)</span><span class="pp-value">NPR 36,000</span></div>
+          <div class="pp-row"><span class="pp-label">Save per bottle</span><span class="pp-value" style="color:#4ade80">NPR 200</span></div>
+        </div>
+
+        <div class="pd-buy">
+          <div class="unit-case"><div class="uc active">Bottle</div><div class="uc">Case (12)</div></div>
+          <div class="pd-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div>
+          <div class="pd-add-btn">Add to Cart</div>
+        </div>
+
+        <div style="padding:12px 16px">
+          <div style="font-size:13px;font-weight:600;color:#FAFAF9;margin-bottom:4px">Total: <span style="color:#CA8A04">NPR 80,000</span></div>
+          <div style="font-size:11px;color:#78716C">25 bottles × NPR 3,200</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

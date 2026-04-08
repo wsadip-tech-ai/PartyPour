@@ -26,9 +26,20 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: _darkBg,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/chat'),
+        backgroundColor: _gold,
+        child: const Icon(Icons.chat, color: _darkBg),
+      ),
       appBar: AppBar(
         backgroundColor: _darkBg,
-        title: const Text('RaksiChaiyo', style: TextStyle(color: _gold, fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: 0.3)),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('PartyPour', style: TextStyle(color: _gold, fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: 0.3)),
+            const Text('Right price. Genuine. Returnable.', style: TextStyle(color: _muted, fontSize: 9, fontWeight: FontWeight.w500, letterSpacing: 0.5)),
+          ],
+        ),
         actions: [
           // Notification bell
           Consumer(builder: (context, ref, _) {
@@ -241,7 +252,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                           border: Border.all(color: _gold.withValues(alpha: 0.15)),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Text("NEPAL'S BEVERAGE CONCIERGE", style: TextStyle(fontSize: 9, color: _gold, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
+                        child: const Text("RIGHT PRICE. GENUINE. RETURNABLE.", style: TextStyle(fontSize: 9, color: _gold, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
                       ),
                       const SizedBox(height: 16),
                       // Headline
@@ -453,92 +464,112 @@ class _StatChip extends StatelessWidget {
   }
 }
 
-// === POPULAR PRODUCTS HORIZONTAL SCROLL ===
+// === POPULAR PRODUCTS HORIZONTAL SCROLL (real data from DB) ===
+final _popularProductsProvider = FutureProvider<List<dynamic>>((ref) async {
+  final data = await Supabase.instance.client
+      .from('products')
+      .select('*, variants(*)')
+      .eq('is_active', true)
+      .contains('tags', ['popular'])
+      .order('name')
+      .limit(8);
+  return data;
+});
+
 class _PopularProducts extends StatelessWidget {
   final WidgetRef ref;
   const _PopularProducts({required this.ref});
 
   @override
   Widget build(BuildContext context) {
-    final categoriesAsync = ref.watch(categoriesProvider);
+    final productsAsync = ref.watch(_popularProductsProvider);
 
-    // Show first 6 products from catalog
     return SizedBox(
       height: 200,
-      child: categoriesAsync.when(
-        data: (_) => _buildProductList(context),
+      child: productsAsync.when(
+        data: (data) {
+          if (data.isEmpty) return const Center(child: Text('No popular picks yet', style: TextStyle(color: _muted, fontSize: 13)));
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: data.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (_, i) {
+              final json = data[i] as Map<String, dynamic>;
+              final name = json['name'] as String;
+              final origin = json['origin'] as String;
+              final productId = json['id'] as String;
+              final isLocal = origin == 'local';
+              final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+              final colors = _getPopularColors(name);
+
+              // Get lowest price from variants
+              String priceLabel = '';
+              final variants = json['variants'] as List<dynamic>? ?? [];
+              if (variants.isNotEmpty) {
+                final prices = variants.map((v) => (v['unit_price'] as num).toDouble()).toList();
+                prices.sort();
+                priceLabel = 'NPR ${prices.first.toStringAsFixed(0)}';
+              }
+
+              return GestureDetector(
+                onTap: () => context.push('/product/$productId'),
+                child: Container(
+                  width: 150,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _surfaceDark,
+                    border: Border.all(color: _border),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: colors),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(child: Text(initial, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isLocal ? const Color(0xFF4ade80).withValues(alpha: 0.12) : _goldLight.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(isLocal ? 'Domestic' : 'Imported', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isLocal ? const Color(0xFF4ade80) : _goldLight)),
+                      ),
+                      const Spacer(),
+                      if (priceLabel.isNotEmpty)
+                        Text(priceLabel, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _gold)),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator(color: _gold)),
-        error: (_, __) => const Center(child: Text('', style: TextStyle(color: _muted))),
+        error: (_, __) => const SizedBox.shrink(),
       ),
     );
   }
 
-  Widget _buildProductList(BuildContext context) {
-    // Static popular items for display — these link to the catalog
-    final items = [
-      _PopularItem('Johnnie Walker', 'Imported', 3200, 'JW', [_gold, _goldLight]),
-      _PopularItem('Old Durbar', 'Local', 700, 'OD', [_surfaceDark, const Color(0xFF57534e)]),
-      _PopularItem('Tuborg', 'Local', 380, 'TB', [const Color(0xFF2E7D32), const Color(0xFF81C784)]),
-      _PopularItem('Absolut', 'Imported', 3500, 'AB', [const Color(0xFF1565C0), const Color(0xFF64B5F6)]),
-      _PopularItem('Khukuri Rum', 'Local', 500, 'KR', [const Color(0xFFC62828), const Color(0xFFEF9A9A)]),
-    ];
-
-    return ListView.separated(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 10),
-      itemBuilder: (_, i) {
-        final item = items[i];
-        final isImported = item.origin == 'Imported';
-        return GestureDetector(
-          onTap: () => context.push('/wizard/event'),
-          child: Container(
-            width: 150,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _surfaceDark,
-              border: Border.all(color: _border),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Gradient placeholder with initials
-                Container(
-                  width: double.infinity,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: item.colors),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(child: Text(item.initials, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
-                ),
-                const SizedBox(height: 10),
-                Text(item.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: isImported ? _goldLight.withValues(alpha: 0.12) : const Color(0xFF4ade80).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(item.origin, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isImported ? _goldLight : const Color(0xFF4ade80))),
-                ),
-                const Spacer(),
-                Text('NPR ${item.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _gold)),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  static List<Color> _getPopularColors(String name) {
+    final hash = name.hashCode.abs() % 6;
+    return [
+      [_gold, _goldLight],
+      [_surfaceDark, const Color(0xFF57534e)],
+      [const Color(0xFF2E7D32), const Color(0xFF81C784)],
+      [const Color(0xFF1565C0), const Color(0xFF64B5F6)],
+      [const Color(0xFFC62828), const Color(0xFFEF9A9A)],
+      [const Color(0xFF6A1B9A), const Color(0xFFCE93D8)],
+    ][hash];
   }
-}
-
-class _PopularItem {
-  final String name, origin, initials;
-  final double price;
-  final List<Color> colors;
-  _PopularItem(this.name, this.origin, this.price, this.initials, this.colors);
 }

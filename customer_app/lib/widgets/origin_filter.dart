@@ -11,7 +11,7 @@ class OriginFilter extends StatelessWidget {
     return SegmentedButton<String?>(
       segments: const [
         ButtonSegment(value: null, label: Text('All')),
-        ButtonSegment(value: 'local', label: Text('Local')),
+        ButtonSegment(value: 'local', label: Text('Domestic')),
         ButtonSegment(value: 'imported', label: Text('Imported')),
       ],
       selected: {selectedOrigin},

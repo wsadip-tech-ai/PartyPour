@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Login Screen Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+
+  .page-header{text-align:center;padding:50px 20px 30px}
+  .page-header h1{font-family:'Playfair Display',serif;font-size:2.4rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+
+  .grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+
+  .option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+  .option:nth-child(1){animation-delay:0.1s}
+  .option:nth-child(2){animation-delay:0.3s}
+  .option:nth-child(3){animation-delay:0.5s}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  .label h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#fff;text-align:center}
+  .label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+
+  .phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+  .phone:hover{transform:translateY(-6px)}
+  .phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+
+  .screen{width:100%;height:100%;overflow:hidden;position:relative}
+
+  /* ============== VERSION A: Ambient Glow ============== */
+  .screen-a{background:#1C1917}
+  .screen-a .bg-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(202,138,4,0.12) 0%,rgba(202,138,4,0.04) 40%,transparent 70%);pointer-events:none;animation:pulse 4s ease-in-out infinite alternate}
+  @keyframes pulse{0%{opacity:0.6;transform:translateX(-50%) scale(1)}100%{opacity:1;transform:translateX(-50%) scale(1.1)}}
+
+  .screen-a .content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 32px}
+  .screen-a .logo-mark{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#1C1917;box-shadow:0 8px 32px rgba(202,138,4,0.3);margin-bottom:24px}
+  .screen-a .brand{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#FAFAF9;letter-spacing:-0.02em}
+  .screen-a .tagline{color:#A8A29E;font-size:14px;margin-top:6px;letter-spacing:0.02em}
+  .screen-a .form{width:100%;margin-top:40px}
+  .screen-a .input{width:100%;padding:16px 18px;background:#292524;border:1.5px solid #44403C;border-radius:12px;color:#FAFAF9;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:14px;transition:border-color 0.3s}
+  .screen-a .input:focus{border-color:#CA8A04}
+  .screen-a .input::placeholder{color:#78716C}
+  .screen-a .forgot{text-align:right;margin-bottom:20px}
+  .screen-a .forgot a{color:#CA8A04;font-size:13px;text-decoration:none}
+  .screen-a .btn-gold{width:100%;padding:16px;background:linear-gradient(135deg,#CA8A04,#EAB308);border:none;border-radius:14px;color:#1C1917;font-size:15px;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-shadow:0 6px 24px rgba(202,138,4,0.35);transition:transform 0.2s,box-shadow 0.2s}
+  .screen-a .btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(202,138,4,0.45)}
+  .screen-a .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:#78716C;font-size:12px;text-transform:uppercase;letter-spacing:0.1em}
+  .screen-a .divider::before,.screen-a .divider::after{content:'';flex:1;height:1px;background:#44403C}
+  .screen-a .social-row{display:flex;gap:12px;width:100%}
+  .screen-a .social-btn{flex:1;padding:14px;background:#292524;border:1.5px solid #44403C;border-radius:12px;text-align:center;color:#A8A29E;font-size:13px;font-weight:500;cursor:pointer;transition:border-color 0.3s}
+  .screen-a .social-btn:hover{border-color:#CA8A04;color:#FAFAF9}
+  .screen-a .signup-link{text-align:center;margin-top:24px;color:#78716C;font-size:13px}
+  .screen-a .signup-link a{color:#CA8A04;text-decoration:none;font-weight:600}
+
+  /* ============== VERSION B: Bottle Silhouette ============== */
+  .screen-b{background:#1C1917;overflow:hidden}
+  .screen-b .bg-art{position:absolute;top:0;left:0;right:0;height:360px;background:linear-gradient(180deg,#292524 0%,#1C1917 100%);overflow:hidden}
+  .screen-b .bg-art::before{content:'';position:absolute;top:40px;left:50%;transform:translateX(-50%);width:120px;height:280px;border:2px solid rgba(202,138,4,0.15);border-radius:30px 30px 8px 8px;opacity:0.5}
+  .screen-b .bg-art::after{content:'';position:absolute;top:20px;left:50%;transform:translateX(-50%);width:40px;height:40px;border:2px solid rgba(202,138,4,0.12);border-radius:4px 4px 10px 10px}
+  .screen-b .bg-art .circle1{position:absolute;top:80px;right:30px;width:100px;height:100px;border-radius:50%;border:1px solid rgba(202,138,4,0.08)}
+  .screen-b .bg-art .circle2{position:absolute;top:120px;left:20px;width:60px;height:60px;border-radius:50%;border:1px solid rgba(202,138,4,0.06)}
+  .screen-b .bg-art .gold-line{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(202,138,4,0.2),transparent)}
+
+  .screen-b .content{position:relative;z-index:1;padding:0 32px;display:flex;flex-direction:column;height:100%}
+  .screen-b .top-space{height:120px}
+  .screen-b .hero-text{text-align:center;margin-bottom:8px}
+  .screen-b .hero-text .pre{font-family:'Inter',sans-serif;font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.2em;font-weight:600}
+  .screen-b .hero-text h1{font-family:'Playfair Display',serif;font-size:32px;color:#FAFAF9;margin-top:12px;line-height:1.15}
+  .screen-b .hero-text h1 em{font-style:italic;color:#CA8A04}
+  .screen-b .hero-text p{color:#78716C;font-size:13px;margin-top:10px;line-height:1.5}
+
+  .screen-b .form-area{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:40px}
+  .screen-b .input{width:100%;padding:16px 18px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(202,138,4,0.15);border-radius:12px;color:#FAFAF9;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;backdrop-filter:blur(10px);transition:border-color 0.3s}
+  .screen-b .input:focus{border-color:#CA8A04}
+  .screen-b .input::placeholder{color:#78716C}
+  .screen-b .btn-gold{width:100%;padding:16px;background:linear-gradient(135deg,#CA8A04,#EAB308);border:none;border-radius:14px;color:#1C1917;font-size:15px;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-shadow:0 6px 24px rgba(202,138,4,0.3);margin-top:8px}
+  .screen-b .row{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+  .screen-b .row a{color:#CA8A04;font-size:13px;text-decoration:none}
+  .screen-b .row span{color:#78716C;font-size:13px}
+  .screen-b .bottom-bar{padding:16px 0;text-align:center;border-top:1px solid #292524}
+  .screen-b .bottom-bar span{color:#78716C;font-size:12px}
+  .screen-b .bottom-bar a{color:#CA8A04;font-size:12px;text-decoration:none;font-weight:600}
+
+  /* ============== VERSION C: Split Hero ============== */
+  .screen-c{background:#1C1917}
+  .screen-c .hero-section{height:320px;background:linear-gradient(160deg,#292524 0%,#1C1917 60%);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 32px 30px;overflow:hidden}
+  .screen-c .hero-section::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle at 80% 20%,rgba(202,138,4,0.15),transparent 60%)}
+  .screen-c .hero-section .decoration{position:absolute;top:50px;right:24px;display:flex;flex-direction:column;gap:6px;opacity:0.15}
+  .screen-c .hero-section .decoration div{width:3px;height:20px;background:#CA8A04;border-radius:2px}
+  .screen-c .hero-section .decoration div:nth-child(2){height:32px}
+  .screen-c .hero-section .decoration div:nth-child(3){height:14px}
+  .screen-c .hero-section .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(202,138,4,0.12);border:1px solid rgba(202,138,4,0.2);border-radius:20px;padding:6px 14px;margin-bottom:16px;width:fit-content}
+  .screen-c .hero-section .badge .dot{width:6px;height:6px;border-radius:50%;background:#CA8A04;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+  .screen-c .hero-section .badge span{font-size:11px;color:#CA8A04;font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
+  .screen-c .hero-section h1{font-family:'Playfair Display',serif;font-size:30px;color:#FAFAF9;line-height:1.15}
+  .screen-c .hero-section h1 .gold{color:#CA8A04}
+  .screen-c .hero-section p{color:#78716C;font-size:13px;margin-top:8px;line-height:1.5}
+
+  .screen-c .form-section{padding:28px 32px;flex:1}
+  .screen-c .form-section .tab-row{display:flex;margin-bottom:24px;background:#292524;border-radius:12px;padding:4px}
+  .screen-c .form-section .tab{flex:1;padding:10px;text-align:center;border-radius:10px;font-size:13px;font-weight:600;color:#78716C;cursor:pointer;transition:all 0.3s}
+  .screen-c .form-section .tab.active{background:#CA8A04;color:#1C1917}
+  .screen-c .input{width:100%;padding:16px 18px;background:#292524;border:1.5px solid #44403C;border-radius:12px;color:#FAFAF9;font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;transition:border-color 0.3s}
+  .screen-c .input:focus{border-color:#CA8A04}
+  .screen-c .input::placeholder{color:#78716C}
+  .screen-c .btn-gold{width:100%;padding:16px;background:linear-gradient(135deg,#CA8A04,#EAB308);border:none;border-radius:14px;color:#1C1917;font-size:15px;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-shadow:0 6px 24px rgba(202,138,4,0.35);margin-top:6px}
+  .screen-c .terms{text-align:center;margin-top:16px;font-size:11px;color:#78716C;line-height:1.5}
+  .screen-c .terms a{color:#CA8A04;text-decoration:none}
+
+  .recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+
+  @media(max-width:1240px){.grid{gap:24px}.phone{width:340px;height:740px;border-radius:38px}}
+  @media(max-width:1080px){.grid{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Login Screen Options</h1>
+  <p>Pick the one that feels right for RaksiChaiyo</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Ambient Glow -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Ambient Glow</span></div>
+    <div class="phone" style="position:relative">
+      <div class="screen screen-a">
+        <div class="bg-glow"></div>
+        <div class="content">
+          <div class="logo-mark">R</div>
+          <div class="brand">RaksiChaiyo</div>
+          <div class="tagline">Beverages for every occasion</div>
+          <div class="form">
+            <input class="input" placeholder="Email address" type="text">
+            <input class="input" placeholder="Password" type="password">
+            <div class="forgot"><a href="#">Forgot password?</a></div>
+            <button class="btn-gold">Sign In</button>
+            <div class="divider">or continue with</div>
+            <div class="social-row">
+              <div class="social-btn">Google</div>
+              <div class="social-btn">Phone</div>
+            </div>
+            <div class="signup-link">New here? <a href="#">Create account</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Bottle Silhouette -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Bottle Silhouette</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen screen-b">
+        <div class="bg-art">
+          <div class="circle1"></div>
+          <div class="circle2"></div>
+          <div class="gold-line"></div>
+        </div>
+        <div class="content">
+          <div class="top-space"></div>
+          <div class="hero-text">
+            <div class="pre">Nepal's Premium</div>
+            <h1>Your event,<br><em>perfectly</em> poured</h1>
+            <p>Curated beverages for weddings, parties & celebrations</p>
+          </div>
+          <div class="form-area">
+            <input class="input" placeholder="Email address" type="text">
+            <input class="input" placeholder="Password" type="password">
+            <button class="btn-gold">Sign In</button>
+            <div class="row">
+              <a href="#">Forgot password?</a>
+              <span>|</span>
+              <a href="#">Create account</a>
+            </div>
+          </div>
+          <div class="bottom-bar">
+            <span>By continuing, you agree to our </span><a href="#">Terms</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION C: Split Hero -->
+  <div class="option">
+    <div class="label"><h2>Version C</h2><span>Split Hero + Tabs</span></div>
+    <div class="phone">
+      <div class="screen screen-c">
+        <div class="hero-section">
+          <div class="decoration"><div></div><div></div><div></div></div>
+          <div class="badge"><div class="dot"></div><span>Now serving Nepal</span></div>
+          <h1>Raise a glass<br>to <span class="gold">great events</span></h1>
+          <p>Premium beverages, delivered to your celebration</p>
+        </div>
+        <div class="form-section">
+          <div class="tab-row">
+            <div class="tab active">Sign In</div>
+            <div class="tab">Sign Up</div>
+          </div>
+          <input class="input" placeholder="Email address" type="text">
+          <input class="input" placeholder="Password" type="password">
+          <button class="btn-gold">Sign In</button>
+          <div class="terms">By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

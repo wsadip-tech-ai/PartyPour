@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Order History</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.appbar{padding:48px 20px 14px;display:flex;align-items:center;justify-content:space-between;background:#1C1917}
+.appbar h2{font-size:17px;font-weight:700;color:#FAFAF9}
+.appbar .bell{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#78716C;position:relative}
+.appbar .bell .badge{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#CA8A04;font-size:8px;display:flex;align-items:center;justify-content:center;color:#1C1917;font-weight:700}
+
+/* Bottom nav */
+.bottom-nav{display:flex;justify-content:space-around;padding:10px 0 6px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.06);position:sticky;bottom:0}
+.nav-item{text-align:center;font-size:10px;color:#78716C}
+.nav-item.active{color:#CA8A04}
+.nav-item .ic{font-size:20px;display:block;margin-bottom:2px}
+.nav-item .dot{width:4px;height:4px;border-radius:50%;background:#CA8A04;margin:3px auto 0}
+
+/* Status colors */
+.status{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600}
+.status.pending{background:rgba(251,146,60,0.12);color:#FB923C;border:1px solid rgba(251,146,60,0.2)}
+.status.confirmed{background:rgba(74,222,128,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.2)}
+.status.dispatched{background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.2)}
+.status.delivered{background:rgba(192,132,252,0.12);color:#c084fc;border:1px solid rgba(192,132,252,0.2)}
+
+/* === VERSION A: Simple List === */
+.va .filter-tabs{display:flex;gap:6px;padding:8px 20px;overflow-x:auto;scrollbar-width:none}
+.va .filter-tabs::-webkit-scrollbar{display:none}
+.va .ftab{padding:7px 14px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid #44403C;color:#A8A29E;white-space:nowrap}
+.va .ftab.active{background:rgba(202,138,4,0.1);border-color:#CA8A04;color:#CA8A04}
+
+.va .order-card{margin:6px 20px;background:#292524;border:1px solid #44403C;border-radius:14px;padding:14px}
+.va .order-card .oc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.va .order-card .oc-id{font-size:13px;font-weight:600;color:#FAFAF9}
+.va .order-card .oc-mid{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.va .order-card .oc-mid .om-event{font-size:12px;color:#A8A29E}
+.va .order-card .oc-mid .om-dot{width:3px;height:3px;border-radius:50%;background:#44403C}
+.va .order-card .oc-mid .om-date{font-size:11px;color:#78716C}
+.va .order-card .oc-bottom{display:flex;align-items:center;justify-content:space-between}
+.va .order-card .oc-amount{font-size:15px;font-weight:700;color:#CA8A04}
+.va .order-card .oc-arrow{color:#78716C;font-size:16px}
+
+/* === VERSION B: Timeline Cards === */
+.vb .active-section{padding:8px 20px}
+.vb .active-label{font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:8px}
+
+.vb .timeline-card{margin-bottom:10px;background:#292524;border-left:3px solid #CA8A04;border-radius:0 14px 14px 0;padding:14px 16px;position:relative}
+.vb .timeline-card.confirmed{border-left-color:#4ade80}
+.vb .timeline-card.dispatched{border-left-color:#60a5fa}
+.vb .timeline-card .tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.vb .timeline-card .tc-id{font-size:14px;font-weight:600;color:#FAFAF9}
+.vb .timeline-card .tc-mid{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.vb .timeline-card .tc-event{font-size:12px;color:#A8A29E}
+.vb .timeline-card .tc-date{font-size:11px;color:#78716C}
+.vb .timeline-card .tc-bottom{display:flex;align-items:center;justify-content:space-between}
+.vb .timeline-card .tc-amount{font-size:15px;font-weight:700;color:#CA8A04}
+
+.vb .timeline-card .tc-progress{margin-top:10px;display:flex;align-items:center;gap:4px}
+.vb .timeline-card .tc-progress .tp-step{flex:1;height:3px;border-radius:2px;background:#44403C}
+.vb .timeline-card .tc-progress .tp-step.done{background:#4ade80}
+.vb .timeline-card .tc-progress .tp-step.current{background:#CA8A04}
+
+.vb .past-label{padding:8px 0;font-size:11px;color:#78716C;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-top:4px}
+
+.vb .past-card{margin-bottom:8px;background:#292524;border:1px solid #44403C;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.vb .past-card .pc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.vb .past-card .pc-icon.delivered{background:rgba(192,132,252,0.1);color:#c084fc}
+.vb .past-card .pc-info{flex:1}
+.vb .past-card .pc-info .pc-id{font-size:13px;font-weight:600;color:#FAFAF9}
+.vb .past-card .pc-info .pc-detail{font-size:11px;color:#78716C}
+.vb .past-card .pc-amount{font-size:13px;font-weight:700;color:#CA8A04}
+.vb .past-card .pc-arrow{color:#78716C;font-size:14px;margin-left:4px}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Order History</h1>
+  <p>Past and active orders</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Simple List with Filters -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Filtered List</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="appbar"><h2>My Orders</h2><div class="bell">&#128276;<div class="badge">2</div></div></div>
+
+        <div class="filter-tabs">
+          <div class="ftab active">All</div>
+          <div class="ftab">Pending</div>
+          <div class="ftab">Confirmed</div>
+          <div class="ftab">Dispatched</div>
+          <div class="ftab">Delivered</div>
+        </div>
+
+        <div class="order-card">
+          <div class="oc-top"><span class="oc-id">Order #a3d8f1e2</span><div class="status pending">&#9679; Pending</div></div>
+          <div class="oc-mid"><span class="om-event">Wedding</span><span class="om-dot"></span><span class="om-date">Nov 4, 2026</span></div>
+          <div class="oc-bottom"><span class="oc-amount">NPR 245,000</span><span class="oc-arrow">&#8250;</span></div>
+        </div>
+
+        <div class="order-card">
+          <div class="oc-top"><span class="oc-id">Order #b7c2e4f9</span><div class="status confirmed">&#10003; Confirmed</div></div>
+          <div class="oc-mid"><span class="om-event">Birthday</span><span class="om-dot"></span><span class="om-date">Oct 20, 2026</span></div>
+          <div class="oc-bottom"><span class="oc-amount">NPR 85,000</span><span class="oc-arrow">&#8250;</span></div>
+        </div>
+
+        <div class="order-card">
+          <div class="oc-top"><span class="oc-id">Order #c1f3a5b8</span><div class="status dispatched">&#128666; On the Way</div></div>
+          <div class="oc-mid"><span class="om-event">Corporate</span><span class="om-dot"></span><span class="om-date">Oct 15, 2026</span></div>
+          <div class="oc-bottom"><span class="oc-amount">NPR 120,000</span><span class="oc-arrow">&#8250;</span></div>
+        </div>
+
+        <div class="order-card">
+          <div class="oc-top"><span class="oc-id">Order #d9e1c3a7</span><div class="status delivered">&#10003; Delivered</div></div>
+          <div class="oc-mid"><span class="om-event">House Party</span><span class="om-dot"></span><span class="om-date">Sep 28, 2026</span></div>
+          <div class="oc-bottom"><span class="oc-amount">NPR 45,000</span><span class="oc-arrow">&#8250;</span></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="ic">&#9750;</span>Home</div>
+          <div class="nav-item active"><span class="ic">&#128230;</span>Orders<div class="dot"></div></div>
+          <div class="nav-item"><span class="ic">&#128100;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Timeline with Active/Past Split -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Active/Past Timeline</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="appbar"><h2>My Orders</h2><div class="bell">&#128276;<div class="badge">2</div></div></div>
+
+        <div class="active-section">
+          <div class="active-label">Active Orders</div>
+
+          <div class="timeline-card">
+            <div class="tc-top"><span class="tc-id">Order #a3d8f1e2</span><div class="status pending">&#9679; Awaiting Confirmation</div></div>
+            <div class="tc-mid"><span class="tc-event">Wedding &bull; 200 guests</span><span class="tc-date">Nov 4, 2026</span></div>
+            <div class="tc-bottom"><span class="tc-amount">NPR 245,000</span></div>
+            <div class="tc-progress"><div class="tp-step current"></div><div class="tp-step"></div><div class="tp-step"></div><div class="tp-step"></div></div>
+          </div>
+
+          <div class="timeline-card confirmed">
+            <div class="tc-top"><span class="tc-id">Order #b7c2e4f9</span><div class="status confirmed">&#10003; Confirmed</div></div>
+            <div class="tc-mid"><span class="tc-event">Birthday &bull; 50 guests</span><span class="tc-date">Oct 20, 2026</span></div>
+            <div class="tc-bottom"><span class="tc-amount">NPR 85,000</span></div>
+            <div class="tc-progress"><div class="tp-step done"></div><div class="tp-step current"></div><div class="tp-step"></div><div class="tp-step"></div></div>
+          </div>
+
+          <div class="timeline-card dispatched">
+            <div class="tc-top"><span class="tc-id">Order #c1f3a5b8</span><div class="status dispatched">&#128666; On the Way</div></div>
+            <div class="tc-mid"><span class="tc-event">Corporate &bull; 100 guests</span><span class="tc-date">Oct 15, 2026</span></div>
+            <div class="tc-bottom"><span class="tc-amount">NPR 120,000</span></div>
+            <div class="tc-progress"><div class="tp-step done"></div><div class="tp-step done"></div><div class="tp-step current"></div><div class="tp-step"></div></div>
+          </div>
+
+          <div class="past-label">Past Orders</div>
+
+          <div class="past-card">
+            <div class="pc-icon delivered">&#10003;</div>
+            <div class="pc-info"><div class="pc-id">Order #d9e1c3a7</div><div class="pc-detail">House Party &bull; Sep 28 &bull; Delivered</div></div>
+            <span class="pc-amount">NPR 45,000</span>
+            <span class="pc-arrow">&#8250;</span>
+          </div>
+
+          <div class="past-card">
+            <div class="pc-icon delivered">&#10003;</div>
+            <div class="pc-info"><div class="pc-id">Order #e2a4b6c8</div><div class="pc-detail">Wedding &bull; Aug 15 &bull; Delivered</div></div>
+            <span class="pc-amount">NPR 180,000</span>
+            <span class="pc-arrow">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="ic">&#9750;</span>Home</div>
+          <div class="nav-item active"><span class="ic">&#128230;</span>Orders<div class="dot"></div></div>
+          <div class="nav-item"><span class="ic">&#128100;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

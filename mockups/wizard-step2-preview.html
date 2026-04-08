@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Step 2: Select Beverage Types</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+/* Progress */
+.progress{padding:48px 20px 0;display:flex;gap:4px}
+.seg{flex:1;height:3px;border-radius:2px;background:#44403C}
+.seg.done{background:#CA8A04}
+.step-lbl{padding:8px 20px 0;font-size:11px;color:#78716C;letter-spacing:0.06em}
+
+/* Bottom bar */
+.bot{position:sticky;bottom:0;padding:14px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot .row{display:flex;gap:10px}
+.bot .back{flex:1;padding:14px;border-radius:14px;border:1.5px solid #CA8A04;background:transparent;color:#CA8A04;font-size:14px;font-weight:600;text-align:center}
+.bot .next{flex:2;padding:14px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:14px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+.bot .next.disabled{opacity:0.4;box-shadow:none}
+
+/* === VERSION A: Icon Grid with Categories === */
+.va .header{padding:16px 20px 0}
+.va .header h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.va .header h1 em{color:#CA8A04;font-style:italic}
+.va .header p{font-size:13px;color:#78716C;margin-top:6px}
+.va .header .summary{margin-top:12px;padding:10px 14px;background:#292524;border:1px solid #44403C;border-radius:10px;display:flex;align-items:center;gap:8px}
+.va .header .summary .dot{width:8px;height:8px;border-radius:50%;background:#CA8A04}
+.va .header .summary span{font-size:12px;color:#A8A29E}
+.va .header .summary strong{color:#CA8A04}
+
+.va .cat-label{padding:16px 20px 8px;font-size:11px;color:#78716C;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+
+.va .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.va .type-card{padding:16px;border-radius:14px;border:1.5px solid #44403C;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;background:transparent}
+.va .type-card.selected{background:rgba(202,138,4,0.08);border-color:#CA8A04}
+.va .type-card .tc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(202,138,4,0.06)}
+.va .type-card.selected .tc-icon{background:rgba(202,138,4,0.15)}
+.va .type-card .tc-text{font-size:13px;font-weight:500;color:#A8A29E}
+.va .type-card.selected .tc-text{color:#CA8A04;font-weight:600}
+.va .type-card .tc-check{margin-left:auto;width:20px;height:20px;border-radius:50%;border:1.5px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent}
+.va .type-card.selected .tc-check{background:#CA8A04;border-color:#CA8A04;color:#1C1917}
+
+/* === VERSION B: Large Tile Grid with Icons === */
+.vb .header{padding:16px 20px 0}
+.vb .header h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.vb .header h1 em{color:#CA8A04;font-style:italic}
+.vb .header p{font-size:13px;color:#78716C;margin-top:6px}
+
+.vb .count-bar{margin:14px 20px;padding:12px 16px;background:linear-gradient(135deg,rgba(202,138,4,0.08),rgba(202,138,4,0.02));border:1px solid rgba(202,138,4,0.15);border-radius:12px;display:flex;align-items:center;justify-content:space-between}
+.vb .count-bar .cb-left{font-size:13px;color:#A8A29E}
+.vb .count-bar .cb-left strong{color:#CA8A04;font-weight:700}
+.vb .count-bar .cb-right{font-size:11px;color:#78716C;padding:4px 10px;background:#292524;border-radius:8px}
+
+.vb .tile-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 16px}
+.vb .tile{padding:16px 8px;border-radius:16px;border:1.5px solid #44403C;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden}
+.vb .tile::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 50% 30%,rgba(202,138,4,0.06),transparent 70%);opacity:0;transition:opacity 0.25s}
+.vb .tile.selected{background:rgba(202,138,4,0.06);border-color:#CA8A04}
+.vb .tile.selected::before{opacity:1}
+.vb .tile .t-icon{font-size:28px;margin-bottom:8px;display:block;position:relative;z-index:1}
+.vb .tile .t-label{font-size:12px;font-weight:500;color:#A8A29E;position:relative;z-index:1}
+.vb .tile.selected .t-label{color:#CA8A04;font-weight:600}
+.vb .tile .t-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:#CA8A04;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1C1917;opacity:0;transition:opacity 0.2s;z-index:2}
+.vb .tile.selected .t-check{opacity:1}
+
+.vb .section-label{padding:4px 20px 8px;font-size:11px;color:#78716C;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Step 2: Select Beverage Types</h1>
+  <p>Choose the layout for beverage type selection</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: List-style with checkmarks -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>List Cards + Categories</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 2 of 5</div>
+        <div class="header">
+          <h1>What beverages do<br>you <em>need?</em></h1>
+          <p>Select all types for your event</p>
+          <div class="summary"><div class="dot"></div><span><strong>200</strong> guests &bull; Wedding</span></div>
+        </div>
+        <div class="cat-label">Hard Drinks</div>
+        <div class="type-grid">
+          <div class="type-card selected"><div class="tc-icon">&#127867;</div><div class="tc-text">Whiskey</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card selected"><div class="tc-icon">&#127864;</div><div class="tc-text">Vodka</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card"><div class="tc-icon">&#127865;</div><div class="tc-text">Gin</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card"><div class="tc-icon">&#127870;</div><div class="tc-text">Rum</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card"><div class="tc-icon">&#127863;</div><div class="tc-text">Brandy</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card selected"><div class="tc-icon">&#127866;</div><div class="tc-text">Beer</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card selected"><div class="tc-icon">&#127863;</div><div class="tc-text">Wine</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card"><div class="tc-icon">&#127381;</div><div class="tc-text">Shots</div><div class="tc-check">&#10003;</div></div>
+        </div>
+        <div class="cat-label">Non-Alcoholic</div>
+        <div class="type-grid" style="padding-bottom:16px">
+          <div class="type-card selected"><div class="tc-icon">&#129380;</div><div class="tc-text">Cold Drinks</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card"><div class="tc-icon">&#129347;</div><div class="tc-text">Juice</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card selected"><div class="tc-icon">&#128167;</div><div class="tc-text">Water</div><div class="tc-check">&#10003;</div></div>
+          <div class="type-card selected"><div class="tc-icon">&#10052;</div><div class="tc-text">Ice</div><div class="tc-check">&#10003;</div></div>
+        </div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Next — 7 selected</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Tile Grid -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Tile Grid + Glow</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 2 of 5</div>
+        <div class="header">
+          <h1>What beverages do<br>you <em>need?</em></h1>
+          <p>Tap to select — pick as many as you like</p>
+        </div>
+        <div class="count-bar">
+          <div class="cb-left"><strong>7</strong> types selected</div>
+          <div class="cb-right">200 guests &bull; Wedding</div>
+        </div>
+        <div class="section-label">Spirits & Alcohol</div>
+        <div class="tile-grid">
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#127867;</span><span class="t-label">Whiskey</span></div>
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#127864;</span><span class="t-label">Vodka</span></div>
+          <div class="tile"><span class="t-icon">&#127865;</span><span class="t-label">Gin</span></div>
+          <div class="tile"><span class="t-icon">&#127870;</span><span class="t-label">Rum</span></div>
+          <div class="tile"><span class="t-icon">&#127863;</span><span class="t-label">Brandy</span></div>
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#127866;</span><span class="t-label">Beer</span></div>
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#127863;</span><span class="t-label">Wine</span></div>
+          <div class="tile"><span class="t-icon">&#127381;</span><span class="t-label">Shots</span></div>
+          <div class="tile"><span class="t-icon">&#9889;</span><span class="t-label">Energy</span></div>
+        </div>
+        <div class="section-label">Non-Alcoholic & Extras</div>
+        <div class="tile-grid" style="padding-bottom:16px">
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#129380;</span><span class="t-label">Cold Drinks</span></div>
+          <div class="tile"><span class="t-icon">&#129347;</span><span class="t-label">Juice</span></div>
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#128167;</span><span class="t-label">Water</span></div>
+          <div class="tile selected"><div class="t-check">&#10003;</div><span class="t-icon">&#10052;</span><span class="t-label">Ice</span></div>
+          <div class="tile"><span class="t-icon">&#127864;</span><span class="t-label">Cocktails</span></div>
+        </div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Next — 7 selected</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

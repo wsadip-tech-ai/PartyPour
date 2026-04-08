@@ -94,6 +94,7 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                           final qty = wizard.estimatedQuantities[slug] ?? 0;
                           final originFilter = _originFilters[slug];
                           final icon = _iconMap[rule.iconName] ?? Icons.local_drink;
+                          final unit = rule.unit;
 
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +114,7 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(rule.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textLight)),
-                                        Text('$qty bottles needed', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _gold)),
+                                        Text('$qty $unit needed', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _gold)),
                                       ],
                                     ),
                                   ],
@@ -125,7 +126,7 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                                 child: Row(
                                   children: [null, 'local', 'imported'].map((origin) {
-                                    final label = origin == null ? 'All' : origin == 'local' ? 'Local' : 'Imported';
+                                    final label = origin == null ? 'All' : origin == 'local' ? 'Domestic' : 'Imported';
                                     final isActive = originFilter == origin;
                                     return Padding(
                                       padding: const EdgeInsets.only(right: 6),
@@ -155,12 +156,27 @@ class _WizardBrandsScreenState extends ConsumerState<WizardBrandsScreen> {
                                 productsFuture: _getProducts(slug),
                                 onBrandSelect: (product, variant) {
                                   final notifier = ref.read(wizardProvider.notifier);
-                                  final currentSelections = wizard.brandSelections[slug] ?? [];
-                                  final existing = currentSelections.where((s) => s.product.id == product.id).firstOrNull;
-                                  if (existing != null) {
-                                    notifier.removeBrandSelection(slug, currentSelections.indexOf(existing));
+                                  final currentSelections = List<BrandSelection>.from(wizard.brandSelections[slug] ?? []);
+                                  final existingIdx = currentSelections.indexWhere((s) => s.product.id == product.id);
+
+                                  if (existingIdx >= 0) {
+                                    // Toggle off — remove and redistribute
+                                    currentSelections.removeAt(existingIdx);
+                                  } else {
+                                    // Add new brand
+                                    currentSelections.add(BrandSelection(product: product, variant: variant, quantity: 0));
                                   }
-                                  notifier.addBrandSelection(slug, BrandSelection(product: product, variant: variant, quantity: qty));
+
+                                  // Redistribute estimated qty evenly across all brands
+                                  if (currentSelections.isNotEmpty) {
+                                    final perBrand = qty ~/ currentSelections.length;
+                                    final remainder = qty % currentSelections.length;
+                                    for (int i = 0; i < currentSelections.length; i++) {
+                                      currentSelections[i].quantity = perBrand + (i < remainder ? 1 : 0);
+                                    }
+                                  }
+
+                                  notifier.setBrandSelections(slug, currentSelections);
                                 },
                               ),
 
@@ -275,8 +291,11 @@ class _BrandList extends StatelessWidget {
               return _BrandCard(
                 product: product,
                 isSelected: isSelected,
-                selectedVariant: selectedVariant,
-                onSelect: (variant) => onBrandSelect(product, variant),
+                onTap: () {
+                  if (product.variants.isNotEmpty) {
+                    onBrandSelect(product, product.variants.first);
+                  }
+                },
               );
             }).toList(),
           ),
@@ -286,14 +305,13 @@ class _BrandList extends StatelessWidget {
   }
 }
 
-// === Dark themed brand card ===
+// === Dark themed brand card — whole card tappable ===
 class _BrandCard extends StatelessWidget {
   final Product product;
   final bool isSelected;
-  final Variant? selectedVariant;
-  final ValueChanged<Variant> onSelect;
+  final VoidCallback onTap;
 
-  const _BrandCard({required this.product, required this.isSelected, this.selectedVariant, required this.onSelect});
+  const _BrandCard({required this.product, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -301,86 +319,63 @@ class _BrandCard extends StatelessWidget {
     final initial = product.name.isNotEmpty ? product.name[0].toUpperCase() : '?';
     final gradientColors = _getColors(product.name);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: isSelected ? _gold.withValues(alpha: 0.04) : _surfaceDark,
-        border: Border.all(color: isSelected ? _gold : _border, width: 1.5),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image placeholder
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 60, height: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: gradientColors),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? _gold.withValues(alpha: 0.04) : _surfaceDark,
+          border: Border.all(color: isSelected ? _gold : _border, width: 1.5),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            // Image placeholder
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 60, height: 60,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: gradientColors),
+                ),
+                child: product.imageUrl != null
+                    ? Image.network(product.imageUrl!, fit: BoxFit.contain, errorBuilder: (_, __, ___) => Center(child: Text(initial, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white))))
+                    : Center(child: Text(initial, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white))),
               ),
-              child: product.imageUrl != null
-                  ? Image.network(product.imageUrl!, fit: BoxFit.contain, errorBuilder: (_, __, ___) => Center(child: Text(initial, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white))))
-                  : Center(child: Text(initial, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white))),
             ),
-          ),
-          const SizedBox(width: 14),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: Text(product.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight))),
-                    if (isSelected)
-                      Container(
-                        width: 20, height: 20,
-                        decoration: const BoxDecoration(color: _gold, shape: BoxShape.circle),
-                        child: const Icon(Icons.check, size: 13, color: _darkBg),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: isLocal ? const Color(0xFF4ade80).withValues(alpha: 0.12) : _goldLight.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+            const SizedBox(width: 14),
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight)),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isLocal ? const Color(0xFF4ade80).withValues(alpha: 0.12) : _goldLight.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(isLocal ? 'Domestic' : 'Imported', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isLocal ? const Color(0xFF4ade80) : _goldLight)),
                   ),
-                  child: Text(isLocal ? 'Local' : 'Imported', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isLocal ? const Color(0xFF4ade80) : _goldLight)),
-                ),
-                const SizedBox(height: 8),
-                // Size chips
-                Wrap(
-                  spacing: 6, runSpacing: 6,
-                  children: product.variants.map((variant) {
-                    final isVariantSelected = selectedVariant?.id == variant.id;
-                    return GestureDetector(
-                      onTap: () => onSelect(variant),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: isVariantSelected ? _gold.withValues(alpha: 0.08) : Colors.transparent,
-                          border: Border.all(color: isVariantSelected ? _gold : _border),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(variant.size, style: TextStyle(fontSize: 11, color: isVariantSelected ? _gold : _mutedLight)),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                if (selectedVariant != null) ...[
-                  const SizedBox(height: 8),
-                  Text('NPR ${selectedVariant!.unitPrice.toStringAsFixed(0)} /bottle', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _gold)),
-                  if (selectedVariant!.casePrice != null)
-                    Text('Case of ${selectedVariant!.caseSize}: NPR ${selectedVariant!.casePrice!.toStringAsFixed(0)}', style: const TextStyle(fontSize: 11, color: _muted)),
+                  if (product.variants.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text('from NPR ${product.lowestPrice.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _gold)),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+            // Checkmark
+            if (isSelected)
+              Container(
+                width: 24, height: 24,
+                decoration: const BoxDecoration(color: _gold, shape: BoxShape.circle),
+                child: const Icon(Icons.check, size: 15, color: _darkBg),
+              ),
+          ],
+        ),
       ),
     );
   }

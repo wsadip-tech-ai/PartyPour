@@ -158,9 +158,40 @@ class WizardEventScreen extends ConsumerWidget {
                       ),
                     ),
 
+                    // === LADIES MINI STEPPER ===
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(color: const Color(0xFFEC4899).withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.woman, color: Color(0xFFEC4899), size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Ladies', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight)),
+                                Text('Included in total guests', style: TextStyle(fontSize: 11, color: _muted)),
+                              ],
+                            ),
+                          ),
+                          _MiniStepper(
+                            value: wizard.ladiesCount,
+                            min: 0,
+                            max: wizard.totalPax - wizard.childrenCount,
+                            onChanged: (v) => ref.read(wizardProvider.notifier).setLadiesCount(v),
+                            onTap: () => _showNumberDialog(context, 'Ladies', wizard.ladiesCount, 0, wizard.totalPax - wizard.childrenCount, (v) => ref.read(wizardProvider.notifier).setLadiesCount(v)),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 24), color: _border),
 
-                    // === EVENT TYPE GRID ===
+                    // === EVENT TYPE DROPDOWN ===
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                       child: const Text("What's the occasion?", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textLight)),
@@ -168,35 +199,37 @@ class WizardEventScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: 1.15,
-                        children: eventTypes.map((e) {
-                          final isActive = wizard.eventType == e.$1;
-                          return GestureDetector(
-                            onTap: () => ref.read(wizardProvider.notifier).setEventType(e.$1),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              decoration: BoxDecoration(
-                                color: isActive ? _gold.withValues(alpha: 0.1) : Colors.transparent,
-                                border: Border.all(color: isActive ? _gold : _border, width: 1.5),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(e.$3, size: 24, color: isActive ? _gold : _muted),
-                                  const SizedBox(height: 6),
-                                  Text(e.$2, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: isActive ? _gold : _muted)),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: _surfaceDark,
+                          border: Border.all(color: _border),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: wizard.eventType,
+                            isExpanded: true,
+                            dropdownColor: _surfaceDark,
+                            icon: const Icon(Icons.keyboard_arrow_down, color: _gold),
+                            style: const TextStyle(fontSize: 14, color: _textLight, fontFamily: 'Inter'),
+                            items: eventTypes.map((e) {
+                              return DropdownMenuItem<String>(
+                                value: e.$1,
+                                child: Row(
+                                  children: [
+                                    Icon(e.$3, size: 20, color: _gold),
+                                    const SizedBox(width: 12),
+                                    Text(e.$2),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) ref.read(wizardProvider.notifier).setEventType(value);
+                            },
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -208,7 +241,7 @@ class WizardEventScreen extends ConsumerWidget {
                         onTap: () async {
                           final date = await showDatePicker(
                             context: context,
-                            initialDate: DateTime.now().add(const Duration(days: 7)),
+                            initialDate: wizard.eventDate ?? DateTime.now().add(const Duration(days: 7)),
                             firstDate: DateTime.now(),
                             lastDate: DateTime.now().add(const Duration(days: 365)),
                             builder: (context, child) => Theme(
@@ -240,6 +273,104 @@ class WizardEventScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // === TIME RANGE ===
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        children: [
+                          // Start time
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                final time = await showTimePicker(
+                                  context: context,
+                                  initialTime: wizard.eventStartTime ?? const TimeOfDay(hour: 18, minute: 0),
+                                  builder: (context, child) => Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.dark(primary: _gold, surface: _surfaceDark, onSurface: _textLight),
+                                    ),
+                                    child: child!,
+                                  ),
+                                );
+                                if (time != null) ref.read(wizardProvider.notifier).setEventStartTime(time);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: _surfaceDark,
+                                  border: Border.all(color: _border),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.schedule, color: _gold, size: 18),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('Start', style: TextStyle(fontSize: 10, color: _muted)),
+                                        Text(
+                                          wizard.eventStartTime == null ? '--:--' : wizard.eventStartTime!.format(context),
+                                          style: TextStyle(fontSize: 14, color: wizard.eventStartTime == null ? _muted : _textLight, fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text('to', style: TextStyle(fontSize: 12, color: _muted)),
+                          ),
+                          // End time
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                final time = await showTimePicker(
+                                  context: context,
+                                  initialTime: wizard.eventEndTime ?? const TimeOfDay(hour: 22, minute: 0),
+                                  builder: (context, child) => Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.dark(primary: _gold, surface: _surfaceDark, onSurface: _textLight),
+                                    ),
+                                    child: child!,
+                                  ),
+                                );
+                                if (time != null) ref.read(wizardProvider.notifier).setEventEndTime(time);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: _surfaceDark,
+                                  border: Border.all(color: _border),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.schedule, color: _gold, size: 18),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('End', style: TextStyle(fontSize: 10, color: _muted)),
+                                        Text(
+                                          wizard.eventEndTime == null ? '--:--' : wizard.eventEndTime!.format(context),
+                                          style: TextStyle(fontSize: 14, color: wizard.eventEndTime == null ? _muted : _textLight, fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24),

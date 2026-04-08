@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, FolderTree, Package, Percent, ShoppingCart, Wrench, Calculator, LogOut } from 'lucide-react'
+import { LayoutDashboard, FolderTree, Package, Percent, ShoppingCart, Wrench, Calculator, LogOut, FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
@@ -14,6 +14,7 @@ const navItems = [
   { href: '/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/equipment', label: 'Equipment', icon: Wrench },
   { href: '/estimation-rules', label: 'Estimation Rules', icon: Calculator },
+  { href: '/company-docs', label: 'AI Knowledge Base', icon: FileText },
 ]
 
 export function Sidebar() {
@@ -31,7 +32,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 border-r bg-card h-screen flex flex-col">
       <div className="p-6">
-        <h1 className="text-xl font-bold text-primary">RaksiChaiyo</h1>
+        <h1 className="text-xl font-bold text-primary">PartyPour</h1>
         <p className="text-xs text-muted-foreground">Admin Portal</p>
       </div>
       <nav className="flex-1 px-4 space-y-1">

@@ -223,7 +223,7 @@ class ProfileScreen extends ConsumerWidget {
                 _Divider(),
                 _ActionRow(
                   icon: Icons.info_outline_rounded,
-                  label: 'About RaksiChaiyo',
+                  label: 'About PartyPour',
                   isLast: true,
                   onTap: () {},
                 ),

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.appbar{padding:48px 20px 14px;display:flex;align-items:center;background:#1C1917}
+.appbar .back-btn{width:32px;height:32px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;color:#A8A29E;font-size:14px;margin-right:12px}
+.appbar h2{font-size:17px;font-weight:700;color:#FAFAF9}
+
+/* Shared form elements */
+.section-label{padding:16px 20px 8px;font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+.input-field{margin:0 20px 10px;padding:14px 16px;background:#292524;border:1.5px solid #44403C;border-radius:12px;color:#FAFAF9;font-size:14px;font-family:'Inter',sans-serif}
+.input-field.placeholder{color:#78716C}
+
+.bot-place{position:sticky;bottom:0;padding:16px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot-place .bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.bot-place .bp-label{font-size:13px;color:#A8A29E}
+.bot-place .bp-amount{font-size:22px;font-weight:800;color:#CA8A04}
+.bot-place .bp-btn{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:15px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+
+/* === VERSION A: Sectioned Form === */
+.va .order-summary{margin:8px 20px 0;padding:14px;background:rgba(202,138,4,0.04);border:1px solid rgba(202,138,4,0.12);border-radius:12px;display:flex;align-items:center;gap:10px}
+.va .order-summary .os-icon{font-size:18px}
+.va .order-summary .os-text{font-size:12px;color:#A8A29E}
+.va .order-summary .os-text strong{color:#CA8A04}
+
+.va .event-chips{display:flex;gap:6px;padding:0 20px;flex-wrap:wrap;margin-bottom:10px}
+.va .ev-chip{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:500;border:1.5px solid #44403C;color:#A8A29E;background:transparent}
+.va .ev-chip.active{background:rgba(202,138,4,0.1);border-color:#CA8A04;color:#CA8A04}
+
+.va .date-field{margin:0 20px 10px;padding:14px 16px;background:#292524;border:1.5px solid #44403C;border-radius:12px;display:flex;align-items:center;gap:10px}
+.va .date-field .df-icon{color:#CA8A04;font-size:18px}
+.va .date-field .df-text{color:#FAFAF9;font-size:14px}
+
+.va .guest-slider{padding:0 20px;margin-bottom:10px}
+.va .guest-slider .gs-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.va .guest-slider .gs-label{font-size:13px;color:#A8A29E}
+.va .guest-slider .gs-value{font-size:16px;font-weight:700;color:#CA8A04}
+.va .guest-slider .gs-bar{height:4px;background:#44403C;border-radius:2px;position:relative}
+.va .guest-slider .gs-bar::before{content:'';position:absolute;left:0;top:0;width:40%;height:100%;background:#CA8A04;border-radius:2px}
+.va .guest-slider .gs-bar .gs-thumb{position:absolute;left:40%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#CA8A04;border:2px solid #1C1917;box-shadow:0 2px 6px rgba(202,138,4,0.3)}
+
+/* === VERSION B: Card Sections === */
+.vb .total-banner{margin:8px 20px;padding:16px;background:linear-gradient(135deg,rgba(202,138,4,0.08),rgba(202,138,4,0.02));border:1.5px solid rgba(202,138,4,0.2);border-radius:14px;text-align:center}
+.vb .total-banner .tb-label{font-size:11px;color:#A8A29E;text-transform:uppercase;letter-spacing:0.06em}
+.vb .total-banner .tb-amount{font-size:26px;font-weight:800;color:#CA8A04;margin-top:4px}
+.vb .total-banner .tb-detail{font-size:11px;color:#78716C;margin-top:2px}
+
+.vb .form-card{margin:12px 20px;background:#292524;border:1px solid #44403C;border-radius:14px;padding:16px}
+.vb .form-card .fc-title{font-size:13px;font-weight:700;color:#FAFAF9;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.vb .form-card .fc-title .fc-icon{font-size:16px;color:#CA8A04}
+.vb .form-card .fc-input{width:100%;padding:12px 14px;background:#1C1917;border:1.5px solid #44403C;border-radius:10px;color:#FAFAF9;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:8px}
+.vb .form-card .fc-input.placeholder{color:#78716C}
+.vb .form-card .fc-input:last-child{margin-bottom:0}
+
+.vb .form-card .fc-chips{display:flex;gap:6px;flex-wrap:wrap}
+.vb .form-card .fc-chip{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:500;border:1.5px solid #44403C;color:#A8A29E}
+.vb .form-card .fc-chip.active{background:rgba(202,138,4,0.1);border-color:#CA8A04;color:#CA8A04}
+
+.vb .form-card .fc-date{padding:12px 14px;background:#1C1917;border:1.5px solid #44403C;border-radius:10px;display:flex;align-items:center;gap:10px}
+.vb .form-card .fc-date .fd-icon{color:#CA8A04;font-size:16px}
+.vb .form-card .fc-date .fd-text{font-size:14px;color:#FAFAF9}
+.vb .form-card .fc-date .fd-arrow{margin-left:auto;color:#78716C}
+
+.vb .form-card .fc-guest{display:flex;align-items:center;justify-content:space-between}
+.vb .form-card .fc-guest .fg-label{font-size:13px;color:#A8A29E}
+.vb .form-card .fc-guest .fg-value{font-size:18px;font-weight:700;color:#CA8A04}
+
+.vb .secure-note{margin:8px 20px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:#78716C}
+.vb .secure-note .sn-icon{font-size:14px;color:#4ade80}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Checkout Screen</h1>
+  <p>Delivery details and order confirmation</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Sectioned Form -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Flat Sectioned Form</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Checkout</h2></div>
+
+        <div class="order-summary"><span class="os-icon">&#128230;</span><span class="os-text"><strong>5 items</strong> &bull; NPR 245,000 &bull; 475 bottles</span></div>
+
+        <div class="section-label">Event Details</div>
+        <div class="event-chips">
+          <div class="ev-chip active">&#10084; Wedding</div>
+          <div class="ev-chip">&#127874; Birthday</div>
+          <div class="ev-chip">&#128188; Corporate</div>
+          <div class="ev-chip">&#127968; House Party</div>
+        </div>
+        <div class="date-field"><span class="df-icon">&#128197;</span><span class="df-text">Nov 4, 2026</span></div>
+        <div class="guest-slider">
+          <div class="gs-row"><span class="gs-label">Guests</span><span class="gs-value">200</span></div>
+          <div class="gs-bar"><div class="gs-thumb"></div></div>
+        </div>
+
+        <div class="section-label">Delivery Details</div>
+        <div class="input-field">Kathmandu, Nepal</div>
+        <div class="input-field">+977 9841234567</div>
+        <div class="input-field placeholder">Special instructions (optional)</div>
+
+        <div style="height:16px"></div>
+        <div class="bot-place">
+          <div class="bp-row"><span class="bp-label">Order Total</span><span class="bp-amount">NPR 245,000</span></div>
+          <div class="bp-btn">Confirm & Place Order</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Card Sections -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Card Groups</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Checkout</h2></div>
+
+        <!-- Total banner -->
+        <div class="total-banner">
+          <div class="tb-label">Order Total</div>
+          <div class="tb-amount">NPR 245,000</div>
+          <div class="tb-detail">5 items &bull; 475 bottles</div>
+        </div>
+
+        <!-- Event card -->
+        <div class="form-card">
+          <div class="fc-title"><span class="fc-icon">&#127881;</span> Event Details</div>
+          <div class="fc-chips">
+            <div class="fc-chip active">&#10084; Wedding</div>
+            <div class="fc-chip">&#127874; Birthday</div>
+            <div class="fc-chip">&#128188; Corporate</div>
+            <div class="fc-chip">&#127968; Party</div>
+          </div>
+          <div style="height:10px"></div>
+          <div class="fc-date"><span class="fd-icon">&#128197;</span><span class="fd-text">Nov 4, 2026</span><span class="fd-arrow">&#8250;</span></div>
+          <div style="height:8px"></div>
+          <div class="fc-guest"><span class="fg-label">Guests</span><span class="fg-value">200</span></div>
+        </div>
+
+        <!-- Delivery card -->
+        <div class="form-card">
+          <div class="fc-title"><span class="fc-icon">&#128666;</span> Delivery Details</div>
+          <div class="fc-input">Kathmandu, Nepal</div>
+          <div class="fc-input">+977 9841234567</div>
+          <div class="fc-input placeholder">Special instructions (optional)</div>
+        </div>
+
+        <!-- Secure note -->
+        <div class="secure-note"><span class="sn-icon">&#128274;</span> Your order details are secure. We'll confirm via call.</div>
+
+        <div style="height:8px"></div>
+        <div class="bot-place">
+          <div class="bp-btn">Confirm & Place Order</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Home Screen Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-family:'Playfair Display',serif;font-size:2.4rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+.option:nth-child(3){animation-delay:0.5s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#fff;text-align:center}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#FAFAF9}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:1240px){.grid{gap:24px}.phone{width:340px;height:740px;border-radius:38px}}
+@media(max-width:1080px){.grid{flex-direction:column;align-items:center}}
+
+/* ============== SHARED ============== */
+.dark-bar{background:#1C1917;padding:48px 20px 14px;display:flex;align-items:center;justify-content:space-between}
+.dark-bar .brand{font-family:'Playfair Display',serif;color:#CA8A04;font-size:18px;font-weight:700}
+.dark-bar .icons{display:flex;gap:14px;color:#78716C;font-size:18px}
+.bottom-nav{display:flex;justify-content:space-around;padding:10px 0 6px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.06);position:sticky;bottom:0}
+.nav-item{text-align:center;font-size:10px;color:#78716C}
+.nav-item.active{color:#CA8A04}
+.nav-item .ic{font-size:20px;display:block;margin-bottom:2px}
+.nav-item .dot{width:4px;height:4px;border-radius:50%;background:#CA8A04;margin:3px auto 0}
+
+/* ============== VERSION A: Hero Card ============== */
+.sa .hero-card{margin:16px;border-radius:20px;background:linear-gradient(145deg,#1C1917 0%,#292524 100%);padding:28px 22px;position:relative;overflow:hidden}
+.sa .hero-card::before{content:'';position:absolute;top:-30px;right:-30px;width:150px;height:150px;background:radial-gradient(circle,rgba(202,138,4,0.15),transparent 65%)}
+.sa .hero-card .pre{font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+.sa .hero-card h2{font-family:'Playfair Display',serif;font-size:24px;color:#FAFAF9;margin-top:10px;line-height:1.2}
+.sa .hero-card h2 em{font-style:italic;color:#CA8A04}
+.sa .hero-card p{color:#A8A29E;font-size:13px;margin-top:8px;line-height:1.5}
+.sa .hero-card .cta{display:inline-block;margin-top:18px;padding:13px 28px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-weight:700;font-size:14px;border-radius:12px;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(202,138,4,0.3)}
+.sa .hero-card .guest-count{position:absolute;bottom:20px;right:20px;background:rgba(202,138,4,0.1);border:1px solid rgba(202,138,4,0.2);border-radius:10px;padding:8px 12px;text-align:center}
+.sa .hero-card .guest-count .num{font-size:20px;font-weight:800;color:#CA8A04}
+.sa .hero-card .guest-count .lbl{font-size:9px;color:#A8A29E;text-transform:uppercase;letter-spacing:0.05em}
+
+.sa .quick-row{display:flex;gap:10px;padding:0 16px;margin-top:4px}
+.sa .quick-card{flex:1;background:#fff;border:1px solid #E7E5E4;border-radius:14px;padding:16px 12px;text-align:center}
+.sa .quick-card .qic{font-size:24px;margin-bottom:6px;display:block}
+.sa .quick-card .qt{font-size:12px;font-weight:600;color:#1C1917}
+.sa .quick-card .qs{font-size:10px;color:#A8A29E;margin-top:2px}
+
+.sa .section-head{padding:20px 16px 10px;display:flex;justify-content:space-between;align-items:center}
+.sa .section-head h3{font-size:15px;font-weight:700;color:#1C1917}
+.sa .section-head a{font-size:12px;color:#CA8A04;font-weight:600}
+
+.sa .brands-scroll{display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none}
+.sa .brands-scroll::-webkit-scrollbar{display:none}
+.sa .brand-card{min-width:130px;background:#fff;border:1px solid #E7E5E4;border-radius:14px;padding:12px;flex-shrink:0}
+.sa .brand-card .bimg{width:100%;height:80px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin-bottom:8px}
+.sa .brand-card .bimg.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.sa .brand-card .bimg.g2{background:linear-gradient(135deg,#1C1917,#44403C)}
+.sa .brand-card .bimg.g3{background:linear-gradient(135deg,#2E7D32,#81C784)}
+.sa .brand-card .bname{font-size:12px;font-weight:600;color:#1C1917}
+.sa .brand-card .bprice{font-size:11px;color:#CA8A04;font-weight:600;margin-top:2px}
+
+/* ============== VERSION B: Dashboard Style ============== */
+.sb .greeting{padding:16px 20px 0}
+.sb .greeting h2{font-size:22px;font-weight:800;color:#1C1917}
+.sb .greeting h2 span{color:#CA8A04}
+.sb .greeting p{color:#A8A29E;font-size:13px;margin-top:4px}
+
+.sb .stats-row{display:flex;gap:10px;padding:16px 20px}
+.sb .stat{flex:1;background:#1C1917;border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.sb .stat::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(202,138,4,0.12),transparent);border-radius:0 14px 0 50%}
+.sb .stat .sn{font-size:22px;font-weight:800;color:#CA8A04}
+.sb .stat .sl{font-size:10px;color:#78716C;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+
+.sb .action-card{margin:0 20px;background:linear-gradient(135deg,#CA8A04,#EAB308);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px}
+.sb .action-card .ac-icon{width:50px;height:50px;background:rgba(28,25,23,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.sb .action-card .ac-text h3{font-size:16px;font-weight:700;color:#1C1917}
+.sb .action-card .ac-text p{font-size:12px;color:rgba(28,25,23,0.7);margin-top:2px}
+.sb .action-card .ac-arrow{margin-left:auto;font-size:20px;color:#1C1917}
+
+.sb .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px}
+.sb .cat-item{background:#fff;border:1px solid #E7E5E4;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px}
+.sb .cat-item .ci-icon{width:40px;height:40px;background:#FEF3C7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.sb .cat-item .ci-text .ct{font-size:13px;font-weight:600;color:#1C1917}
+.sb .cat-item .ci-text .cn{font-size:10px;color:#A8A29E}
+
+/* ============== VERSION C: Immersive Dark ============== */
+.sc{background:#1C1917 !important}
+.sc .hero-img{width:100%;height:260px;background:linear-gradient(180deg,#292524 0%,#1C1917 50%,rgba(28,25,23,0) 100%);position:relative;padding:48px 22px 0}
+.sc .hero-img::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(202,138,4,0.08) 0%,transparent 60%)}
+.sc .hero-img .tagline{font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.15em;font-weight:600}
+.sc .hero-img h2{font-family:'Playfair Display',serif;font-size:26px;color:#FAFAF9;margin-top:12px;line-height:1.2}
+.sc .hero-img h2 em{color:#CA8A04;font-style:italic}
+.sc .hero-img p{color:#78716C;font-size:13px;margin-top:10px}
+
+.sc .action-row{display:flex;gap:10px;padding:0 20px;margin-top:-20px;position:relative;z-index:2}
+.sc .action-btn{flex:1;padding:16px;border-radius:14px;text-align:center;font-size:13px;font-weight:700}
+.sc .action-btn.primary{background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;box-shadow:0 4px 16px rgba(202,138,4,0.3)}
+.sc .action-btn.secondary{background:#292524;border:1px solid #44403C;color:#FAFAF9}
+
+.sc .section-head{padding:24px 20px 10px;display:flex;justify-content:space-between;align-items:center}
+.sc .section-head h3{font-size:15px;font-weight:700;color:#FAFAF9}
+.sc .section-head a{font-size:12px;color:#CA8A04;font-weight:600}
+
+.sc .type-chips{display:flex;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.sc .type-chips::-webkit-scrollbar{display:none}
+.sc .chip{padding:10px 18px;border-radius:24px;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;border:1px solid #44403C;color:#A8A29E;background:#292524}
+.sc .chip.active{background:rgba(202,138,4,0.12);border-color:rgba(202,138,4,0.3);color:#EAB308}
+
+.sc .product-grid{display:flex;gap:10px;padding:16px 20px;overflow-x:auto;scrollbar-width:none}
+.sc .product-grid::-webkit-scrollbar{display:none}
+.sc .prod{min-width:155px;background:#292524;border:1px solid #44403C;border-radius:16px;padding:12px;flex-shrink:0}
+.sc .prod .pimg{width:100%;height:100px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#CA8A04;margin-bottom:10px}
+.sc .prod .pimg.p1{background:linear-gradient(135deg,#44403C,#292524)}
+.sc .prod .pimg.p2{background:linear-gradient(135deg,#292524,#1C1917)}
+.sc .prod .pimg.p3{background:linear-gradient(135deg,#44403C,#57534e)}
+.sc .prod .pname{font-size:13px;font-weight:600;color:#FAFAF9}
+.sc .prod .porigin{display:inline-block;margin-top:4px;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.sc .prod .porigin.local{background:rgba(74,222,128,0.12);color:#4ade80}
+.sc .prod .porigin.imported{background:rgba(234,179,8,0.12);color:#EAB308}
+.sc .prod .pprice{font-size:13px;font-weight:700;color:#CA8A04;margin-top:6px}
+
+.sc .promo-card{margin:16px 20px;background:linear-gradient(135deg,rgba(202,138,4,0.08),rgba(202,138,4,0.02));border:1px solid rgba(202,138,4,0.15);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px}
+.sc .promo-card .promo-icon{font-size:28px}
+.sc .promo-card .promo-text h4{font-size:14px;font-weight:700;color:#FAFAF9}
+.sc .promo-card .promo-text p{font-size:11px;color:#78716C;margin-top:2px}
+
+.sc .bottom-nav{background:#1C1917;border-top:1px solid #292524}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Home Screen Options</h1>
+  <p>Pick the experience that fits RaksiChaiyo best</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Hero Card -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Hero Card + Quick Actions</span></div>
+    <div class="phone">
+      <div class="screen sa">
+        <div class="dark-bar"><span class="brand">RaksiChaiyo</span><div class="icons">&#128276; &#9776;</div></div>
+        <div class="hero-card">
+          <div class="pre">Plan your event</div>
+          <h2>The <em>perfect</em> pour<br>for every occasion</h2>
+          <p>From intimate gatherings to grand celebrations</p>
+          <div class="cta">Start Your Order</div>
+          <div class="guest-count"><div class="num">200</div><div class="lbl">avg guests</div></div>
+        </div>
+        <div class="quick-row">
+          <div class="quick-card"><span class="qic">&#127867;</span><div class="qt">Calculator</div><div class="qs">Estimate cost</div></div>
+          <div class="quick-card"><span class="qic">&#128218;</span><div class="qt">Catalog</div><div class="qs">Browse all</div></div>
+          <div class="quick-card"><span class="qic">&#128172;</span><div class="qt">Support</div><div class="qs">Get help</div></div>
+        </div>
+        <div class="section-head"><h3>Popular Brands</h3><a>View all ></a></div>
+        <div class="brands-scroll">
+          <div class="brand-card"><div class="bimg g1">JW</div><div class="bname">Johnnie Walker</div><div class="bprice">NPR 3,200</div></div>
+          <div class="brand-card"><div class="bimg g2">OD</div><div class="bname">Old Durbar</div><div class="bprice">NPR 700</div></div>
+          <div class="brand-card"><div class="bimg g3">TB</div><div class="bname">Tuborg</div><div class="bprice">NPR 380</div></div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="ic">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="ic">&#128230;</span>Orders</div>
+          <div class="nav-item"><span class="ic">&#128100;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Dashboard -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Dashboard + Stats</span></div>
+    <div class="phone">
+      <div class="screen sb">
+        <div class="dark-bar"><span class="brand">RaksiChaiyo</span><div class="icons">&#128276; &#9776;</div></div>
+        <div class="greeting"><h2>Namaste, <span>Sadip</span></h2><p>What are we planning today?</p></div>
+        <div class="stats-row">
+          <div class="stat"><div class="sn">62+</div><div class="sl">Brands</div></div>
+          <div class="stat"><div class="sn">24hr</div><div class="sl">Delivery</div></div>
+          <div class="stat"><div class="sn">4.9</div><div class="sl">Rating</div></div>
+        </div>
+        <div class="action-card">
+          <div class="ac-icon">&#127881;</div>
+          <div class="ac-text"><h3>Start Your Order</h3><p>5-step guided wizard</p></div>
+          <div class="ac-arrow">&#8594;</div>
+        </div>
+        <div class="section-head" style="padding-top:16px"><h3 style="color:#1C1917">Browse Categories</h3></div>
+        <div class="cat-grid">
+          <div class="cat-item"><div class="ci-icon">&#127867;</div><div class="ci-text"><div class="ct">Whiskey</div><div class="cn">7 brands</div></div></div>
+          <div class="cat-item"><div class="ci-icon">&#127866;</div><div class="ci-text"><div class="ct">Beer</div><div class="cn">5 brands</div></div></div>
+          <div class="cat-item"><div class="ci-icon">&#127863;</div><div class="ci-text"><div class="ct">Wine</div><div class="cn">6 brands</div></div></div>
+          <div class="cat-item"><div class="ci-icon">&#129380;</div><div class="ci-text"><div class="ct">Vodka</div><div class="cn">3 brands</div></div></div>
+        </div>
+        <div class="section-head"><h3 style="color:#1C1917">Quick Actions</h3></div>
+        <div style="display:flex;gap:10px;padding:0 20px 16px">
+          <div style="flex:1;padding:14px;background:#fff;border:1px solid #E7E5E4;border-radius:12px;text-align:center;font-size:12px;font-weight:600;color:#1C1917">&#128200; Price Calculator</div>
+          <div style="flex:1;padding:14px;background:#fff;border:1px solid #E7E5E4;border-radius:12px;text-align:center;font-size:12px;font-weight:600;color:#1C1917">&#128172; Chat Support</div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="ic">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="ic">&#128230;</span>Orders</div>
+          <div class="nav-item"><span class="ic">&#128100;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION C: Immersive Dark -->
+  <div class="option">
+    <div class="label"><h2>Version C</h2><span>Full Dark Immersive</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen sc">
+        <div class="dark-bar"><span class="brand">RaksiChaiyo</span><div class="icons">&#128276; &#9776;</div></div>
+        <div class="hero-img">
+          <div class="tagline">Premium Event Beverages</div>
+          <h2>Curate your <em>perfect</em> event bar</h2>
+          <p>62+ brands, delivered to your celebration</p>
+        </div>
+        <div class="action-row">
+          <div class="action-btn primary">Start Your Order</div>
+          <div class="action-btn secondary">Calculator</div>
+        </div>
+        <div class="section-head"><h3>Browse by Type</h3><a>See all ></a></div>
+        <div class="type-chips">
+          <div class="chip active">Whiskey</div>
+          <div class="chip">Beer</div>
+          <div class="chip">Vodka</div>
+          <div class="chip">Wine</div>
+          <div class="chip">Rum</div>
+          <div class="chip">Gin</div>
+        </div>
+        <div class="section-head"><h3>Popular Picks</h3><a>View all ></a></div>
+        <div class="product-grid">
+          <div class="prod"><div class="pimg p1">JW</div><div class="pname">Johnnie Walker</div><div class="porigin imported">Imported</div><div class="pprice">NPR 3,200</div></div>
+          <div class="prod"><div class="pimg p2">OD</div><div class="pname">Old Durbar</div><div class="porigin local">Local</div><div class="pprice">NPR 700</div></div>
+          <div class="prod"><div class="pimg p3">TB</div><div class="pname">Tuborg</div><div class="porigin local">Local</div><div class="pprice">NPR 380</div></div>
+        </div>
+        <div class="promo-card">
+          <div class="promo-icon">&#127881;</div>
+          <div class="promo-text"><h4>Wedding Season Special</h4><p>Get 10% off on orders above NPR 50,000</p></div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="ic">&#9750;</span>Home<div class="dot"></div></div>
+          <div class="nav-item"><span class="ic">&#128230;</span>Orders</div>
+          <div class="nav-item"><span class="ic">&#128100;</span>Profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Price Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+/* App bar */
+.appbar{padding:48px 20px 14px;display:flex;align-items:center;gap:12px;background:#1C1917}
+.appbar .close{width:32px;height:32px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;color:#A8A29E;font-size:14px}
+.appbar h2{font-size:17px;font-weight:700;color:#FAFAF9}
+
+/* Sticky total bar */
+.total-bar{position:sticky;bottom:0;padding:14px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between}
+.total-bar .tb-label{font-size:14px;color:#FAFAF9}
+.total-bar .tb-amount{font-size:22px;font-weight:800;color:#CA8A04}
+
+/* === VERSION A: Editable Cards with Toggle === */
+.va .hint{padding:12px 20px;font-size:13px;color:#78716C}
+
+.va .item-card{margin:0 20px 10px;background:#292524;border:1px solid #44403C;border-radius:14px;padding:14px}
+.va .item-card .ic-top{display:flex;align-items:start;gap:12px}
+.va .item-card .ic-img{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.va .item-card .ic-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.va .item-card .ic-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.va .item-card .ic-info{flex:1}
+.va .item-card .ic-info .ic-name{font-size:14px;font-weight:600;color:#FAFAF9}
+.va .item-card .ic-info .ic-cat{font-size:10px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-top:2px}
+.va .item-card .ic-info .ic-size{font-size:11px;color:#78716C;margin-top:4px}
+
+.va .item-card .ic-controls{margin-top:12px;display:flex;align-items:center;gap:10px}
+.va .item-card .ic-toggle{display:flex;background:#1C1917;border-radius:8px;padding:2px;flex-shrink:0}
+.va .item-card .ic-toggle .tg{padding:6px 12px;border-radius:6px;font-size:10px;font-weight:500;color:#78716C;cursor:pointer}
+.va .item-card .ic-toggle .tg.active{background:#CA8A04;color:#1C1917;font-weight:600}
+
+.va .item-card .ic-qty{display:flex;align-items:center;gap:6px;margin-left:auto}
+.va .item-card .ic-qty .qb{width:28px;height:28px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:14px;color:#CA8A04}
+.va .item-card .ic-qty .qv{font-size:18px;font-weight:700;color:#FAFAF9;min-width:28px;text-align:center}
+
+.va .item-card .ic-price{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.va .item-card .ic-price .ip-unit{font-size:11px;color:#78716C}
+.va .item-card .ic-price .ip-total{font-size:15px;font-weight:700;color:#CA8A04}
+
+/* === VERSION B: Compact Table with Live Updates === */
+.vb .live-banner{margin:10px 20px;padding:10px 14px;background:linear-gradient(135deg,rgba(202,138,4,0.06),rgba(202,138,4,0.02));border:1px solid rgba(202,138,4,0.12);border-radius:10px;display:flex;align-items:center;gap:8px}
+.vb .live-banner .lb-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.vb .live-banner .lb-text{font-size:11px;color:#A8A29E}
+
+.vb .cat-label{padding:12px 20px 6px;font-size:11px;color:#CA8A04;text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+
+.vb .table-row{display:flex;align-items:center;padding:10px 20px;gap:10px}
+.vb .table-row:nth-child(even){background:rgba(255,255,255,0.01)}
+.vb .table-row .tr-img{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.vb .table-row .tr-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.vb .table-row .tr-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.vb .table-row .tr-img.g3{background:linear-gradient(135deg,#1565C0,#64B5F6)}
+
+.vb .table-row .tr-info{flex:1;min-width:0}
+.vb .table-row .tr-info .tr-name{font-size:13px;font-weight:500;color:#FAFAF9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vb .table-row .tr-info .tr-detail{font-size:10px;color:#78716C}
+
+.vb .table-row .tr-toggle{display:flex;background:#292524;border-radius:6px;padding:2px;flex-shrink:0}
+.vb .table-row .tr-toggle .tg{padding:4px 8px;border-radius:4px;font-size:9px;font-weight:500;color:#78716C;cursor:pointer}
+.vb .table-row .tr-toggle .tg.active{background:#CA8A04;color:#1C1917;font-weight:600}
+
+.vb .table-row .tr-qty{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.vb .table-row .tr-qty .qb{width:22px;height:22px;border-radius:6px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:10px;color:#CA8A04}
+.vb .table-row .tr-qty .qv{font-size:14px;font-weight:700;color:#FAFAF9;min-width:22px;text-align:center}
+
+.vb .table-row .tr-price{min-width:60px;text-align:right;font-size:13px;font-weight:700;color:#CA8A04;flex-shrink:0}
+
+.vb .divider{height:1px;background:#44403C;margin:4px 20px}
+
+.vb .summary-section{margin:12px 20px;padding:14px;background:#292524;border:1px solid #44403C;border-radius:12px}
+.vb .summary-section .ss-row{display:flex;justify-content:space-between;font-size:12px;color:#A8A29E;margin-bottom:4px}
+.vb .summary-section .ss-row.grand{font-size:16px;font-weight:800;color:#CA8A04;padding-top:8px;border-top:1px solid #44403C;margin-top:4px}
+.vb .summary-section .ss-row.grand span:first-child{color:#FAFAF9}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Price Calculator</h1>
+  <p>Play with quantities and see prices update in real-time</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Editable Cards -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Full Cards + Unit/Case Toggle</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="appbar"><div class="close">&#10005;</div><h2>Price Calculator</h2></div>
+        <div class="hint">Adjust quantities and toggle unit/case to see price changes.</div>
+
+        <div class="item-card">
+          <div class="ic-top">
+            <div class="ic-img g1">JW</div>
+            <div class="ic-info">
+              <div class="ic-name">Johnnie Walker Red</div>
+              <div class="ic-cat">Whiskey</div>
+              <div class="ic-size">750ml</div>
+            </div>
+          </div>
+          <div class="ic-controls">
+            <div class="ic-toggle"><div class="tg active">Bottle</div><div class="tg">Case (12)</div></div>
+            <div class="ic-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div>
+          </div>
+          <div class="ic-price"><span class="ip-unit">NPR 3,200 /bottle</span><span class="ip-total">NPR 80,000</span></div>
+        </div>
+
+        <div class="item-card">
+          <div class="ic-top">
+            <div class="ic-img g2">TB</div>
+            <div class="ic-info">
+              <div class="ic-name">Tuborg</div>
+              <div class="ic-cat">Beer</div>
+              <div class="ic-size">650ml</div>
+            </div>
+          </div>
+          <div class="ic-controls">
+            <div class="ic-toggle"><div class="tg">Bottle</div><div class="tg active">Case (12)</div></div>
+            <div class="ic-qty"><div class="qb">-</div><div class="qv">17</div><div class="qb">+</div></div>
+          </div>
+          <div class="ic-price"><span class="ip-unit">NPR 4,200 /case</span><span class="ip-total">NPR 71,400</span></div>
+        </div>
+
+        <div class="item-card">
+          <div class="ic-top">
+            <div class="ic-img g2">CC</div>
+            <div class="ic-info">
+              <div class="ic-name">Coca-Cola</div>
+              <div class="ic-cat">Cold Drinks</div>
+              <div class="ic-size">2.25L</div>
+            </div>
+          </div>
+          <div class="ic-controls">
+            <div class="ic-toggle"><div class="tg active">Bottle</div><div class="tg">Case (6)</div></div>
+            <div class="ic-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div>
+          </div>
+          <div class="ic-price"><span class="ip-unit">NPR 180 /bottle</span><span class="ip-total">NPR 9,000</span></div>
+        </div>
+
+        <div class="total-bar"><span class="tb-label">Total</span><span class="tb-amount">NPR 160,400</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Compact Table -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Compact Table + Live Updates</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="appbar"><div class="close">&#10005;</div><h2>Price Calculator</h2></div>
+
+        <div class="live-banner"><div class="lb-dot"></div><span class="lb-text">Prices update as you change quantities</span></div>
+
+        <div class="cat-label">Whiskey</div>
+        <div class="table-row">
+          <div class="tr-img g1">JW</div>
+          <div class="tr-info"><div class="tr-name">Johnnie Walker Red</div><div class="tr-detail">750ml</div></div>
+          <div class="tr-toggle"><div class="tg active">Btl</div><div class="tg">Case</div></div>
+          <div class="tr-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div>
+          <div class="tr-price">80,000</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="cat-label">Beer</div>
+        <div class="table-row">
+          <div class="tr-img g2">TB</div>
+          <div class="tr-info"><div class="tr-name">Tuborg</div><div class="tr-detail">650ml</div></div>
+          <div class="tr-toggle"><div class="tg">Btl</div><div class="tg active">Case</div></div>
+          <div class="tr-qty"><div class="qb">-</div><div class="qv">17</div><div class="qb">+</div></div>
+          <div class="tr-price">71,400</div>
+        </div>
+        <div class="table-row">
+          <div class="tr-img g2">GK</div>
+          <div class="tr-info"><div class="tr-name">Gorkha</div><div class="tr-detail">650ml</div></div>
+          <div class="tr-toggle"><div class="tg active">Btl</div><div class="tg">Case</div></div>
+          <div class="tr-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div>
+          <div class="tr-price">80,000</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="cat-label">Cold Drinks</div>
+        <div class="table-row">
+          <div class="tr-img g2">CC</div>
+          <div class="tr-info"><div class="tr-name">Coca-Cola</div><div class="tr-detail">2.25L</div></div>
+          <div class="tr-toggle"><div class="tg active">Btl</div><div class="tg">Case</div></div>
+          <div class="tr-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div>
+          <div class="tr-price">9,000</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="cat-label">Water</div>
+        <div class="table-row">
+          <div class="tr-img g3">AN</div>
+          <div class="tr-info"><div class="tr-name">Aqua Nepal</div><div class="tr-detail">1L</div></div>
+          <div class="tr-toggle"><div class="tg">Btl</div><div class="tg active">Case</div></div>
+          <div class="tr-qty"><div class="qb">-</div><div class="qv">9</div><div class="qb">+</div></div>
+          <div class="tr-price">2,880</div>
+        </div>
+
+        <div class="summary-section">
+          <div class="ss-row"><span>Bottles</span><span>301</span></div>
+          <div class="ss-row"><span>Categories</span><span>4 types</span></div>
+          <div class="ss-row"><span>Savings (case)</span><span style="color:#4ade80">- NPR 5,600</span></div>
+          <div class="ss-row grand"><span>Total</span><span>NPR 243,280</span></div>
+        </div>
+
+        <div style="height:16px"></div>
+        <div class="total-bar"><span class="tb-label">Total</span><span class="tb-amount">NPR 243,280</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

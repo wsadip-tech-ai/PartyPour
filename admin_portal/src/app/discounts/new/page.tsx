@@ -20,7 +20,7 @@ export default function NewDiscountPage() {
   const [validFrom, setValidFrom] = useState('')
   const [validUntil, setValidUntil] = useState('')
 
-  useEffect(() => { supabase.from('variants').select('*, products(name)').eq('is_active', true).order('size').then(({ data }) => setVariants(data ?? [])) }, [])
+  useEffect(() => { supabase.from('variants').select('*, products(name)').eq('is_active', true).order('size').then(({ data }: { data: any }) => setVariants(data ?? [])) }, [])
 
   const handleSave = async () => {
     const { error } = await supabase.from('discounts').insert({ variant_id: variantId || null, type, value: parseFloat(value), valid_from: new Date(validFrom).toISOString(), valid_until: new Date(validUntil).toISOString() })

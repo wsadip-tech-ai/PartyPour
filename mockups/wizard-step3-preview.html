@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Step 3: Quantities</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+.progress{padding:48px 20px 0;display:flex;gap:4px}
+.seg{flex:1;height:3px;border-radius:2px;background:#44403C}
+.seg.done{background:#CA8A04}
+.step-lbl{padding:8px 20px 0;font-size:11px;color:#78716C;letter-spacing:0.06em}
+.bot{position:sticky;bottom:0;padding:14px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot .row{display:flex;gap:10px}
+.bot .back{flex:1;padding:14px;border-radius:14px;border:1.5px solid #CA8A04;background:transparent;color:#CA8A04;font-size:14px;font-weight:600;text-align:center}
+.bot .next{flex:2;padding:14px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:14px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+
+/* === VERSION A: Clean List === */
+.va .header{padding:16px 20px 0}
+.va .header h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.va .header h1 em{color:#CA8A04;font-style:italic}
+.va .header .sub{font-size:13px;color:#78716C;margin-top:4px}
+.va .header .ctx{margin-top:10px;font-size:12px;color:#A8A29E}
+.va .header .ctx strong{color:#CA8A04}
+
+.va .list{padding:16px 20px}
+.va .item{background:#292524;border:1px solid #44403C;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.va .item .i-icon{width:40px;height:40px;border-radius:10px;background:rgba(202,138,4,0.08);display:flex;align-items:center;justify-content:center;font-size:18px}
+.va .item .i-info{flex:1}
+.va .item .i-info h4{font-size:14px;font-weight:600;color:#FAFAF9}
+.va .item .i-info p{font-size:11px;color:#78716C;margin-top:2px}
+.va .item .i-stepper{display:flex;align-items:center;gap:8px}
+.va .item .i-stepper .btn{width:32px;height:32px;border-radius:8px;border:1.5px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:14px;color:#CA8A04;background:transparent}
+.va .item .i-stepper .val{font-size:22px;font-weight:800;color:#CA8A04;min-width:36px;text-align:center}
+
+/* === VERSION B: Card Tiles with Progress === */
+.vb .header{padding:16px 20px 0}
+.vb .header h1{font-size:22px;font-weight:800;color:#FAFAF9;line-height:1.15}
+.vb .header h1 em{color:#CA8A04;font-style:italic}
+.vb .header .sub{font-size:13px;color:#78716C;margin-top:4px}
+
+.vb .summary-bar{margin:14px 20px 0;padding:14px 16px;background:#292524;border:1px solid #44403C;border-radius:12px;display:flex;align-items:center;gap:10px}
+.vb .summary-bar .sb-dot{width:8px;height:8px;border-radius:50%;background:#CA8A04}
+.vb .summary-bar .sb-text{font-size:12px;color:#A8A29E}
+.vb .summary-bar .sb-text strong{color:#CA8A04}
+.vb .summary-bar .sb-total{margin-left:auto;font-size:14px;font-weight:700;color:#CA8A04}
+
+.vb .list{padding:16px 20px}
+.vb .card{background:#292524;border:1px solid #44403C;border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.vb .card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:#CA8A04;border-radius:3px 0 0 3px}
+.vb .card .c-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.vb .card .c-top .c-icon{width:36px;height:36px;border-radius:10px;background:rgba(202,138,4,0.1);display:flex;align-items:center;justify-content:center;font-size:16px}
+.vb .card .c-top h4{font-size:14px;font-weight:600;color:#FAFAF9}
+.vb .card .c-top .c-servings{font-size:11px;color:#78716C;margin-top:1px}
+.vb .card .c-stepper{display:flex;align-items:center;justify-content:center;gap:16px}
+.vb .card .c-stepper .ctrl{width:44px;height:44px;border-radius:12px;border:1.5px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:18px;color:#CA8A04;background:transparent;cursor:pointer}
+.vb .card .c-stepper .num{font-size:36px;font-weight:800;color:#CA8A04;min-width:60px;text-align:center;line-height:1}
+.vb .card .c-stepper .unit{font-size:10px;color:#78716C;text-align:center;margin-top:2px}
+.vb .card .c-hint{text-align:center;font-size:10px;color:#78716C;margin-top:4px}
+
+.vb .tip{margin:0 20px 16px;padding:12px 14px;background:rgba(202,138,4,0.05);border:1px solid rgba(202,138,4,0.1);border-radius:10px;display:flex;gap:8px;align-items:center}
+.vb .tip .t-icon{font-size:14px;color:#CA8A04}
+.vb .tip .t-text{font-size:11px;color:#A8A29E}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Step 3: Estimated Quantities</h1>
+  <p>How should we show the bottle count estimates?</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Clean Row List -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Compact Rows</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 3 of 5</div>
+        <div class="header">
+          <h1>Estimated <em>quantities</em></h1>
+          <div class="sub">Adjust numbers to your preference</div>
+          <div class="ctx"><strong>200</strong> guests &bull; Wedding &bull; <strong>7</strong> types</div>
+        </div>
+        <div class="list">
+          <div class="item"><div class="i-icon">&#127867;</div><div class="i-info"><h4>Whiskey</h4><p>~300 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">25</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#127864;</div><div class="i-info"><h4>Vodka</h4><p>~150 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">13</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#127866;</div><div class="i-info"><h4>Beer</h4><p>~400 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">400</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#127863;</div><div class="i-info"><h4>Wine</h4><p>~120 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">24</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#129380;</div><div class="i-info"><h4>Cold Drinks</h4><p>~200 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">50</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#128167;</div><div class="i-info"><h4>Water</h4><p>~200 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">100</div><div class="btn">+</div></div></div>
+          <div class="item"><div class="i-icon">&#10052;</div><div class="i-info"><h4>Ice</h4><p>~200 servings</p></div><div class="i-stepper"><div class="btn">-</div><div class="val">20</div><div class="btn">+</div></div></div>
+        </div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Confirm Quantities</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Prominent Cards -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Featured Cards</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="progress"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg"></div><div class="seg"></div></div>
+        <div class="step-lbl">Step 3 of 5</div>
+        <div class="header">
+          <h1>Here's what<br>we <em>recommend</em></h1>
+          <div class="sub">Based on your event — adjust as needed</div>
+        </div>
+        <div class="summary-bar">
+          <div class="sb-dot"></div>
+          <div class="sb-text"><strong>200</strong> guests &bull; Wedding</div>
+          <div class="sb-total">7 types</div>
+        </div>
+        <div class="list">
+          <div class="card">
+            <div class="c-top"><div class="c-icon">&#127867;</div><div><h4>Whiskey</h4><div class="c-servings">~300 servings for 200 guests</div></div></div>
+            <div class="c-stepper"><div class="ctrl">-</div><div><div class="num">25</div><div class="unit">bottles</div></div><div class="ctrl">+</div></div>
+            <div class="c-hint">tap number to edit</div>
+          </div>
+          <div class="card">
+            <div class="c-top"><div class="c-icon">&#127864;</div><div><h4>Vodka</h4><div class="c-servings">~150 servings for 200 guests</div></div></div>
+            <div class="c-stepper"><div class="ctrl">-</div><div><div class="num">13</div><div class="unit">bottles</div></div><div class="ctrl">+</div></div>
+            <div class="c-hint">tap number to edit</div>
+          </div>
+          <div class="card">
+            <div class="c-top"><div class="c-icon">&#127866;</div><div><h4>Beer</h4><div class="c-servings">~400 servings for 200 guests</div></div></div>
+            <div class="c-stepper"><div class="ctrl">-</div><div><div class="num">400</div><div class="unit">bottles</div></div><div class="ctrl">+</div></div>
+            <div class="c-hint">tap number to edit</div>
+          </div>
+          <div class="card">
+            <div class="c-top"><div class="c-icon">&#127863;</div><div><h4>Wine</h4><div class="c-servings">~120 servings for 200 guests</div></div></div>
+            <div class="c-stepper"><div class="ctrl">-</div><div><div class="num">24</div><div class="unit">bottles</div></div><div class="ctrl">+</div></div>
+            <div class="c-hint">tap number to edit</div>
+          </div>
+        </div>
+        <div class="tip"><span class="t-icon">&#128161;</span><span class="t-text">These estimates are based on typical consumption. Feel free to adjust!</span></div>
+        <div class="bot"><div class="row"><div class="back">Back</div><div class="next">Confirm Quantities</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

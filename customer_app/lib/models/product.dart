@@ -25,6 +25,17 @@ class Product {
   }
 
   double get lowestPrice => variants.isEmpty ? 0 : variants.map((v) => v.unitPrice).reduce((a, b) => a < b ? a : b);
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'subcategory_id': subcategoryId,
+    'name': name,
+    'origin': origin,
+    'description': description,
+    'image_url': imageUrl,
+    'tags': tags,
+    'variants': variants.map((v) => v.toJson()).toList(),
+  };
 }
 
 class Variant {
@@ -50,5 +61,18 @@ class Variant {
     );
   }
 
-  double get savingsPerUnit => caseSize != null && casePrice != null ? unitPrice - (casePrice! / caseSize!) : 0;
+  /// Whether this variant is sold only as a case (e.g. beer).
+  bool get isCaseOnly => size.toLowerCase().startsWith('case');
+
+  double get savingsPerUnit => caseSize != null && casePrice != null && !isCaseOnly ? unitPrice - (casePrice! / caseSize!) : 0;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'product_id': productId,
+    'size': size,
+    'unit_price': unitPrice,
+    'case_size': caseSize,
+    'case_price': casePrice,
+    'mrp': mrp,
+  };
 }

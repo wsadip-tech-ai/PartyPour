@@ -39,6 +39,9 @@ class EstimationRule {
     );
   }
 
+  /// Returns the display unit for this beverage type
+  String get unit => subcategorySlug == 'beer-bottle-can' ? 'cases' : 'litres';
+
   int estimateBottles({
     required int totalPax,
     required int children,

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaksiChaiyo — Cart Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Inter',sans-serif;min-height:100vh}
+.page-header{text-align:center;padding:50px 20px 30px}
+.page-header h1{font-size:2rem;background:linear-gradient(135deg,#CA8A04,#EAB308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.page-header p{color:#777;margin-top:8px;font-size:0.95rem}
+.grid{display:flex;justify-content:center;gap:40px;padding:0 20px 60px;flex-wrap:wrap}
+.option{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;animation:fadeUp 0.7s ease forwards}
+.option:nth-child(1){animation-delay:0.1s}
+.option:nth-child(2){animation-delay:0.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.label h2{font-size:1.2rem;color:#fff;text-align:center;font-weight:700}
+.label span{font-size:0.8rem;color:#777;display:block;text-align:center;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase}
+.phone{width:375px;height:812px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);transition:transform 0.4s cubic-bezier(.22,1,.36,1)}
+.phone:hover{transform:translateY(-6px)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1C1917;border-radius:0 0 20px 20px;z-index:100}
+.screen{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;background:#1C1917}
+.screen::-webkit-scrollbar{display:none}
+.recommend-badge{position:absolute;top:-14px;right:20px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:0.7rem;font-weight:700;padding:6px 14px;border-radius:8px;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 4px 12px rgba(202,138,4,0.3);z-index:10}
+@media(max-width:850px){.grid{flex-direction:column;align-items:center}}
+
+/* App bar */
+.appbar{padding:48px 20px 14px;display:flex;align-items:center;background:#1C1917}
+.appbar .back-btn{width:32px;height:32px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;color:#A8A29E;font-size:14px;margin-right:12px}
+.appbar h2{font-size:17px;font-weight:700;color:#FAFAF9;flex:1}
+.appbar .count{font-size:12px;color:#CA8A04;font-weight:600}
+
+/* === VERSION A: Swipe Cards === */
+.va .item{margin:8px 20px;background:#292524;border:1px solid #44403C;border-radius:14px;padding:14px;display:flex;gap:12px;position:relative}
+.va .item .it-img{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.va .item .it-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.va .item .it-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.va .item .it-img.g3{background:linear-gradient(135deg,#2E7D32,#81C784)}
+.va .item .it-info{flex:1}
+.va .item .it-info .it-name{font-size:14px;font-weight:600;color:#FAFAF9}
+.va .item .it-info .it-detail{font-size:11px;color:#78716C;margin-top:2px}
+.va .item .it-info .it-price-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.va .item .it-info .it-qty{display:flex;align-items:center;gap:6px}
+.va .item .it-info .it-qty .qb{width:28px;height:28px;border-radius:8px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:14px;color:#CA8A04}
+.va .item .it-info .it-qty .qv{font-size:18px;font-weight:700;color:#FAFAF9;min-width:28px;text-align:center}
+.va .item .it-info .it-total{font-size:15px;font-weight:700;color:#CA8A04}
+.va .item .it-delete{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:6px;background:rgba(239,68,68,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;color:#EF4444}
+
+.va .empty-add{margin:12px 20px;padding:16px;border:1.5px dashed #44403C;border-radius:14px;text-align:center;color:#78716C;font-size:13px}
+
+/* Bottom */
+.bot-checkout{position:sticky;bottom:0;padding:16px 20px;background:#1C1917;border-top:1px solid rgba(255,255,255,0.04)}
+.bot-checkout .bc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.bot-checkout .bc-row .bc-label{font-size:13px;color:#A8A29E}
+.bot-checkout .bc-row .bc-amount{font-size:22px;font-weight:800;color:#CA8A04}
+.bot-checkout .bc-btn{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#CA8A04,#EAB308);color:#1C1917;font-size:15px;font-weight:700;text-align:center;box-shadow:0 4px 16px rgba(202,138,4,0.25);letter-spacing:0.3px}
+
+/* === VERSION B: Compact List + Breakdown === */
+.vb .summary-strip{display:flex;gap:8px;padding:8px 20px}
+.vb .summary-chip{padding:8px 14px;background:#292524;border:1px solid #44403C;border-radius:10px;font-size:11px;color:#A8A29E}
+.vb .summary-chip strong{color:#CA8A04}
+
+.vb .list-header{padding:14px 20px 6px;display:flex;align-items:center;font-size:11px;color:#78716C;text-transform:uppercase;letter-spacing:0.08em;font-weight:600}
+.vb .list-header .lh-item{flex:1}
+.vb .list-header .lh-qty{width:80px;text-align:center}
+.vb .list-header .lh-price{width:70px;text-align:right}
+
+.vb .cart-row{display:flex;align-items:center;padding:10px 20px;gap:10px}
+.vb .cart-row:nth-child(even){background:rgba(255,255,255,0.01)}
+.vb .cart-row .cr-img{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.vb .cart-row .cr-img.g1{background:linear-gradient(135deg,#CA8A04,#EAB308)}
+.vb .cart-row .cr-img.g2{background:linear-gradient(135deg,#44403C,#292524)}
+.vb .cart-row .cr-img.g3{background:linear-gradient(135deg,#2E7D32,#81C784)}
+.vb .cart-row .cr-info{flex:1;min-width:0}
+.vb .cart-row .cr-info .cr-name{font-size:13px;font-weight:600;color:#FAFAF9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vb .cart-row .cr-info .cr-detail{font-size:10px;color:#78716C}
+.vb .cart-row .cr-qty{width:80px;display:flex;align-items:center;justify-content:center;gap:4px}
+.vb .cart-row .cr-qty .qb{width:22px;height:22px;border-radius:6px;border:1px solid #44403C;display:flex;align-items:center;justify-content:center;font-size:10px;color:#CA8A04}
+.vb .cart-row .cr-qty .qv{font-size:15px;font-weight:700;color:#FAFAF9;min-width:22px;text-align:center}
+.vb .cart-row .cr-price{width:70px;text-align:right;font-size:13px;font-weight:700;color:#CA8A04}
+
+.vb .divider{height:1px;background:#44403C;margin:4px 20px}
+
+.vb .breakdown{margin:12px 20px;padding:14px;background:#292524;border:1px solid #44403C;border-radius:12px}
+.vb .breakdown .bk-row{display:flex;justify-content:space-between;font-size:12px;color:#A8A29E;margin-bottom:4px}
+.vb .breakdown .bk-row.total{font-size:16px;font-weight:800;padding-top:8px;border-top:1px solid #44403C;margin-top:4px}
+.vb .breakdown .bk-row.total span:first-child{color:#FAFAF9}
+.vb .breakdown .bk-row.total span:last-child{color:#CA8A04}
+
+.vb .add-more{margin:8px 20px;padding:12px;border:1.5px dashed #44403C;border-radius:12px;text-align:center;font-size:12px;color:#78716C;display:flex;align-items:center;justify-content:center;gap:6px}
+.vb .add-more span{color:#CA8A04}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Cart Screen</h1>
+  <p>Review items before checkout</p>
+</div>
+
+<div class="grid">
+
+  <!-- VERSION A: Large Cards -->
+  <div class="option">
+    <div class="label"><h2>Version A</h2><span>Large Item Cards</span></div>
+    <div class="phone">
+      <div class="screen va">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Cart</h2><span class="count">3 items</span></div>
+
+        <div class="item">
+          <div class="it-delete">&#10005;</div>
+          <div class="it-img g1">JW</div>
+          <div class="it-info">
+            <div class="it-name">Johnnie Walker Red</div>
+            <div class="it-detail">750ml &bull; Whiskey &bull; Imported</div>
+            <div class="it-price-row">
+              <div class="it-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div>
+              <div class="it-total">NPR 80,000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="it-delete">&#10005;</div>
+          <div class="it-img g2">TB</div>
+          <div class="it-info">
+            <div class="it-name">Tuborg</div>
+            <div class="it-detail">650ml &bull; Beer &bull; Local</div>
+            <div class="it-price-row">
+              <div class="it-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div>
+              <div class="it-total">NPR 76,000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="it-delete">&#10005;</div>
+          <div class="it-img g3">CC</div>
+          <div class="it-info">
+            <div class="it-name">Coca-Cola</div>
+            <div class="it-detail">2.25L &bull; Cold Drinks &bull; Imported</div>
+            <div class="it-price-row">
+              <div class="it-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div>
+              <div class="it-total">NPR 9,000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-add">+ Add more from catalog</div>
+
+        <div class="bot-checkout">
+          <div class="bc-row"><span class="bc-label">Total (3 items)</span><span class="bc-amount">NPR 165,000</span></div>
+          <div class="bc-btn">Proceed to Checkout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION B: Compact Table -->
+  <div class="option">
+    <div class="label"><h2>Version B</h2><span>Compact Table + Breakdown</span></div>
+    <div class="phone" style="position:relative">
+      <div class="recommend-badge">Recommended</div>
+      <div class="screen vb">
+        <div class="appbar"><div class="back-btn">&#8592;</div><h2>Cart</h2><span class="count">5 items</span></div>
+
+        <div class="summary-strip">
+          <div class="summary-chip"><strong>5</strong> items</div>
+          <div class="summary-chip"><strong>475</strong> bottles</div>
+          <div class="summary-chip"><strong>3</strong> categories</div>
+        </div>
+
+        <div class="list-header"><span class="lh-item">Item</span><span class="lh-qty">Qty</span><span class="lh-price">Total</span></div>
+
+        <div class="cart-row"><div class="cr-img g1">JW</div><div class="cr-info"><div class="cr-name">Johnnie Walker Red</div><div class="cr-detail">750ml &bull; NPR 3,200</div></div><div class="cr-qty"><div class="qb">-</div><div class="qv">25</div><div class="qb">+</div></div><div class="cr-price">80,000</div></div>
+        <div class="cart-row"><div class="cr-img g2">TB</div><div class="cr-info"><div class="cr-name">Tuborg</div><div class="cr-detail">650ml &bull; NPR 380</div></div><div class="cr-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="cr-price">76,000</div></div>
+        <div class="cart-row"><div class="cr-img g2">GK</div><div class="cr-info"><div class="cr-name">Gorkha</div><div class="cr-detail">650ml &bull; NPR 400</div></div><div class="cr-qty"><div class="qb">-</div><div class="qv">200</div><div class="qb">+</div></div><div class="cr-price">80,000</div></div>
+        <div class="cart-row"><div class="cr-img g3">CC</div><div class="cr-info"><div class="cr-name">Coca-Cola</div><div class="cr-detail">2.25L &bull; NPR 180</div></div><div class="cr-qty"><div class="qb">-</div><div class="qv">50</div><div class="qb">+</div></div><div class="cr-price">9,000</div></div>
+
+        <div class="divider"></div>
+
+        <div class="breakdown">
+          <div class="bk-row"><span>Subtotal</span><span>NPR 245,000</span></div>
+          <div class="bk-row"><span>Discount</span><span>NPR 0</span></div>
+          <div class="bk-row"><span>Delivery</span><span style="color:#4ade80">FREE</span></div>
+          <div class="bk-row total"><span>Grand Total</span><span>NPR 245,000</span></div>
+        </div>
+
+        <div class="add-more"><span>+</span> Add more from catalog</div>
+
+        <div class="bot-checkout">
+          <div class="bc-row"><span class="bc-label">Total (5 items)</span><span class="bc-amount">NPR 245,000</span></div>
+          <div class="bc-btn">Proceed to Checkout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

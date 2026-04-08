@@ -89,7 +89,7 @@ class BrandPickerCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    isLocal ? 'Local' : 'Imported',
+                    isLocal ? 'Domestic' : 'Imported',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
