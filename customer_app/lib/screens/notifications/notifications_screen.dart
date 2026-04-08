@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/auth_provider.dart';
 
 const _darkBg = Color(0xFF1C1917);
 const _surfaceDark = Color(0xFF292524);
@@ -54,6 +55,7 @@ class NotificationsScreen extends ConsumerWidget {
                   return _NotificationCard(
                     notification: n,
                     onTap: () async {
+                      ref.read(analyticsProvider).trackNotificationOpened(n.id);
                       if (!n.isRead) {
                         await ref.read(notificationServiceProvider).markAsRead(n.id);
                         ref.invalidate(notificationsProvider);

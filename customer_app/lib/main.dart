@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 import 'config/router.dart';
+import 'providers/auth_provider.dart';
 
 /// Pre-loaded SharedPreferences instance, available synchronously after main()
 late final SharedPreferences prefs;
@@ -24,6 +25,7 @@ class PartyPourApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(analyticsProvider).trackAppOpened();
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: 'PartyPour',

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../providers/auth_provider.dart';
 
 const _gold = Color(0xFFCA8A04);
 const _goldLight = Color(0xFFEAB308);
@@ -39,6 +40,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    ref.read(analyticsProvider).trackChatStarted();
     _loadHistory();
   }
 
@@ -82,6 +84,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty || _loading) return;
 
+    ref.read(analyticsProvider).trackChatMessageSent(text.length);
     _controller.clear();
     setState(() {
       _messages.add(_ChatMessage(role: 'user', content: text));

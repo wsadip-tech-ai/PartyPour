@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/catalog_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/cart_badge.dart';
 import '../../models/product.dart';
 
@@ -66,6 +67,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
       body: productAsync.when(
         data: (product) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(analyticsProvider).trackProductViewed(widget.productId, product.name);
+          });
           _selectedVariant ??= product.variants.first;
           final variant = _selectedVariant!;
           final hasCase =

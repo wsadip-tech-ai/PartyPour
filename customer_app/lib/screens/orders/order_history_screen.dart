@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/order.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -45,6 +46,7 @@ class OrderHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(analyticsProvider).trackOrderHistoryViewed();
     final ordersAsync = ref.watch(orderHistoryProvider);
 
     return Scaffold(
