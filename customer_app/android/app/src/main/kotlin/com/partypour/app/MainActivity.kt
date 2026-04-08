@@ -1,4 +1,4 @@
-package com.raksichaiyo.customer_app
+package com.partypour.app
 
 import io.flutter.embedding.android.FlutterActivity
 

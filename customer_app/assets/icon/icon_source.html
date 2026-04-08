@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head><title>PartyPour Icon Generator</title></head>
+<body style="background:#333; display:flex; flex-direction:column; align-items:center; padding:40px; gap:20px;">
+<h2 style="color:white;">PartyPour Icon Generator</h2>
+
+<canvas id="appIcon" width="1024" height="1024"></canvas>
+<a id="downloadApp" download="app_icon.png" style="color:#EAB308; font-size:18px; cursor:pointer;">Download App Icon (1024x1024)</a>
+
+<canvas id="splashIcon" width="512" height="512" style="margin-top:20px;"></canvas>
+<a id="downloadSplash" download="splash_icon.png" style="color:#EAB308; font-size:18px; cursor:pointer;">Download Splash Icon (512x512)</a>
+
+<script>
+function drawIcon(canvas, size) {
+  const ctx = canvas.getContext('2d');
+  const s = size / 64;
+
+  const bgGrad = ctx.createLinearGradient(size * 0.7, 0, size * 0.3, size);
+  bgGrad.addColorStop(0, '#1C1917');
+  bgGrad.addColorStop(0.5, '#292524');
+  bgGrad.addColorStop(1, '#3d2a06');
+
+  const r = size * 0.22;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, size, size, r);
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(202, 138, 4, 0.35)';
+  ctx.lineWidth = size * 0.015;
+  ctx.stroke();
+
+  const glowGrad = ctx.createRadialGradient(size/2, size*0.45, 0, size/2, size*0.45, size*0.35);
+  glowGrad.addColorStop(0, 'rgba(202, 138, 4, 0.15)');
+  glowGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(0, 0, size, size);
+
+  const goldGrad = ctx.createLinearGradient(size*0.2, size*0.2, size*0.8, size*0.8);
+  goldGrad.addColorStop(0, '#CA8A04');
+  goldGrad.addColorStop(1, '#EAB308');
+
+  ctx.save();
+  ctx.translate(size/2, size/2);
+
+  const lw = size * 0.03;
+
+  function drawGlass(rotation) {
+    ctx.save();
+    ctx.rotate(rotation * Math.PI / 180);
+
+    ctx.beginPath();
+    ctx.moveTo(-8*s, -18*s);
+    ctx.lineTo(-4*s, 4*s);
+    ctx.lineTo(4*s, 4*s);
+    ctx.lineTo(8*s, -18*s);
+    ctx.closePath();
+    ctx.strokeStyle = goldGrad;
+    ctx.lineWidth = lw;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, 4*s);
+    ctx.lineTo(0, 14*s);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(-6*s, 14*s);
+    ctx.lineTo(6*s, 14*s);
+    ctx.lineWidth = lw * 1.2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(-6*s, -10*s);
+    ctx.quadraticCurveTo(0, -7*s, 6*s, -10*s);
+    ctx.strokeStyle = 'rgba(234, 179, 8, 0.3)';
+    ctx.lineWidth = lw * 0.6;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.translate(-6*s, 2*s);
+  drawGlass(-15);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(6*s, 2*s);
+  drawGlass(15);
+  ctx.restore();
+
+  ctx.strokeStyle = '#EAB308';
+  ctx.lineWidth = lw * 0.8;
+  ctx.lineCap = 'round';
+
+  ctx.beginPath();
+  ctx.moveTo(0, -18*s);
+  ctx.lineTo(0, -24*s);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(-4*s, -19*s);
+  ctx.lineTo(-8*s, -24*s);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(4*s, -19*s);
+  ctx.lineTo(8*s, -24*s);
+  ctx.stroke();
+
+  ctx.fillStyle = '#EAB308';
+  ctx.globalAlpha = 0.6;
+  ctx.beginPath(); ctx.arc(-2*s, -21*s, s*0.8, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 0.4;
+  ctx.beginPath(); ctx.arc(3*s, -22*s, s*0.6, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  ctx.restore();
+}
+
+drawIcon(document.getElementById('appIcon'), 1024);
+drawIcon(document.getElementById('splashIcon'), 512);
+
+document.getElementById('downloadApp').href = document.getElementById('appIcon').toDataURL('image/png');
+document.getElementById('downloadSplash').href = document.getElementById('splashIcon').toDataURL('image/png');
+</script>
+</body>
+</html>
