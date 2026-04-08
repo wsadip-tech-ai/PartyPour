@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { toast } from 'sonner'
+import { getInitials, getAvatarColor } from '@/lib/utils/avatar'
+import { Eye } from 'lucide-react'
 
 const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   pending: 'outline',
@@ -123,7 +125,14 @@ export default function OrdersPage() {
                   #{order.id.substring(0, 8)}
                 </Link>
               </TableCell>
-              <TableCell>{order.profiles?.full_name ?? order.profiles?.email ?? 'Unknown'}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <div className={`h-6 w-6 rounded-full ${getAvatarColor(order.profiles?.full_name, order.profiles?.email)} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
+                    {getInitials(order.profiles?.full_name, order.profiles?.email)}
+                  </div>
+                  <span>{order.profiles?.full_name ?? order.profiles?.email ?? 'Unknown'}</span>
+                </div>
+              </TableCell>
               <TableCell>{order.event_type ?? '-'}</TableCell>
               <TableCell>NPR {order.final_amount.toLocaleString()}</TableCell>
               <TableCell>
@@ -131,29 +140,34 @@ export default function OrdersPage() {
               </TableCell>
               <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
               <TableCell>
-                {order.status === 'pending' ? (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white h-7 px-3 text-xs"
-                      disabled={actionLoading !== null}
-                      onClick={() => quickUpdateStatus(order.id, 'confirmed')}
-                    >
-                      {actionLoading === order.id + 'confirmed' ? '...' : 'Confirm'}
+                <div className="flex items-center gap-2">
+                  <Link href={`/orders/${order.id}`}>
+                    <Button size="sm" variant="outline" className="h-7 px-3 text-xs gap-1">
+                      <Eye className="h-3 w-3" /> View
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="h-7 px-3 text-xs"
-                      disabled={actionLoading !== null}
-                      onClick={() => quickUpdateStatus(order.id, 'cancelled')}
-                    >
-                      {actionLoading === order.id + 'cancelled' ? '...' : 'Cancel'}
-                    </Button>
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground text-xs">—</span>
-                )}
+                  </Link>
+                  {order.status === 'pending' && (
+                    <>
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white h-7 px-3 text-xs"
+                        disabled={actionLoading !== null}
+                        onClick={() => quickUpdateStatus(order.id, 'confirmed')}
+                      >
+                        {actionLoading === order.id + 'confirmed' ? '...' : 'Confirm'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="h-7 px-3 text-xs"
+                        disabled={actionLoading !== null}
+                        onClick={() => quickUpdateStatus(order.id, 'cancelled')}
+                      >
+                        {actionLoading === order.id + 'cancelled' ? '...' : 'Cancel'}
+                      </Button>
+                    </>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

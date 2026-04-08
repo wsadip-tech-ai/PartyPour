@@ -40,7 +40,7 @@ export default function CustomersPage() {
       orderMap.set(o.user_id, existing)
     }
 
-    const result: CustomerWithStats[] = profiles.map((p) => {
+    const result: CustomerWithStats[] = profiles.map((p: any) => {
       const stats = orderMap.get(p.id) ?? { count: 0, total: 0 }
       return {
         ...p,
