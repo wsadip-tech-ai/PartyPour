@@ -1,0 +1,36 @@
+# Build artifacts
+.next/
+out/
+build/
+dist/
+
+# Agent / IDE state
+.superpowers/
+.claude/
+.agents/
+.vscode/
+.idea/
+
+# Test artifacts
+playwright-report/
+test-results/
+screenshots/
+coverage/
+
+# Dependencies
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment (defense in depth - nested .gitignores also cover these)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel

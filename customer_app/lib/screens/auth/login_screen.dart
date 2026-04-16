@@ -51,20 +51,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
   }
 
   Future<void> _submitEmail() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final isSignUp = _tabController.index == 1;
+
+    // Validation
+    if (email.isEmpty || password.isEmpty) {
+      setState(() { _error = 'Email and password are required.'; });
+      return;
+    }
+    if (isSignUp && _nameController.text.trim().isEmpty) {
+      setState(() { _error = 'Full name is required.'; });
+      return;
+    }
+    if (isSignUp && password.length < 6) {
+      setState(() { _error = 'Password must be at least 6 characters.'; });
+      return;
+    }
+
     setState(() { _loading = true; _error = null; });
     try {
       final authService = ref.read(authServiceProvider);
-      if (_tabController.index == 1) {
+      if (isSignUp) {
         await authService.signUpWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text,
+          email,
+          password,
           _nameController.text.trim(),
         );
       } else {
-        await authService.signInWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
+        await authService.signInWithEmail(email, password);
       }
       if (mounted) context.go('/home');
     } catch (e) {

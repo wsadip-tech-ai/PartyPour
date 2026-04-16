@@ -61,7 +61,7 @@ class WizardState {
   final String specialInstructions;
 
   WizardState({
-    this.totalPax = 100,
+    this.totalPax = 0,
     this.childrenCount = 0,
     this.ladiesCount = 0,
     this.eventType = 'wedding',
@@ -158,7 +158,7 @@ class WizardState {
     final quantities = rawQty.map((k, v) => MapEntry(k, (v as num).toInt()));
 
     return WizardState(
-      totalPax: json['totalPax'] as int? ?? 100,
+      totalPax: json['totalPax'] as int? ?? 0,
       childrenCount: json['childrenCount'] as int? ?? 0,
       ladiesCount: json['ladiesCount'] as int? ?? 0,
       eventType: json['eventType'] as String? ?? 'wedding',
@@ -235,7 +235,7 @@ class WizardNotifier extends StateNotifier<WizardState> {
 
   void updateQuantity(String slug, int quantity) {
     final updated = Map<String, int>.from(state.estimatedQuantities);
-    updated[slug] = quantity.clamp(0, 9999);
+    updated[slug] = quantity.clamp(0, 99999);
     _update(state.copyWith(estimatedQuantities: updated));
   }
 
@@ -267,7 +267,7 @@ class WizardNotifier extends StateNotifier<WizardState> {
     final updated = Map<String, List<BrandSelection>>.from(state.brandSelections);
     final list = List<BrandSelection>.from(updated[slug] ?? []);
     if (index < list.length) {
-      list[index].quantity = quantity.clamp(0, 9999);
+      list[index].quantity = quantity.clamp(0, 99999);
       updated[slug] = list;
       _update(state.copyWith(brandSelections: updated));
     }

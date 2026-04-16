@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/order_provider.dart';
 
 const _gold = Color(0xFFCA8A04);
@@ -31,7 +32,7 @@ class OrderDetailScreen extends ConsumerWidget {
       backgroundColor: _darkBg,
       appBar: AppBar(
         backgroundColor: _darkBg,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.canPop() ? context.pop() : context.go('/home')),
         title: const Text('Order Details', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: _textLight)),
       ),
       body: orderAsync.when(
@@ -170,8 +171,8 @@ class OrderDetailScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
                             width: 38, height: 38,
-                            decoration: BoxDecoration(gradient: LinearGradient(colors: _getColors(item.variantId))),
-                            child: Center(child: Text(item.variantId.substring(0, 2).toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white))),
+                            decoration: BoxDecoration(gradient: LinearGradient(colors: _getColors(item.productName ?? item.variantId))),
+                            child: Center(child: Text((item.productName ?? '?')[0].toUpperCase(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white))),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -179,8 +180,8 @@ class OrderDetailScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Item #${item.variantId.substring(0, 8)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight)),
-                              Text('${item.quantity} ${item.unitType}(s)', style: const TextStyle(fontSize: 10, color: _muted)),
+                              Text(item.productName ?? 'Item #${item.variantId.substring(0, 8)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight)),
+                              Text('${item.variantSize ?? ''} • ${item.quantity} ${item.unitType}(s) @ NPR ${item.unitPrice.toStringAsFixed(0)}', style: const TextStyle(fontSize: 10, color: _muted)),
                             ],
                           ),
                         ),
@@ -222,9 +223,9 @@ class OrderDetailScreen extends ConsumerWidget {
                 // === ACTION BUTTONS ===
                 Row(
                   children: [
-                    Expanded(child: _ActionButton(icon: Icons.chat_outlined, label: 'Chat Support', onTap: () {})),
+                    Expanded(child: _ActionButton(icon: Icons.chat_outlined, label: 'Chat Support', onTap: () => context.push('/chat'))),
                     const SizedBox(width: 8),
-                    Expanded(child: _ActionButton(icon: Icons.phone_outlined, label: 'Call Us', onTap: () {})),
+                    Expanded(child: _ActionButton(icon: Icons.phone_outlined, label: 'Call Us', onTap: () => launchUrl(Uri.parse('tel:+9779800000000')))),
                   ],
                 ),
               ],

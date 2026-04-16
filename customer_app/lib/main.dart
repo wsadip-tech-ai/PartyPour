@@ -1,10 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
+import 'package:flutter/foundation.dart';
 import 'config/router.dart';
 import 'providers/auth_provider.dart';
+import 'services/push_notification_service.dart';
 
 /// Pre-loaded SharedPreferences instance, available synchronously after main()
 late final SharedPreferences prefs;
@@ -12,6 +15,7 @@ late final SharedPreferences prefs;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
+  await Firebase.initializeApp();
   try {
     await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
   } catch (_) {
@@ -26,6 +30,19 @@ class PartyPourApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.read(analyticsProvider).trackAppOpened();
+
+    // Initialize push notifications when user is authenticated
+    ref.listen(authStateProvider, (previous, next) {
+      next.whenData((authState) {
+        debugPrint('[Auth] Event: ${authState.event}, User: ${authState.session?.user.id}');
+        if (authState.event == AuthChangeEvent.signedIn ||
+            authState.event == AuthChangeEvent.tokenRefreshed ||
+            authState.event == AuthChangeEvent.initialSession) {
+          ref.read(pushNotificationProvider).initialize();
+        }
+      });
+    });
+
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: 'PartyPour',

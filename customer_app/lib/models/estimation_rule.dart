@@ -50,6 +50,6 @@ class EstimationRule {
     final effectiveGuests = (totalPax - children) + (children * childrenFactor);
     final multiplier = eventMultipliers[eventType] ?? 1.0;
     final totalServings = effectiveGuests * drinksPerGuest * multiplier;
-    return (totalServings / servingsPerBottle).ceil().clamp(0, 9999);
+    return (totalServings / servingsPerBottle).ceil().clamp(0, 99999);
   }
 }

@@ -14,7 +14,7 @@ void main() {
       );
 
       expect(find.text('All'), findsOneWidget);
-      expect(find.text('Local'), findsOneWidget);
+      expect(find.text('Domestic'), findsOneWidget);
       expect(find.text('Imported'), findsOneWidget);
     });
 
@@ -32,7 +32,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Local'));
+      await tester.tap(find.text('Domestic'));
       expect(selectedValue, 'local');
     });
   });

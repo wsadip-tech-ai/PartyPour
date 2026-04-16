@@ -22,7 +22,6 @@ const eventColors: Record<string, string> = {
   app_opened: 'bg-gray-100 text-gray-700',
   wizard_step_entered: 'bg-blue-100 text-blue-700',
   wizard_step_completed: 'bg-green-100 text-green-700',
-  wizard_abandoned: 'bg-red-100 text-red-700',
   order_placed: 'bg-purple-100 text-purple-700',
   product_viewed: 'bg-cyan-100 text-cyan-700',
   chat_started: 'bg-amber-100 text-amber-700',
@@ -75,7 +74,6 @@ export default function AnalyticsActivityPage() {
             <SelectItem value="app_opened">App Opened</SelectItem>
             <SelectItem value="wizard_step_entered">Wizard Step Entered</SelectItem>
             <SelectItem value="wizard_step_completed">Wizard Step Completed</SelectItem>
-            <SelectItem value="wizard_abandoned">Wizard Abandoned</SelectItem>
             <SelectItem value="order_placed">Order Placed</SelectItem>
             <SelectItem value="product_viewed">Product Viewed</SelectItem>
             <SelectItem value="chat_started">Chat Started</SelectItem>

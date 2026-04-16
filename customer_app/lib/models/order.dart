@@ -45,10 +45,14 @@ class OrderItem {
   final String unitType;
   final double unitPrice;
   final double totalPrice;
+  final String? productName;
+  final String? variantSize;
 
-  OrderItem({required this.id, required this.orderId, required this.variantId, required this.quantity, required this.unitType, required this.unitPrice, required this.totalPrice});
+  OrderItem({required this.id, required this.orderId, required this.variantId, required this.quantity, required this.unitType, required this.unitPrice, required this.totalPrice, this.productName, this.variantSize});
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
+    final variant = json['variants'] as Map<String, dynamic>?;
+    final product = variant?['products'] as Map<String, dynamic>?;
     return OrderItem(
       id: json['id'] as String,
       orderId: json['order_id'] as String,
@@ -57,6 +61,8 @@ class OrderItem {
       unitType: json['unit_type'] as String,
       unitPrice: (json['unit_price'] as num).toDouble(),
       totalPrice: (json['total_price'] as num).toDouble(),
+      productName: product?['name'] as String?,
+      variantSize: variant?['size'] as String?,
     );
   }
 }

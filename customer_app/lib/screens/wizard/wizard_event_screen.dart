@@ -91,11 +91,11 @@ class WizardEventScreen extends ConsumerWidget {
                             children: [
                               _CircleButton(
                                 icon: Icons.remove,
-                                onTap: wizard.totalPax > 10 ? () => ref.read(wizardProvider.notifier).setTotalPax(wizard.totalPax - 10) : null,
+                                onTap: wizard.totalPax > 0 ? () => ref.read(wizardProvider.notifier).setTotalPax((wizard.totalPax - 10).clamp(0, 2000)) : null,
                               ),
                               const SizedBox(width: 20),
                               GestureDetector(
-                                onTap: () => _showNumberDialog(context, 'Total Guests', wizard.totalPax, 10, 2000, (v) => ref.read(wizardProvider.notifier).setTotalPax(v)),
+                                onTap: () => _showNumberDialog(context, 'Total Guests', wizard.totalPax, 0, 2000, (v) => ref.read(wizardProvider.notifier).setTotalPax(v)),
                                 child: Column(
                                   children: [
                                     Text(
@@ -405,11 +405,19 @@ class WizardEventScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(14),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(14),
-                          onTap: () {
+                          onTap: wizard.totalPax > 0 ? () {
                             ref.read(analyticsProvider).trackWizardStepCompleted(1, 'event');
                             context.push('/wizard/types');
+                          } : () {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              backgroundColor: Color(0xFF292524),
+                              content: Text('Please enter the number of guests', style: TextStyle(color: Color(0xFFEF4444))),
+                            ));
                           },
-                          child: const Center(child: Text('Next — Select Beverages', style: TextStyle(color: _darkBg, fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3))),
+                          child: Center(child: Text(
+                            wizard.totalPax > 0 ? 'Next — Select Beverages' : 'Enter guest count to continue',
+                            style: TextStyle(color: wizard.totalPax > 0 ? _darkBg : _darkBg.withValues(alpha: 0.6), fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: 0.3),
+                          )),
                         ),
                       ),
                     ),

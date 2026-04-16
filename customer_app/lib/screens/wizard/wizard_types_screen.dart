@@ -34,7 +34,7 @@ class _WizardTypesScreenState extends ConsumerState<WizardTypesScreen> {
   };
 
   // Group slugs into categories for display
-  static const _alcoholSlugs = {'whiskey', 'vodka', 'gin', 'rum', 'brandy', 'beer-bottle-can', 'wine', 'shots-specials', 'energy-drinks'};
+  static const _alcoholSlugs = {'whiskey', 'vodka', 'gin', 'rum', 'brandy', 'beer-bottle-can', 'wine', 'shots-specials'};
 
   @override
   Widget build(BuildContext context) {

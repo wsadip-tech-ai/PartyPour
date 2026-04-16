@@ -23,6 +23,10 @@ export function OrderActions({ orderId, status, onStatusUpdate }: OrderActionsPr
       toast.error('Failed to update order status')
     } else {
       toast.success(`Order ${newStatus} successfully`)
+      // Notify customer via in-app + push notification
+      supabase.functions.invoke('notify-order-status', {
+        body: { order_id: orderId, new_status: newStatus },
+      }).catch(() => {}) // non-blocking
       onStatusUpdate()
     }
     setLoading(false)

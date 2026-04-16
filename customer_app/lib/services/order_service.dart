@@ -44,18 +44,23 @@ class OrderService {
 
     await _client.from('order_items').insert(items);
 
+    // Trigger order confirmation notification email
+    _client.functions.invoke('send-order-email', body: {'order_id': orderId}).catchError((_) {});
+
     // Re-fetch the complete order with server-generated IDs
     return getOrder(orderId);
   }
 
+  static const _orderSelect = '*, order_items(*, variants(size, products(name)))';
+
   Future<List<Order>> getOrderHistory() async {
     final userId = _client.auth.currentUser!.id;
-    final data = await _client.from('orders').select('*, order_items(*)').eq('user_id', userId).order('created_at', ascending: false);
+    final data = await _client.from('orders').select(_orderSelect).eq('user_id', userId).order('created_at', ascending: false);
     return data.map((json) => Order.fromJson(json)).toList();
   }
 
   Future<Order> getOrder(String orderId) async {
-    final data = await _client.from('orders').select('*, order_items(*)').eq('id', orderId).single();
+    final data = await _client.from('orders').select(_orderSelect).eq('id', orderId).single();
     return Order.fromJson(data);
   }
 }

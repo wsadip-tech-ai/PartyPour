@@ -130,7 +130,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       backgroundColor: _darkBg,
       appBar: AppBar(
         backgroundColor: _darkBg,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.canPop() ? context.pop() : context.go('/home')),
         title: const Text('Checkout', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: _textLight)),
       ),
       body: Column(

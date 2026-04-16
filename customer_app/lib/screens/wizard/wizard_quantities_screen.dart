@@ -296,7 +296,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
           ),
           onSubmitted: (val) {
             final n = int.tryParse(val) ?? current;
-            onChanged(n.clamp(0, 9999));
+            onChanged(n.clamp(0, 99999));
             Navigator.pop(context);
           },
         ),
@@ -304,7 +304,7 @@ class _WizardQuantitiesScreenState extends ConsumerState<WizardQuantitiesScreen>
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _muted))),
           TextButton(onPressed: () {
             final n = int.tryParse(controller.text) ?? current;
-            onChanged(n.clamp(0, 9999));
+            onChanged(n.clamp(0, 99999));
             Navigator.pop(context);
           }, child: const Text('OK', style: TextStyle(color: _gold, fontWeight: FontWeight.w700))),
         ],

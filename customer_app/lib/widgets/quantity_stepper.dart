@@ -14,7 +14,7 @@ class QuantityStepper extends StatelessWidget {
     super.key,
     required this.value,
     this.min = 0,
-    this.max = 9999,
+    this.max = 99999,
     required this.onChanged,
     this.large = false,
   });

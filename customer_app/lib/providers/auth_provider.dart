@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 import '../models/profile.dart';
 import '../services/analytics_service.dart';
+import '../services/push_notification_service.dart';
 
 final supabaseProvider = Provider<SupabaseClient>((ref) => Supabase.instance.client);
 final authServiceProvider = Provider<AuthService>((ref) => AuthService(ref.watch(supabaseProvider)));
@@ -14,4 +15,8 @@ final profileProvider = FutureProvider<Profile?>((ref) {
 
 final analyticsProvider = Provider<AnalyticsService>(
   (ref) => AnalyticsService(ref.watch(supabaseProvider)),
+);
+
+final pushNotificationProvider = Provider<PushNotificationService>(
+  (ref) => PushNotificationService(ref.watch(supabaseProvider)),
 );

@@ -94,11 +94,16 @@ class OrderPlacedScreen extends ConsumerWidget {
                               ...order.items.map((item) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
-                                      child: Text('${item.quantity}x @ NPR ${item.unitPrice.toStringAsFixed(0)}',
-                                        style: const TextStyle(fontSize: 13, color: _mutedLight)),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(item.productName ?? 'Item', style: const TextStyle(fontSize: 13, color: _textLight, fontWeight: FontWeight.w500)),
+                                          Text('${item.variantSize ?? ''} • ${item.quantity}x @ NPR ${item.unitPrice.toStringAsFixed(0)}',
+                                            style: const TextStyle(fontSize: 11, color: _mutedLight)),
+                                        ],
+                                      ),
                                     ),
                                     Text('NPR ${item.totalPrice.toStringAsFixed(0)}',
                                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textLight)),
@@ -121,28 +126,6 @@ class OrderPlacedScreen extends ConsumerWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
-
-                        // Payment section placeholder
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: _surfaceDark,
-                            border: Border.all(color: _gold.withValues(alpha: 0.2)),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Column(
-                            children: [
-                              const Icon(Icons.payment, size: 28, color: _gold),
-                              const SizedBox(height: 8),
-                              const Text('Payment', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textLight)),
-                              const SizedBox(height: 4),
-                              const Text('Payment integration coming soon.\nWe will confirm your order via call.', textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 12, color: _muted)),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 24),
                       ],
                     ),

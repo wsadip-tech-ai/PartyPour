@@ -32,7 +32,7 @@ class CartScreen extends ConsumerWidget {
       backgroundColor: _darkBg,
       appBar: AppBar(
         backgroundColor: _darkBg,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: _mutedLight), onPressed: () => context.canPop() ? context.pop() : context.go('/home')),
         title: const Text('Cart', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: _textLight)),
         actions: [
           Padding(
@@ -272,7 +272,7 @@ class CartScreen extends ConsumerWidget {
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _gold, width: 2)),
           ),
           onSubmitted: (val) {
-            onChanged((int.tryParse(val) ?? current).clamp(1, 9999));
+            onChanged((int.tryParse(val) ?? current).clamp(1, 99999));
             Navigator.pop(context);
           },
         ),
@@ -280,7 +280,7 @@ class CartScreen extends ConsumerWidget {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _muted))),
           TextButton(
             onPressed: () {
-              onChanged((int.tryParse(controller.text) ?? current).clamp(1, 9999));
+              onChanged((int.tryParse(controller.text) ?? current).clamp(1, 99999));
               Navigator.pop(context);
             },
             child: const Text('OK', style: TextStyle(color: _gold, fontWeight: FontWeight.w700)),

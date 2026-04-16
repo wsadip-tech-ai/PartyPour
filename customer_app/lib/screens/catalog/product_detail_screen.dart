@@ -532,6 +532,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             margin: const EdgeInsets.all(16),
                           ),
                         );
+                        // Go back to previous screen (category listing)
+                        if (context.canPop()) context.pop();
                       },
                       icon: const Icon(Icons.add_shopping_cart_rounded,
                           color: Color(0xFF1C1917), size: 20),
@@ -588,7 +590,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _goldColor, width: 2)),
           ),
           onSubmitted: (val) {
-            setState(() => _quantity = (int.tryParse(val) ?? _quantity).clamp(1, 9999));
+            setState(() => _quantity = (int.tryParse(val) ?? _quantity).clamp(1, 99999));
             Navigator.pop(context);
           },
         ),
@@ -596,7 +598,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _textDim))),
           TextButton(
             onPressed: () {
-              setState(() => _quantity = (int.tryParse(controller.text) ?? _quantity).clamp(1, 9999));
+              setState(() => _quantity = (int.tryParse(controller.text) ?? _quantity).clamp(1, 99999));
               Navigator.pop(context);
             },
             child: const Text('OK', style: TextStyle(color: _goldColor, fontWeight: FontWeight.w700)),

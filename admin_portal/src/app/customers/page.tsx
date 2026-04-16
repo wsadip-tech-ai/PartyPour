@@ -130,8 +130,8 @@ export default function CustomersPage() {
                     {getInitials(c.full_name, c.email)}
                   </div>
                   <div>
-                    <p className="font-medium">{c.full_name ?? 'Unknown'}</p>
-                    <p className="text-xs text-muted-foreground">{c.email ?? 'No email'}</p>
+                    <p className="font-medium">{c.full_name || 'Unknown'}</p>
+                    <p className="text-xs text-muted-foreground">{c.email || 'No email'}</p>
                   </div>
                 </Link>
               </TableCell>

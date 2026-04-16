@@ -684,12 +684,12 @@ class _PriceCalculatorScreenState extends ConsumerState<PriceCalculatorScreen> {
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _border)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _gold, width: 2)),
           ),
-          onSubmitted: (val) { onChanged((int.tryParse(val) ?? current).clamp(1, 9999)); Navigator.pop(context); },
+          onSubmitted: (val) { onChanged((int.tryParse(val) ?? current).clamp(1, 99999)); Navigator.pop(context); },
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel', style: TextStyle(color: _muted))),
           TextButton(
-            onPressed: () { onChanged((int.tryParse(controller.text) ?? current).clamp(1, 9999)); Navigator.pop(context); },
+            onPressed: () { onChanged((int.tryParse(controller.text) ?? current).clamp(1, 99999)); Navigator.pop(context); },
             child: const Text('OK', style: TextStyle(color: _gold, fontWeight: FontWeight.w700)),
           ),
         ],

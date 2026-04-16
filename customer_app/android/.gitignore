@@ -12,3 +12,11 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Signing
+*.jks
+key.properties
+
+# Firebase config (sensitive)
+**/google-services.json
+**/GoogleService-Info.plist

@@ -15,7 +15,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: SizedBox(
-              width: 200, height: 250,
+              width: 300, height: 300,
               child: ProductCard(product: product, onTap: () {}),
             ),
           ),
@@ -24,7 +24,7 @@ void main() {
 
       expect(find.text('Khukuri'), findsOneWidget);
       expect(find.text('NPR 550'), findsOneWidget);
-      expect(find.text('Local'), findsOneWidget);
+      expect(find.text('Domestic'), findsOneWidget);
     });
 
     testWidgets('shows Imported badge for imported products', (tester) async {
@@ -37,7 +37,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: SizedBox(
-              width: 280, height: 250,
+              width: 300, height: 300,
               child: ProductCard(product: product, onTap: () {}),
             ),
           ),
@@ -59,7 +59,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: SizedBox(
-              width: 200, height: 250,
+              width: 300, height: 300,
               child: ProductCard(product: product, onTap: () => tapped = true),
             ),
           ),
