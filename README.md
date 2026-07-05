@@ -128,6 +128,21 @@ flowchart LR
 **Testing:** Playwright (admin e2e), Dart unit tests (mobile models, services)
 **Notifications:** Firebase Cloud Messaging + transactional email provider
 
+## Repo tour
+
+```
+customer_app/lib/        # Flutter customer app
+  screens/               #   home, 5-step calculator wizard, catalog, cart, checkout, orders
+  providers/             #   app state
+  services/              #   Supabase + API calls
+  models/  widgets/  config/
+admin_portal/src/        # Next.js admin portal (dashboard, orders, products, analytics)
+supabase/
+  migrations/            # 23 migrations — catalog, orders, customers, analytics (RLS)
+  functions/             # Deno edge functions (AI assistant, notifications)
+mockups/                 # HTML design-exploration previews (internal)
+```
+
 ## Local development
 
 ```bash
