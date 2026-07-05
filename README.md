@@ -10,6 +10,10 @@
 
 ---
 
+![PartyPour admin portal — analytics](docs/assets/admin-analytics.png)
+
+<p align="center"><em>Admin portal — conversion-funnel analytics (app-open → order). The Flutter customer app is the primary surface; this is the vendor/operator side. Screenshots from the running app (pre-launch).</em></p>
+
 ## The problem
 
 Event hosts in Nepal — from house parties to corporate functions — over-buy or under-buy alcohol on nearly every event. Bartenders ballpark, hosts panic the night before, and unused inventory becomes a sunk cost. Existing solutions assume Western drinking patterns; **PartyPour calibrates to local consumption norms** (e.g., units per guest by event type, weighted by drinker mix).
@@ -166,8 +170,8 @@ Built by **Sadip Wagle** — AI Solutions Architect, formerly Co-Founder of **Da
 
 - **LinkedIn:** [sadip-wagle](https://www.linkedin.com/in/sadip-wagle-711245b7/)
 - **GitHub:** [@wsadip-tech-ai](https://github.com/wsadip-tech-ai)
-- **Email:** wsadip@gmail.com
+- **Email:** waglesadip79@gmail.com
 
 ---
 
-*PartyPour is part of a portfolio that also includes [KaraDarpan](https://github.com/wsadip-tech-ai/KaraDarpan) (tax AI), [Kaam](https://github.com/wsadip-tech-ai/Kaam) (home services), [Astra](https://github.com/wsadip-tech-ai/Astra) (astrology AI), and [WedMe](https://github.com/wsadip-tech-ai/WedMe) (event direct-booking).*
+*PartyPour is part of a portfolio that also includes [Astra](https://github.com/wsadip-tech-ai/Astra) (astrology AI), [Pasal AI](https://github.com/wsadip-tech-ai/pasal-ai) (Nepali DM-commerce AI), [Kaam](https://github.com/wsadip-tech-ai/Kaam) (home services), and [WedMe](https://github.com/wsadip-tech-ai/WedMe) (event direct-booking).*
